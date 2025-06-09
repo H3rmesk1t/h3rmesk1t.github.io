@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="大数据处理流程下图展现了大数据生态中设计的各种组件及工具。  大数据处理的主要流程包括数据收集、数据存储、数据处理、数据应用等主要环节。  数据采集在数据采集阶段，现有的中大型项目通常采用微服务架构进行分布式部署，所以数据采集需要在多台服务器上进行，且采集过程不能影响正常业务的开展。基于上述需求，就衍生了多种日志收集工具，如Flume、Logstash、Kibana等，它们都能通过简单的配置完成复">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop基础">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="H3rmesk1t&#39;s Blog">
+<meta property="og:description" content="大数据处理流程下图展现了大数据生态中设计的各种组件及工具。  大数据处理的主要流程包括数据收集、数据存储、数据处理、数据应用等主要环节。  数据采集在数据采集阶段，现有的中大型项目通常采用微服务架构进行分布式部署，所以数据采集需要在多台服务器上进行，且采集过程不能影响正常业务的开展。基于上述需求，就衍生了多种日志收集工具，如Flume、Logstash、Kibana等，它们都能通过简单的配置完成复">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749194815478-80d0c7bb-3957-41a9-8f91-7d35235f8a65.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749177801899-5ea62354-350e-4816-ba11-409899e3f432.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749193035965-615f41ba-cfde-4761-ba8f-6a427575d6d5.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749192838450-df103e53-8497-40fe-b00b-b164479a16b8.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749196569009-239b14b7-4a0a-4aa1-a02f-e00bea675ba9.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749399941325-9da210be-8b83-480d-91c2-3c53fd435aa0.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749440954303-13a1515a-69a7-46ea-abbb-dbd838d746f9.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749465633301-8a5bf3b5-9bc3-4f28-a12f-dffa4efce0a2.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749467097564-9d72a9bf-e5f2-43a6-8ab2-7679df9dc593.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749468638359-b1d29679-6873-42d5-a639-7f507b26b702.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749469314542-d5817ccf-4e6b-41f1-816e-6d609f242739.png">
+<meta property="article:published_time" content="2025-06-09T12:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-09T11:56:55.866Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749194815478-80d0c7bb-3957-41a9-8f91-7d35235f8a65.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>Hadoop基础</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t&#39;s Blog" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&text=Hadoop基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&is_video=false&description=Hadoop基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hadoop基础&body=Check out this article: https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&name=Hadoop基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&t=Hadoop基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">大数据处理流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86"><span class="toc-number">1.1.</span> <span class="toc-text">数据采集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-number">1.2.</span> <span class="toc-text">数据存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">数据分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%94%E7%94%A8"><span class="toc-number">1.4.</span> <span class="toc-text">数据应用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hadoop"><span class="toc-number">2.</span> <span class="toc-text">Hadoop</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Hadoop%E8%B5%B7%E6%BA%90"><span class="toc-number">2.1.</span> <span class="toc-text">Hadoop起源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hadoop%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">Hadoop核心组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hadoop%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.3.</span> <span class="toc-text">Hadoop环境搭建</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HDFS"><span class="toc-number">3.</span> <span class="toc-text">HDFS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="toc-number">3.1.</span> <span class="toc-text">HDFS设计原则</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E5%AE%B9%E9%94%99%E6%80%A7"><span class="toc-number">3.1.1.</span> <span class="toc-text">高容错性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%95%B0%E6%8D%AE%E9%9B%86%E5%AD%98%E5%82%A8"><span class="toc-number">3.1.2.</span> <span class="toc-text">大规模数据集存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">3.1.3.</span> <span class="toc-text">简单一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE"><span class="toc-number">3.1.4.</span> <span class="toc-text">流式数据访问</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7"><span class="toc-number">3.1.5.</span> <span class="toc-text">可移植性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E6%9E%B6%E6%9E%84"><span class="toc-number">3.2.</span> <span class="toc-text">HDFS架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E8%AF%BB%E5%86%99"><span class="toc-number">3.3.</span> <span class="toc-text">HDFS读写</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HDFS%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.1.</span> <span class="toc-text">HDFS写数据流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HDFS%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.2.</span> <span class="toc-text">HDFS读数据流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DFSOutputStream%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86"><span class="toc-number">3.3.3.</span> <span class="toc-text">DFSOutputStream内部原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">3.3.4.</span> <span class="toc-text">读写过程中如何保证数据完整性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%AF%E6%9C%AC%E6%94%BE%E7%BD%AE%E7%AD%96%E7%95%A5"><span class="toc-number">3.3.5.</span> <span class="toc-text">副本放置策略</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapReduce"><span class="toc-number">4.</span> <span class="toc-text">MapReduce</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YARN"><span class="toc-number">5.</span> <span class="toc-text">YARN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Hadoop基础
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-06-09T12:00:00.000Z" class="dt-published" itemprop="datePublished">2025-06-09</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="大数据处理流程"><a href="#大数据处理流程" class="headerlink" title="大数据处理流程"></a>大数据处理流程</h2><p>下图展现了大数据生态中设计的各种组件及工具。</p>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749194815478-80d0c7bb-3957-41a9-8f91-7d35235f8a65.png"></p>
+<p>大数据处理的主要流程包括数据收集、数据存储、数据处理、数据应用等主要环节。</p>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749177801899-5ea62354-350e-4816-ba11-409899e3f432.png"></p>
+<h3 id="数据采集"><a href="#数据采集" class="headerlink" title="数据采集"></a>数据采集</h3><p>在数据采集阶段，现有的中大型项目通常采用微服务架构进行分布式部署，所以数据采集需要在多台服务器上进行，且采集过程不能影响正常业务的开展。基于上述需求，就衍生了多种日志收集工具，如Flume、Logstash、Kibana等，它们都能通过简单的配置完成复杂的数据收集和数据聚合。</p>
+<h3 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h3><p>在数据存储阶段，大家所熟知的例如MySQL、Oracle等传统的关系型数据库，其优点在于能够快速存储结构化的数据，并且支持随机访问，但大数据的数据结构通过是半结构化（如日志数据）、非结构化数据（如音频、视频数据），为了解决海量半结构化和非结构化数据的存储，Hadoop HDFS、KFS、GFS等分布式文件系统应运而生，它们都能够支持结构化、半结构和非结构化数据的存储，并可以通过增加机器进行横向扩展。</p>
+<p>分布式文件系统完美地解决了海量数据存储的问题，但是一个优秀的数据存储系统需要同时考虑数据存储和访问两方面的问题，比如你希望能够对数据进行随机访问，这是传统的关系型数据库所擅长的，但却不是分布式文件系统所擅长的，那么有没有一种存储方案能够同时兼具分布式文件系统和关系型数据库的优点，基于这种需求，就产生了HBase、MongoDB。</p>
+<h3 id="数据分析"><a href="#数据分析" class="headerlink" title="数据分析"></a>数据分析</h3><p>在数据分析阶段通常分为两种：批处理和流处理。</p>
+<ul>
+<li>批处理：对数据进行离线处理的方式，数据会按照一定的时间间隔或者数据量进行批量处理，对应的处理框架有Hadoop MapReduce、Spark、Flink等。批处理可以对大量数据进行高效处理和分析，适用于需要对历史数据进行分析和挖掘的场景，如离线数仓、批量报表、离线推荐等场景。</li>
+</ul>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749193035965-615f41ba-cfde-4761-ba8f-6a427575d6d5.png"></p>
+<ul>
+<li>流处理：对数据进行实时处理的方式，数据会以流的形式不断地产生和处理，对应的处理框架有Storm、Spark Streaming、Flink Streaming等。流处理可以快速响应数据的变化，及时地进行数据处理和分析，适用于需要实时处理数据的场景，如实时数仓、实时监控、实时推荐等场景。</li>
+</ul>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749192838450-df103e53-8497-40fe-b00b-b164479a16b8.png"></p>
+<p>流处理和批处理都是常用的数据处理方式，它们各有优劣。流处理通常用于需要实时响应的场景，如在线监控和警报系统等；批处理则通常用于离线数据分析和挖掘等大规模数据处理场景。</p>
+<p>同时，为了能够让熟悉SQL的人员也能够进行数据的分析，查询分析框架应运而生，常用的有Hive 、Spark SQL 、Flink SQL、Pig、Phoenix等。这些框架都能够使用标准的SQL或者类SQL语法灵活地进行数据的查询分析。这些SQL经过解析优化后转换为对应的作业程序来运行，如Hive本质上就是将SQL转换为MapReduce作业，Spark SQL将SQL转换为一系列的弹性分布式数据集（Resilient Distributed Dataset，RDD）和转换关系（Transformations），Phoenix将SQL查询转换为一个或多个HBase Scan。</p>
+<h3 id="数据应用"><a href="#数据应用" class="headerlink" title="数据应用"></a>数据应用</h3><p>数据应用的领域广泛且多样，例如数据可视化广泛应用于科学研究、医疗健康、交通管理等领域，帮助专业人士更好地分析和理解数据；个性化推荐通过分析用户的行为数据、兴趣偏好等信息，为用户提供个性化的内容推荐，如短视频个性化推荐、电商商品推荐、头条新闻推荐等；数据也可以应用于机器学习模型训练，如金融领域，银行可以利用客户的历史交易数据训练机器学习模型，用于评估客户的信用风险，从而更好地进行信贷审批。</p>
+<h2 id="Hadoop"><a href="#Hadoop" class="headerlink" title="Hadoop"></a>Hadoop</h2><h3 id="Hadoop起源"><a href="#Hadoop起源" class="headerlink" title="Hadoop起源"></a>Hadoop起源</h3><p>在大数据时代，针对大数据处理的新技术也在不断地开发和运用中，并逐渐成为数据处理挖掘行业广泛使用的主流技术。<strong>Hadoop作为处理大数据的分布式存储和计算框架</strong>，已在国内外大、中、小型企业中得到了广泛应用。</p>
+<p>Hadoop是由Apache的Lucence项目创始人道格·卡廷创建的，Lucence是一个应用广泛的文本搜索系统库。Hadoop起源于开源的网络搜索引擎Nutch，Nutch本身也是Lucence项目的一部分，Hadoop的发展历史如下图所示。</p>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749196569009-239b14b7-4a0a-4aa1-a02f-e00bea675ba9.png"></p>
+<h3 id="Hadoop核心组件"><a href="#Hadoop核心组件" class="headerlink" title="Hadoop核心组件"></a>Hadoop核心组件</h3><p>Hadoop的核心组件主要包括Hadoop Common、<strong>HDFS</strong>（Hadoop Distributed File System）、<strong>YARN</strong>（Yet Another Resource Negotiator）和<strong>MapReduce</strong>，这些组件共同构成了Hadoop的基础架构，提供了分布式存储和计算的能力。</p>
+<ul>
+<li>Hadoop Common提供库和工具，支持其他Hadoop模块运行，包括文件系统抽象、工具和库，用于访问文件系统，以及运行Hadoop的守护进程。</li>
+<li>HDFS是Hadoop的分布式文件系统，用于存储数据。HDFS将大文件切分成多个数据块，并将这些数据块分布式地存储在集群的多个节点上，以提供高容错性和可扩展性。</li>
+<li>YARN是Hadoop的资源管理器，负责集群资源的调度和管理。YARN将集群的计算资源划分为多个容器（Containers），并分配给不同的应用程序进行处理。</li>
+<li>MapReduce是Hadoop的计算框架，用于分布式处理数据。MapReduce模型将计算任务分解为Map和Reduce两个阶段。Map阶段将输入数据划分为多个片段，并在集群的不同节点上并行处理；Reduce阶段将Map阶段的结果进行合并和汇总，生成最终的输出结果。</li>
+</ul>
+<h3 id="Hadoop环境搭建"><a href="#Hadoop环境搭建" class="headerlink" title="Hadoop环境搭建"></a>Hadoop环境搭建</h3><p>创建一个Hadoop的文件夹，结合配置docker-compose文件和hadoop.env文件，通过Docker Compose来部署一个Hadoop集群。</p>
+<p>在docker-compose的配置中定义了5个服务：</p>
+<ul>
+<li>namenode：HDFS的NameNode，负责管理文件系统的元数据</li>
+<li>datanode：HDFS的DataNode，负责存储实际的数据块</li>
+<li>resourcemanager：YARN的ResourceManager，负责集群资源管理和任务调度</li>
+<li>nodemanager：YARN的NodeManager，负责管理单个节点上的资源和任务</li>
+<li>historyserver：YARN的HistoryServer，负责保存和展示已完成任务的历史信息</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">namenode:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">&quot;bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8&quot;</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">&quot;namenode&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop-network&quot;</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">&quot;always&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9870:9870&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9000:9000&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop_namenode:/hadoop/dfs/name&quot;</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">CLUSTER_NAME:</span> <span class="string">&quot;docker-hadoop-cluster&quot;</span></span><br><span class="line">    <span class="attr">env_file:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./hadoop.env&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">datanode:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">&quot;bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8&quot;</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">&quot;datanode&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop-network&quot;</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">&quot;always&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop_datanode:/hadoop/dfs/data&quot;</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">SERVICE_PRECONDITION:</span> <span class="string">&quot;namenode:9870&quot;</span></span><br><span class="line">    <span class="attr">env_file:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./hadoop.env&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">resourcemanager:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">&quot;bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8&quot;</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">&quot;resourcemanager&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop-network&quot;</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">&quot;always&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8088:8088&quot;</span>  <span class="comment"># Web UI</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">SERVICE_PRECONDITION:</span> <span class="string">&quot;namenode:9000,namenode:9870,datanode:9864&quot;</span></span><br><span class="line">    <span class="attr">env_file:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./hadoop.env&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">nodemanager:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">&quot;bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8&quot;</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">&quot;nodemanager&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop-network&quot;</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">&quot;always&quot;</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">SERVICE_PRECONDITION:</span> <span class="string">&quot;namenode:9000,namenode:9870,datanode:9864,resourcemanager:8088&quot;</span></span><br><span class="line">    <span class="attr">env_file:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./hadoop.env&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">historyserver:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">&quot;bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8&quot;</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">&quot;historyserver&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop-network&quot;</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">&quot;always&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8188:8188&quot;</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">SERVICE_PRECONDITION:</span> <span class="string">&quot;namenode:9000,namenode:9870,datanode:9864,resourcemanager:8088&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;hadoop_historyserver:/hadoop/yarn/timeline&quot;</span></span><br><span class="line">    <span class="attr">env_file:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./hadoop.env&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">hadoop_namenode:</span></span><br><span class="line">  <span class="attr">hadoop_datanode:</span></span><br><span class="line">  <span class="attr">hadoop_historyserver:</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">hadoop-network:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">&quot;bridge&quot;</span></span><br><span class="line">    <span class="comment"># ipam:</span></span><br><span class="line">    <span class="comment">#   config:</span></span><br><span class="line">    <span class="comment">#     - subnet: &quot;172.23.0.0/24&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">CORE_CONF_fs_defaultFS=hdfs://namenode:9000</span><br><span class="line">CORE_CONF_hadoop_http_staticuser_user=root</span><br><span class="line">CORE_CONF_hadoop_proxyuser_hue_hosts=*</span><br><span class="line">CORE_CONF_hadoop_proxyuser_hue_groups=*</span><br><span class="line">CORE_CONF_io_compression_codecs=org.apache.hadoop.io.compress.SnappyCodec</span><br><span class="line"></span><br><span class="line">HDFS_CONF_dfs_webhdfs_enabled=true</span><br><span class="line">HDFS_CONF_dfs_permissions_enabled=false</span><br><span class="line">HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false</span><br><span class="line"></span><br><span class="line">YARN_CONF_yarn_log___aggregation___enable=true</span><br><span class="line">YARN_CONF_yarn_log_server_url=http://historyserver:8188/applicationhistory/logs/</span><br><span class="line">YARN_CONF_yarn_resourcemanager_recovery_enabled=true</span><br><span class="line">YARN_CONF_yarn_resourcemanager_store_class=org.apache.hadoop.yarn.server.resourcemanager.recovery.FileSystemRMStateStore</span><br><span class="line">YARN_CONF_yarn_resourcemanager_scheduler_class=org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</span><br><span class="line">YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___mb=8192</span><br><span class="line">YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___mb=8192</span><br><span class="line">YARN_CONF_yarn_resourcemanager_fs_state___store_uri=/rmstate</span><br><span class="line">YARN_CONF_yarn_resourcemanager_system___metrics___publisher_enabled=true</span><br><span class="line">YARN_CONF_yarn_resourcemanager_hostname=resourcemanager</span><br><span class="line">YARN_CONF_yarn_resourcemanager_address=resourcemanager:8032</span><br><span class="line">YARN_CONF_yarn_resourcemanager_scheduler_address=resourcemanager:8030</span><br><span class="line">YARN_CONF_yarn_resourcemanager_resource__tracker_address=resourcemanager:8031</span><br><span class="line">YARN_CONF_yarn_timeline___service_enabled=true</span><br><span class="line">YARN_CONF_yarn_timeline___service_generic___application___history_enabled=true</span><br><span class="line">YARN_CONF_yarn_timeline___service_hostname=historyserver</span><br><span class="line">YARN_CONF_mapreduce_map_output_compress=true</span><br><span class="line">YARN_CONF_mapred_map_output_compress_codec=org.apache.hadoop.io.compress.SnappyCodec</span><br><span class="line">YARN_CONF_yarn_nodemanager_resource_memory___mb=16384</span><br><span class="line">YARN_CONF_yarn_nodemanager_resource_cpu___vcores=8</span><br><span class="line">YARN_CONF_yarn_nodemanager_disk___health___checker_max___disk___utilization___per___disk___percentage=98.5</span><br><span class="line">YARN_CONF_yarn_nodemanager_remote___app___log___dir=/app-logs</span><br><span class="line">YARN_CONF_yarn_nodemanager_aux___services=mapreduce_shuffle</span><br><span class="line"></span><br><span class="line">MAPRED_CONF_mapreduce_framework_name=yarn</span><br><span class="line">MAPRED_CONF_mapred_child_java_opts=-Xmx4096m</span><br><span class="line">MAPRED_CONF_mapreduce_map_memory_mb=4096</span><br><span class="line">MAPRED_CONF_mapreduce_reduce_memory_mb=8192</span><br><span class="line">MAPRED_CONF_mapreduce_map_java_opts=-Xmx3072m</span><br><span class="line">MAPRED_CONF_mapreduce_reduce_java_opts=-Xmx6144m</span><br><span class="line">MAPRED_CONF_yarn_app_mapreduce_am_env=HADOOP_MAPRED_HOME=/opt/hadoop-3.2.1/</span><br><span class="line">MAPRED_CONF_mapreduce_map_env=HADOOP_MAPRED_HOME=/opt/hadoop-3.2.1/</span><br><span class="line">MAPRED_CONF_mapreduce_reduce_env=HADOOP_MAPRED_HOME=/opt/hadoop-3.2.1/</span><br></pre></td></tr></table></figure>
+
+<p>YARN作业测试，通过下面的命令提交一个示例MapReduce作业来进行验证，如果任务成功运行，在HistoryServer Web UI，可以看到一个运行完成状态的作业。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop jar /opt/hadoop-3.2.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar pi 10 100</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749399941325-9da210be-8b83-480d-91c2-3c53fd435aa0.png"></p>
+<h2 id="HDFS"><a href="#HDFS" class="headerlink" title="HDFS"></a>HDFS</h2><h3 id="HDFS设计原则"><a href="#HDFS设计原则" class="headerlink" title="HDFS设计原则"></a>HDFS设计原则</h3><h4 id="高容错性"><a href="#高容错性" class="headerlink" title="高容错性"></a>高容错性</h4><ol>
+<li><strong><font style="color:rgba(0, 0, 0, 0.9);">数据冗余存储</font></strong><ul>
+<li><font style="color:rgba(0, 0, 0, 0.9);">HDFS会将文件分割成多个数据块（block），默认情况下每个数据块会在集群中的不同节点上存储三份副本。例如，一个大小为256MB的文件，假设HDFS的块大小为128MB，那么这个文件会被分成两个块。这两个块各自在不同的数据节点上存储三份副本。这样即使某个数据节点出现故障，数据也不会丢失，因为还有其他副本可以使用。</font></li>
+<li><font style="color:rgba(0, 0, 0, 0.9);">当检测到某个副本丢失（如数据节点故障或数据损坏）时，HDFS会自动重新复制数据块，以恢复到设定的副本数量。这种机制使得HDFS能够在硬件故障频繁的廉价硬件集群环境中可靠地存储数据。</font></li>
+</ul>
+</li>
+<li><strong><font style="color:rgba(0, 0, 0, 0.9);">错误检测与恢复</font></strong><ul>
+<li><font style="color:rgba(0, 0, 0, 0.9);">HDFS采用校验和（checksum）来检测数据块是否损坏。在写入数据块时，会计算校验和并存储。当读取数据块时，会再次计算校验和并与存储的校验和进行比较。如果发现校验和不一致，就认为该数据块损坏。此时，HDFS会从其他副本读取数据块，并且会尝试修复损坏的副本，通过重新复制未损坏的副本到原来存储损坏副本的节点或者新的节点。</font></li>
+</ul>
+</li>
+</ol>
+<h4 id="大规模数据集存储"><a href="#大规模数据集存储" class="headerlink" title="大规模数据集存储"></a><font style="color:rgba(0, 0, 0, 0.9);">大规模数据集存储</font></h4><ol>
+<li><strong>大文件存储优化</strong><ul>
+<li>HDFS针对大文件存储进行了优化。它采用大块（默认128MB）来存储数据，这比传统文件系统（如常见的4KB一块）更适合处理大规模数据集。对于大文件，大块可以减少元数据（如块的索引等信息）的管理开销。</li>
+</ul>
+</li>
+<li><strong>高吞吐量访问</strong><ul>
+<li>在设计上，HDFS更注重数据的吞吐量而不是低延迟。它适合于大规模数据的顺序读写操作。当进行大规模数据读取时，HDFS可以通过并行读取多个数据块来提高数据传输速率。例如，在进行数据挖掘或者大数据分析任务时，需要读取大量的数据，HDFS能够利用集群中的多个节点并行地读取数据块，从而实现高吞吐量的数据访问。</li>
+</ul>
+</li>
+</ol>
+<h4 id="简单一致性"><a href="#简单一致性" class="headerlink" title="简单一致性"></a>简单一致性</h4><ol>
+<li><strong>一次写入多次读取</strong><ul>
+<li>HDFS采用的是“一次写入，多次读取”的一致性模型。文件一旦被写入后，其内容是不可变的，只能追加数据。例如，在数据仓库场景中，数据一旦被加载到HDFS中，就可以被多个分析任务安全地读取，而不用担心数据在读取过程中被修改导致一致性问题。</li>
+</ul>
+</li>
+<li><strong>命名空间一致性</strong><ul>
+<li>HDFS的命名空间（包括文件和目录的层级结构）在集群范围内是一致的，所有的客户端看到的文件系统结构是相同的。</li>
+</ul>
+</li>
+</ol>
+<h4 id="流式数据访问"><a href="#流式数据访问" class="headerlink" title="流式数据访问"></a>流式数据访问</h4><ol>
+<li><strong>数据本地性优化</strong><ul>
+<li>HDFS会尽量将计算任务调度到存储数据的数据节点上执行，这就是数据本地性（data-locality）原则，以减少数据在网络中的传输，提高数据处理效率。例如，在运行MapReduce任务时，Hadoop会优先将map任务分配到存储输入数据块的节点上，如果无法在数据本地节点执行，也会尽量在同一个机架内的节点上执行，以减少跨机架的数据传输开销。</li>
+</ul>
+</li>
+<li><strong>数据流失写入与读取</strong><ul>
+<li>HDFS支持数据的流式写入和读取。对于写入操作，客户端可以像写入一个普通文件一样，连续不断地将数据写入HDFS。HDFS会将这些数据分块存储到集群中。在读取时，客户端也可以以流的方式读取数据块。这种流式访问方式非常适合于处理大规模数据，例如在日志数据收集系统中，日志数据可以源源不断地写入HDFS，后续的数据处理系统可以以流的方式读取这些日志数据进行分析。</li>
+</ul>
+</li>
+</ol>
+<h4 id="可移植性"><a href="#可移植性" class="headerlink" title="可移植性"></a>可移植性</h4><ol>
+<li><strong>跨平台</strong><ul>
+<li>HDFS是用Java语言编写的，因此它具有很好的可移植性。它可以运行在多种操作系统之上，如Linux、Unix和Windows等。</li>
+</ul>
+</li>
+<li><strong>硬件兼容</strong><ul>
+<li>HDFS被设计为可以在廉价的商用硬件上运行。它不需要高端的存储设备，能够充分利用普通的服务器硬件来构建大规模的存储集群。这种硬件兼容性使得企业可以以较低的成本构建HDFS集群，同时也可以方便地进行硬件扩展。</li>
+</ul>
+</li>
+</ol>
+<h3 id="HDFS架构"><a href="#HDFS架构" class="headerlink" title="HDFS架构"></a>HDFS架构</h3><p>HDFS采用master&#x2F;slave架构，一个HDFS集群是由一个Namenode和一定数目的Datanodes组成。</p>
+<p>其中，Namenode是一个中心服务器，负责管理文件系统的命名空间（namespace）以及客户端对文件的访问；集群中的Datanode一般是一个节点一个，负责管理它所在节点上的存储。</p>
+<p>HDFS暴露了文件系统的命名空间，用户能够以文件的形式在上面存储数据。从内部看，一个文件其实被分成一个或多个数据块，这些块存储在一组Datanode上，Namenode执行文件系统的命名空间操作，比如打开、关闭、重命名文件或目录，它也负责确定数据块到具体Datanode节点的映射；Datanode负责处理文件系统客户端的读写请求，在Namenode的统一调度下进行数据块的创建、删除和复制。</p>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749440954303-13a1515a-69a7-46ea-abbb-dbd838d746f9.png"></p>
+<ul>
+<li>Client：Client是HDFS的客户端，代表用户与HDFS交互，执行文件的读写操作。向NameNode发送文件读写请求，获取文件的元数据信息；根据NameNode返回的元数据信息，与DataNode进行实际的数据读写操作。</li>
+<li>NameNode：NameNode是HDFS的主节点，负责管理文件系统的元数据。维护文件系统的目录树结构和文件的元数据，包括文件的权限、位置、大小等信息；管理数据块的分配和副本策略，确保每个数据块有足够数量的副本（默认3份）；处理客户端的文件读写请求，提供文件的元数据信息，指导客户端到相应的DataNode进行数据读写；监控DataNode的状态，通过心跳机制检测DataNode是否正常工作，管理集群的健康状态。</li>
+<li>SecondaryNameNode：SecondaryNameNode是NameNode的辅助节点，主要用于协助NameNode进行元数据的检查点操作，防止元数据丢失。定期从NameNode获取fsimage和edit log文件，合并生成新的fsimage文件，作为元数据的备份；在NameNode故障时，可以提供最近的元数据备份，帮助快速恢复NameNode。</li>
+<li>DataNode：DataNode是HDFS中的工作节点，负责存储和管理实际的数据块。DataNode存储文件的数据块，这些数据块是文件的物理存储单元；响应客户端的读写请求，从磁盘读取或写入数据块；定期向NameNode发送块报告（Block Report），报告其存储的数据块信息，以便NameNode更新元数据；根据NameNode的指令，创建、删除、复制数据块，以保证数据的冗余性和一致性。</li>
+</ul>
+<h3 id="HDFS读写"><a href="#HDFS读写" class="headerlink" title="HDFS读写"></a>HDFS读写</h3><p>作为一个文件系统，文件的读和写是最基本的需求，本部分了解客户端是如何与HDFS进行交互的，也就是客户端与HDFS，以及构成HDFS的两类节点（NameNode和DataNode）之间的数据流是怎样的。</p>
+<ul>
+<li>Block：是最大的单位，文件上传前需要分块，这个块就是Block，一般为128MB。一般不推荐修改块大小，因为块太小时寻址时间占比过高；块太大时Map任务数太少，作业执行速度变慢。</li>
+<li>Packet：是第二大的单位，它是Client向DataNode，或DataNode之间数据传输的基本单位，默认64KB。</li>
+<li>Chunk：是最小的单位，它是Client向DataNode，或DataNode之间进行数据校验的基本单位，默认512Byte。因为用作校验，故每个Chunk需要带有4Byte的校验位，所以实际每个Chunk写入Packet的大小为516Byte。</li>
+</ul>
+<h4 id="HDFS写数据流程"><a href="#HDFS写数据流程" class="headerlink" title="HDFS写数据流程"></a>HDFS写数据流程</h4><ol>
+<li>客户端通过Distributed FileSystem模块向NameNode请求上传文件，NameNode检查目标文件是否已存在，父目录是否存在；</li>
+<li>NameNode返回是否可以上传；</li>
+<li>客户端请求第一个Block上传到哪几个DataNode服务器上；</li>
+<li>NameNode依据<strong>机架感知策略</strong>（默认副本数为3）返回节点，例如DataNode1、DataNode2、DataNode3；</li>
+<li>客户端通过FSDataOutputStream模块请求DataNode1上传数据，DataNode1收到请求会继续调用DataNode2，然后DataNode2调用DataNode3，形成传输管道（Pipeline）；</li>
+<li>DataNode1、DataNode2、DataNode3逐级应答客户端；</li>
+<li>客户端开始往DataNode1上传第一个Block（先从磁盘读取数据放到一个本地内存缓存），以Packet为单位，DataNode1收到一个Packet就会传给DataNode2，DataNode2传给DataNode3，每个节点接收Packet后会写入本地磁盘并加入应答队列；</li>
+<li>当一个Block传输完成之后，客户端再次请求NameNode上传第二个Block的服务器。（重复执行3-7步）；</li>
+<li>直至所有块上传完毕，最终客户端通知NameNode完成上传，NameNode更新元数据（如FsImage和EditLog）。</li>
+</ol>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749465633301-8a5bf3b5-9bc3-4f28-a12f-dffa4efce0a2.png"></p>
+<h4 id="HDFS读数据流程"><a href="#HDFS读数据流程" class="headerlink" title="HDFS读数据流程"></a>HDFS读数据流程</h4><ol>
+<li>客户端通过DistributedFileSystem向NameNode请求下载文件，NameNode通过查询元数据，找到文件块所在的DataNode地址；</li>
+<li>挑选一台DataNode（就近原则，然后随机）服务器，请求读取数据；</li>
+<li>DataNode开始传输数据给客户端（从磁盘里面读取数据输入流，以Packet为单位来做校验）；</li>
+<li>客户端以Packet为单位接收，先在本地缓存，然后写入目标文件。</li>
+</ol>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749467097564-9d72a9bf-e5f2-43a6-8ab2-7679df9dc593.png"></p>
+<h4 id="DFSOutputStream内部原理"><a href="#DFSOutputStream内部原理" class="headerlink" title="DFSOutputStream内部原理"></a>DFSOutputStream内部原理</h4><ol>
+<li>创建Packet<br>Client写数据时，会将字节流数据缓存到内部的缓冲区中，当长度满足一个Chunk大小（512B）时，便会创建一个Packet对象，然后向该Packet对象中写ChunkChecksum校验和数据，以及实际数据块ChunkData，校验和数据是基于实际数据块计算得到的。每次满足一个Chunk大小时，都会向Packet中写上述数据内容，直到达到一个Packet对象大小（64K），就会将该Packet对象放入到dataQueue队列中，等待DataStreamer线程取出并发送到DataNode节点。</li>
+<li>发送Packet<br>DataStreamer线程从dataQueue队列中取出Packet对象，放到ackQueue队列中，然后向DataNode节点发送这个Packet对象所对应的数据。</li>
+<li>接收Ack<br>发送一个Packet数据包以后，会有一个用来接收Ack的ResponseProcessor线程，如果收到成功的ack，则表示一个Packet发送成功；如果成功，则ResponseProcessor线程会将ackQueue队列中对应的Packet删除。</li>
+</ol>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749468638359-b1d29679-6873-42d5-a639-7f507b26b702.png"></p>
+<h4 id="读写过程中如何保证数据完整性"><a href="#读写过程中如何保证数据完整性" class="headerlink" title="读写过程中如何保证数据完整性"></a>读写过程中如何保证数据完整性</h4><p><font style="color:rgba(0, 0, 0, 0.9);">HDFS在读写过程中采取多种机制来保证数据完整性。在写入数据时，HDFS会将文件分割成多个固定大小的Block，每个Block会被复制多份（通常默认是三份），这些副本会被存储在不同的数据节点上。当数据写入时，NameNode会负责协调块的分配和副本的存储位置。数据首先写入到一个数据节点，然后通过内部的管道机制将数据顺序地复制到其他副本节点。在复制过程中，每个数据节点会对块数据计算校验和，并将校验和信息与数据块一起存储。当读取数据时，客户端会从NameNode获取块的位置信息，然后直接从数据节点读取数据。在读取过程中，客户端会利用校验和来验证数据的完整性。如果发现某个块的校验和与存储时计算的校验和不一致，说明该块数据可能损坏。此时，客户端可以从其他副本节点读取该块数据，因为每个块都有多个副本存储在不同的节点上。通过这种数据块的多副本存储、校验和验证以及副本间的冗余机制，HDFS能够在分布式环境下有效保证数据的完整性，即使部分数据节点出现故障或者数据在传输过程中发生损坏，也能够通过副本恢复和校验来确保数据的准确性和完整性。</font></p>
+<h4 id="副本放置策略"><a href="#副本放置策略" class="headerlink" title="副本放置策略"></a>副本放置策略</h4><p>HDFS的副本放置策略是其保证数据可靠性和性能的关键机制之一，以下是其主要策略：</p>
+<ol>
+<li>默认副本数量<ol>
+<li>默认值：HDFS默认将每个数据块复制为3个副本，这种多副本机制可以有效提高数据的可靠性和容错能力。</li>
+<li>可配置性：用户可以根据实际需求调整副本数量。例如，在对数据可靠性要求极高的场景中，可以增加副本数量；在对存储空间要求较高的场景中，可以适当减少副本数量。</li>
+</ol>
+</li>
+<li>副本放置规则<ol>
+<li>副本1：第一份副本通常放置在上传数据的节点所在的机架上，这样可以减少数据传输的延迟，提高写入性能；</li>
+<li>副本2：第二份副本放置在与第一副本不同的机架上，这种跨机架放置策略可以有效防止整个机架故障导致数据丢失；</li>
+<li>副本3：第三份副本放置在与第二副本相同的机架上，但与第二副本不同的节点上，这种放置策略可以在保证数据可靠性的同时，避免跨机架通信的高成本；</li>
+<li>副本N：如果配置了更多的副本，HDFS会继续按照上述规则进行放置，尽量分散到不同的机架和节点上，以进一步提高数据的可靠性。</li>
+</ol>
+</li>
+</ol>
+<p><img src="/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/1749469314542-d5817ccf-4e6b-41f1-816e-6d609f242739.png"></p>
+<h2 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h2><h2 id="YARN"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</h2><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/MXfoVF27ZHL084YELMD9HQ">Hadoop实战：使用Docker Compose部署Hadoop集群</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">大数据处理流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86"><span class="toc-number">1.1.</span> <span class="toc-text">数据采集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-number">1.2.</span> <span class="toc-text">数据存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">数据分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%94%E7%94%A8"><span class="toc-number">1.4.</span> <span class="toc-text">数据应用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hadoop"><span class="toc-number">2.</span> <span class="toc-text">Hadoop</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Hadoop%E8%B5%B7%E6%BA%90"><span class="toc-number">2.1.</span> <span class="toc-text">Hadoop起源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hadoop%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">Hadoop核心组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hadoop%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.3.</span> <span class="toc-text">Hadoop环境搭建</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HDFS"><span class="toc-number">3.</span> <span class="toc-text">HDFS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="toc-number">3.1.</span> <span class="toc-text">HDFS设计原则</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E5%AE%B9%E9%94%99%E6%80%A7"><span class="toc-number">3.1.1.</span> <span class="toc-text">高容错性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%95%B0%E6%8D%AE%E9%9B%86%E5%AD%98%E5%82%A8"><span class="toc-number">3.1.2.</span> <span class="toc-text">大规模数据集存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">3.1.3.</span> <span class="toc-text">简单一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE"><span class="toc-number">3.1.4.</span> <span class="toc-text">流式数据访问</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7"><span class="toc-number">3.1.5.</span> <span class="toc-text">可移植性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E6%9E%B6%E6%9E%84"><span class="toc-number">3.2.</span> <span class="toc-text">HDFS架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E8%AF%BB%E5%86%99"><span class="toc-number">3.3.</span> <span class="toc-text">HDFS读写</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HDFS%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.1.</span> <span class="toc-text">HDFS写数据流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HDFS%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.2.</span> <span class="toc-text">HDFS读数据流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DFSOutputStream%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86"><span class="toc-number">3.3.3.</span> <span class="toc-text">DFSOutputStream内部原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">3.3.4.</span> <span class="toc-text">读写过程中如何保证数据完整性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%AF%E6%9C%AC%E6%94%BE%E7%BD%AE%E7%AD%96%E7%95%A5"><span class="toc-number">3.3.5.</span> <span class="toc-text">副本放置策略</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapReduce"><span class="toc-number">4.</span> <span class="toc-text">MapReduce</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YARN"><span class="toc-number">5.</span> <span class="toc-text">YARN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&text=Hadoop基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&is_video=false&description=Hadoop基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hadoop基础&body=Check out this article: https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&title=Hadoop基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&name=Hadoop基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2025/06/09/Hadoop%E5%9F%BA%E7%A1%80/&t=Hadoop基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    H3rmesk1t
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>
