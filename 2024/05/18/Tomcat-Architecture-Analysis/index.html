@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="IntroductionApache Tomcat软件是Java Servlet、JavaServer Pages、Java Expression Language和Java WebSocket技术的一个开源实现。Java Servlet、JavaServer Pages、Java Expression Language和Java WebSocket规范是在Java Community Proce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat Architecture Analysis">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="IntroductionApache Tomcat软件是Java Servlet、JavaServer Pages、Java Expression Language和Java WebSocket技术的一个开源实现。Java Servlet、JavaServer Pages、Java Expression Language和Java WebSocket规范是在Java Community Proce">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/1.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/2.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/3.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/4.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/9.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/6.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/7.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/8.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/5.png">
+<meta property="article:published_time" content="2024-05-17T16:17:40.000Z">
+<meta property="article:modified_time" content="2024-10-17T16:44:44.102Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="MemoryShell">
+<meta property="article:tag" content="Tomcat">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/1.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>Tomcat Architecture Analysis</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/05/18/Tomcat-Filter/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/03/14/JNDI%E6%B3%A8%E5%85%A5/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&text=Tomcat Architecture Analysis"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&is_video=false&description=Tomcat Architecture Analysis"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tomcat Architecture Analysis&body=Check out this article: https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&name=Tomcat Architecture Analysis&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&t=Tomcat Architecture Analysis"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Architecture"><span class="toc-number">2.</span> <span class="toc-text">Architecture</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Three-Major-Components"><span class="toc-number">3.</span> <span class="toc-text">Three Major Components</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Listener"><span class="toc-number">3.1.</span> <span class="toc-text">Listener</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Conception"><span class="toc-number">3.1.1.</span> <span class="toc-text">Conception</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage"><span class="toc-number">3.1.2.</span> <span class="toc-text">Usage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter"><span class="toc-number">3.2.</span> <span class="toc-text">Filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Conception-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">Conception</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Life-Cycle"><span class="toc-number">3.2.2.</span> <span class="toc-text">Life Cycle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage-1"><span class="toc-number">3.2.3.</span> <span class="toc-text">Usage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Servlet"><span class="toc-number">3.3.</span> <span class="toc-text">Servlet</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Conception-2"><span class="toc-number">3.3.1.</span> <span class="toc-text">Conception</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Life-Cycle-1"><span class="toc-number">3.3.2.</span> <span class="toc-text">Life Cycle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage-2"><span class="toc-number">3.3.3.</span> <span class="toc-text">Usage</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Tomcat Architecture Analysis
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-05-17T16:17:40.000Z" class="dt-published" itemprop="datePublished">2024-05-18</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/MemoryShell/" rel="tag">MemoryShell</a>, <a class="p-category" href="/tags/Tomcat/" rel="tag">Tomcat</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Apache Tomcat软件是Java Servlet、JavaServer Pages、Java Expression Language和Java WebSocket技术的一个开源实现。Java Servlet、JavaServer Pages、Java Expression Language和Java WebSocket规范是在Java Community Process下开发的。</p>
+<p>简单来说，Tomcat可以看成是Web服务器加Servlet容器。</p>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/1.png"></p>
+<p>在上面的流程图中，Tomcat通过Connector组件接收并解析HTTP请求，将ServletRequest对象发送给Container进行处理。Container处理完成后会将响应封装成ServletRespone对象返回给Connector，然后Connector再将ServletRespone对象解析成HTTP响应文本格式发送给客户端，至此Tomcat就完成了一次网络通信。</p>
+<h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2><p><img src="/2024/05/18/Tomcat-Architecture-Analysis/2.png"></p>
+<p>在Tomcat架构图中主要包含三个组件：Service、Connectot、Container。</p>
+<ul>
+<li>Server：Web服务器，一个Server中可以包含多个Service。</li>
+<li>Service：每一个Service都是独立的，它们共享一个JVM以及系统类库，并且一个Service负责维护多个Connector和一个Container。</li>
+<li>Connector：Connector用于连接Service和Container，解析客户端的请求并转发到Container，以及转发来自Container的响应。每一种不同的Connector都可以处理不同的请求协议，包括HTTP&#x2F;1.1、HTTP&#x2F;2、AJP等等。</li>
+<li>Container：Tomcat的Container包含四种子容器，分别为Engine、Host、Context和Wrapper。其中，一个Container对应一个Engine，一个Engine可以包含多个Host，一个Host可以包含多个Context，一个Context又包含多个Wrapper。<ul>
+<li>Engine：可以看成是容器对外提供功能的入口，每个Engine是Host的集合，用于管理各个Host。</li>
+<li>Host：可以看成一个虚拟主机，一个Tomcat可以支持多个虚拟主机。虚拟主机的作用就是运行多个应用，它负责安装和展开这些应用，并且标识这个应用以便能够区分它们，每个虚拟主机对应的一个域名，不同Host容器接受处理对应不同域名的请求。</li>
+<li>Context：上下文容器，可以将其看成一个Web应用，每个Host里面可以运行多个Web应用。同一个Host里面不同的Context，其contextPath必须不同，默认Context的contextPath为空格或斜杠。</li>
+<li>Wrapper：对Servlet的抽象和包装，每个Context可以有多个Wrapper，用于支持不同的Servlet，每个Wrapper实例表示一个具体的Servlet定义，Wrapper主要负责管理Servlet，包括Servlet的装载、初始化、执行以及资源回收。</li>
+</ul>
+</li>
+</ul>
+<p>下图展示了请求在Container中的解析过程：</p>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/3.png"></p>
+<h2 id="Three-Major-Components"><a href="#Three-Major-Components" class="headerlink" title="Three Major Components"></a>Three Major Components</h2><p>Java Web中有三大组件，分别是Servlet、Filter和Listener。三者的加载顺序为Listener-&gt;Filter-&gt;Servlet。</p>
+<p>在org.apache.catalina.core.StandardContext类的startInternal方法中，首先调用了listenerStart，接着是filterStart，最后是loadOnStartup。这三处调用分别触发了Listener、Filter、Servlet的构造加载。</p>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/4.png"></p>
+<h3 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h3><h4 id="Conception"><a href="#Conception" class="headerlink" title="Conception"></a>Conception</h4><p>Listener是一个实现了特定接口的Java程序，用于监听一个方法或者属性，当被监听的方法被调用或者属性改变时，就会自动执行某个方法。</p>
+<p>与Listener相关的概念：</p>
+<ul>
+<li>事件：某个方法被调用，或者属性的改变；</li>
+<li>事件源：被监听的对象（如ServletContext、requset、方法等）；</li>
+<li>监听器：用于监听事件源，当发生事件时会触发监听器。</li>
+</ul>
+<p>监听器分类：</p>
+<table>
+<thead>
+<tr>
+<th align="center">事件源</th>
+<th align="center">监听器</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ServletContext</td>
+<td align="center">ServletContextListener</td>
+<td align="center">用于监听 ServletContext 对象的创建与销毁过程</td>
+</tr>
+<tr>
+<td align="center">HttpSession</td>
+<td align="center">HttpSessionListener</td>
+<td align="center">用于监听 HttpSession 对象的创建和销毁过程</td>
+</tr>
+<tr>
+<td align="center">ServletRequest</td>
+<td align="center">ServletRequestListener</td>
+<td align="center">用于监听 ServletRequest 对象的创建和销毁过程</td>
+</tr>
+<tr>
+<td align="center">ServletContext</td>
+<td align="center">ServletContextAttributeListener</td>
+<td align="center">用于监听 ServletContext 对象的属性新增、移除和替换</td>
+</tr>
+<tr>
+<td align="center">HttpSession</td>
+<td align="center">HttpSessionAttributeListener</td>
+<td align="center">用于监听 HttpSession 对象的属性新增、移除和替换</td>
+</tr>
+<tr>
+<td align="center">ServletRequest</td>
+<td align="center">ServletRequestAttributeListener</td>
+<td align="center">用于监听 HttpServletRequest 对象的属性新增、移除和替换</td>
+</tr>
+<tr>
+<td align="center">HttpSession</td>
+<td align="center">HttpSessionBindingListener</td>
+<td align="center">用于监听 JavaBean 对象绑定到 HttpSession 对象和从 HttpSession 对象解绑的事件</td>
+</tr>
+<tr>
+<td align="center">HttpSession</td>
+<td align="center">HttpSessionActivationListener</td>
+<td align="center">用于监听 HttpSession 中对象活化和钝化的过程</td>
+</tr>
+</tbody></table>
+<p>按照监听的对象不同将其划分为三类：ServletContextListener，HttpSessionListener和ServletRequestListener。	</p>
+<h4 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h4><ul>
+<li>ServletContextListener配置</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.memoryshell.tomcatmemoryshell;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> jakarta.servlet.ServletContextEvent;</span><br><span class="line"><span class="keyword">import</span> jakarta.servlet.ServletContextListener;</span><br><span class="line"><span class="keyword">import</span> jakarta.servlet.annotation.WebListener;</span><br><span class="line"></span><br><span class="line"><span class="meta">@WebListener</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MemoryListener</span> <span class="keyword">implements</span> <span class="title class_">ServletContextListener</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">contextInitialized</span><span class="params">(ServletContextEvent servletContextEvent)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;ServletContext对象创建...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">contextDestroyed</span><span class="params">(ServletContextEvent servletContextEvent)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;ServletContext对象销毁...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>web.xml配置</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns</span>=<span class="string">&quot;https://jakarta.ee/xml/ns/jakartaee&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">version</span>=<span class="string">&quot;5.0&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>com.memoryshell.tomcatmemoryshell.MemoryListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/9.png"></p>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h3><h4 id="Conception-1"><a href="#Conception-1" class="headerlink" title="Conception"></a>Conception</h4><p>Filter用于拦截用户请求以及服务端的响应，能够在拦截之后对请求和响应做出相应的修改。Filter不是Servlet，不能直接访问，它能够对于Web应用中的资源（Servlet、JSP、静态页面等）做出拦截，从而实现一些相应的功能。</p>
+<h4 id="Life-Cycle"><a href="#Life-Cycle" class="headerlink" title="Life Cycle"></a>Life Cycle</h4><p>Filter的生命周期分为三个阶段：</p>
+<ul>
+<li>初始化阶段：Filter的初始化阶段只会在Web应用程序启动时调用一次。</li>
+<li>拦截和过滤阶段：当客户请求访问与过滤器关联的URL的时候，Servlet过滤器将先执行doFilter方法。FilterChain参数用于访问后续过滤器。</li>
+<li>销毁阶段：Filter的销毁阶段只会在web应用移除或服务器停止时才调用一次来卸载Filter对象。</li>
+</ul>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/6.png"></p>
+<h4 id="Usage-1"><a href="#Usage-1" class="headerlink" title="Usage"></a>Usage</h4><ul>
+<li>FilterChain</li>
+</ul>
+<p>一个Servlet可以注册多个Filter，Web容器会将注册的多个Filter组合成一个”Filter链”，并按照一定的顺序依次执行各Filter的doFilter方法。</p>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/7.png"></p>
+<ul>
+<li>Filter execution sequence</li>
+</ul>
+<p>由于Filter的注册方式不同，其执行顺序也有所不同。</p>
+<ol>
+<li>基于注解配置：按照类名的字符串比较规则比较，值小的先执行；</li>
+<li>使用web.xml配置：根据对应的Mapping的顺序组织，谁定义在上边谁就在前。</li>
+</ol>
+<ul>
+<li>FilterConfig</li>
+</ul>
+<p>和Servlet类似，由于Filter也有可能访问Servlet，所以Servlet规范将代表ServletContext对象和Filter的配置参数信息都封装到一个称为FilterConfig的对象中。</p>
+<p>FilterConfig接口则用于定义FilterConfig对象应该对外提供的方法，以便在Filter的doFilter方法中可以调用这些方法来获取ServletContext对象，以及获取在web.xml文件中的一些初始化参数。</p>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/8.png"></p>
+<h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h3><h4 id="Conception-2"><a href="#Conception-2" class="headerlink" title="Conception"></a>Conception</h4><p>Servlet是运行在Web服务器或应用服务器上的程序，它是作为来自HTTP客户端的请求和HTTP服务器上的数据库或应用程序之间的中间层。用来处理客户端请求的动态资源，并根据请求生成相应的返回信息提供给用户，当Tomcat接收到来自客户端的请求时，会将其解析成RequestServlet对象并发送到对应的Servlet上进行处理。</p>
+<h4 id="Life-Cycle-1"><a href="#Life-Cycle-1" class="headerlink" title="Life Cycle"></a>Life Cycle</h4><p>Servlet的生命周期分为五个阶段：</p>
+<ul>
+<li>加载阶段：当Tomcat第一次访问Servlet时，会创建Servlet的实例。</li>
+<li>初始化阶段：当Servlet实例化后，Tomcat会调用init方法初始化这个对象。</li>
+<li>处理服务阶段：当浏览器访问Servlet时，Servlet会调用service方法处理请求。</li>
+<li>销毁阶段：当Tomcat关闭时或者检测到Servlet要从Tomcat删除时，会自动调用destroy方法，让该实例释放掉所占的资源。除此之外，一个Servlet如果长时间不被使用的话，也会被Tomcat自动销毁。</li>
+<li>卸载阶段：当Servlet调用完destroy方法后，会等待垃圾回收。如果有需要再次使用这个Servlet时，会重新调用init方法进行初始化操作。</li>
+</ul>
+<p><img src="/2024/05/18/Tomcat-Architecture-Analysis/5.png"></p>
+<h4 id="Usage-2"><a href="#Usage-2" class="headerlink" title="Usage"></a>Usage</h4><p>根据上文对Servlet生命周期的了解，当需要实现一个Servlet时，需要继承Servlet接口，并实现相应的五个方法。</p>
+<p>在Tomcat中已经封装好了两个类，分别是GenericServlet类和HttpServlet类。GenericServlet抽象类实现了Servlet接口，并对Servlet接口中除service方法外的其它四个方法进行了简单实现。</p>
+<p>通过继承GenericServlet类创建来Servlet，只需要重写service方法即可。但是，GenericServlet抽象类是一个通用的Servlet类，并不是针对某种应用场景而设计的，因此在处理HTTP请求的时候需要手动实现对HTTP请求的解析和封装。</p>
+<p>HttpServlet是GenericServlet的子类，它在GenericServlet的基础上专门针对HTTP协议进行了处理。其针对每一种HTTP请求都设置了一种处理方法。当使用HttpServlet类的时候，只需要根据HTTP请求类型重写相应的处理方法即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@WebServlet(name = &quot;MemoryServlet&quot;, value = &quot;/MemoryServlet&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MemoryServlet</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String message;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">()</span> &#123;</span><br><span class="line">        message = <span class="string">&quot;This is MemoryShell page!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        response.setContentType(<span class="string">&quot;text/html&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Hello</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">out</span> <span class="operator">=</span> response.getWriter();</span><br><span class="line">        out.println(<span class="string">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);</span><br><span class="line">        out.println(<span class="string">&quot;&lt;h1&gt;&quot;</span> + message + <span class="string">&quot;&lt;/h1&gt;&quot;</span>);</span><br><span class="line">        out.println(<span class="string">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://goodapple.top/archives/1359">Java安全学习——Tomcat架构浅析</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Architecture"><span class="toc-number">2.</span> <span class="toc-text">Architecture</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Three-Major-Components"><span class="toc-number">3.</span> <span class="toc-text">Three Major Components</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Listener"><span class="toc-number">3.1.</span> <span class="toc-text">Listener</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Conception"><span class="toc-number">3.1.1.</span> <span class="toc-text">Conception</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage"><span class="toc-number">3.1.2.</span> <span class="toc-text">Usage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter"><span class="toc-number">3.2.</span> <span class="toc-text">Filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Conception-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">Conception</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Life-Cycle"><span class="toc-number">3.2.2.</span> <span class="toc-text">Life Cycle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage-1"><span class="toc-number">3.2.3.</span> <span class="toc-text">Usage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Servlet"><span class="toc-number">3.3.</span> <span class="toc-text">Servlet</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Conception-2"><span class="toc-number">3.3.1.</span> <span class="toc-text">Conception</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Life-Cycle-1"><span class="toc-number">3.3.2.</span> <span class="toc-text">Life Cycle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage-2"><span class="toc-number">3.3.3.</span> <span class="toc-text">Usage</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&text=Tomcat Architecture Analysis"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&is_video=false&description=Tomcat Architecture Analysis"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tomcat Architecture Analysis&body=Check out this article: https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&title=Tomcat Architecture Analysis"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&name=Tomcat Architecture Analysis&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/18/Tomcat-Architecture-Analysis/&t=Tomcat Architecture Analysis"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

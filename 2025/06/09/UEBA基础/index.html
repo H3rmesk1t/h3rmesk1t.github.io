@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="UEBA概念UEBA（User and Entity Behavior Analytics，用户和实体行为分析）主要用于检测用户以及网络中实体（网络设备、进程、应用程序等）的异常行为，然后判断异常行为是否存在安全威胁，并及时向运维人员发出告警。UEBA可以在企业现有网络安全系统或解决方案的基础上，增强企业的安全能力，覆盖传统安全系统或解决方案无法覆盖的盲点，降低企业的安全风险。在实际应用中，UEB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UEBA基础">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="UEBA概念UEBA（User and Entity Behavior Analytics，用户和实体行为分析）主要用于检测用户以及网络中实体（网络设备、进程、应用程序等）的异常行为，然后判断异常行为是否存在安全威胁，并及时向运维人员发出告警。UEBA可以在企业现有网络安全系统或解决方案的基础上，增强企业的安全能力，覆盖传统安全系统或解决方案无法覆盖的盲点，降低企业的安全风险。在实际应用中，UEB">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/1749465889177-d62dcdb7-9cff-413e-9b9c-82aa5bc9a037.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/1749465889420-a660a452-69de-4a83-97fc-8ee2f91f6f64.png">
+<meta property="article:published_time" content="2025-06-09T11:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-09T10:51:28.714Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="数据安全">
+<meta property="article:tag" content="UEBA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/1749465889177-d62dcdb7-9cff-413e-9b9c-82aa5bc9a037.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>UEBA基础</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/04/02/SpringBoot%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84RCE/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&text=UEBA基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&is_video=false&description=UEBA基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=UEBA基础&body=Check out this article: https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&name=UEBA基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&t=UEBA基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">UEBA概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">UEBA原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">UEBA架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E7%8E%B0%E6%9C%89%E6%8A%80%E6%9C%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">UEBA现有技术的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UEBA-vs-UBA"><span class="toc-number">4.1.</span> <span class="toc-text">UEBA vs UBA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UEBA-vs-SIEM"><span class="toc-number">4.2.</span> <span class="toc-text">UEBA vs SIEM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UEBA-vs-NTA"><span class="toc-number">4.3.</span> <span class="toc-text">UEBA vs NTA</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        UEBA基础
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-06-09T11:00:00.000Z" class="dt-published" itemprop="datePublished">2025-06-09</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8/">数据安全</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/UEBA/" rel="tag">UEBA</a>, <a class="p-category" href="/tags/%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8/" rel="tag">数据安全</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="UEBA概念"><a href="#UEBA概念" class="headerlink" title="UEBA概念"></a>UEBA概念</h2><p>UEBA（User and Entity Behavior Analytics，用户和实体行为分析）主要用于检测用户以及网络中实体（网络设备、进程、应用程序等）的异常行为，然后判断异常行为是否存在安全威胁，并及时向运维人员发出告警。UEBA可以在企业现有网络安全系统或解决方案的基础上，增强企业的安全能力，覆盖传统安全系统或解决方案无法覆盖的盲点，降低企业的安全风险。在实际应用中，UEBA大都和其他安全系统或解决方案一起部署，以获得更好的安全和检测性能。</p>
+<h2 id="UEBA原理"><a href="#UEBA原理" class="headerlink" title="UEBA原理"></a>UEBA原理</h2><p>UEBA技术不仅检测人的异常行为，也检测实体的异常行为。</p>
+<p>例如，某职员每天的工作时间段是早10点到晚8点，外发的文件数量为几十个，总大小也不超过100MB。但是有一天该职员突然工作到晚上12点，外发文件大小超过100GB，UEBA就会认为这是异常行为，并发出告警信息。如果网络中部署了自动响应与处置类的功能，还可以自动隔离该职员的办公设备，令其无法联网，并锁定该职员的所有账号权限，等待运维人员处理完异常后再重新开放权限。</p>
+<p>相较于人的异常行为，实体的异常行为往往并不容易发现，甚至发现了也会被忽略。例如，某企业的服务器对外提供服务，一般凌晨时段的访问请求非常少，但是某天凌晨的访问请求突然增多，且该服务器开始与网络内的其他服务器进行文件传输，这大概率会触发UEBA的告警。如果没有UEBA，由于传统安全设备主要关注网络边界的安全性，所以该服务器的异常行为并不会触发告警，也不会被拦截，这为企业的网络安全埋下了巨大隐患。</p>
+<p>UEBA利用人工智能和机器学习算法来检测网络中的用户和实体的异常行为。首先，UEBA收集有关用户和实体活动的数据，通过分析数据来<strong>建立用户和实体的行为模式基线</strong>。然后，UEBA会持续监控用户和实体行为，并将其当前行为与基线行为进行比较，<strong>计算风险评分</strong>，确定行为偏差是否可接受。如果风险评分超过一定的阈值，UEBA会实时向用户发出告警。</p>
+<p>风险评分是基于威胁的严重和紧急程度等因素评定的，可以帮助运维人员识别最优先处理的威胁，提高威胁的处置效率。例如，用户多次登录失败，可以生成一个较低的风险评分；而用户向外发送超过10GB的文件，且其中很多文件的名称命中了敏感字，这就应该生成一个较高的风险评分。</p>
+<p>UEBA可以通过多源数据采集和动态基线建模来提升内部威胁检测能力，包括：</p>
+<ol>
+<li>数据来源扩展<ol>
+<li>终端行为数据：包括文件操作记录（创建&#x2F;删除&#x2F;复制敏感文件）、进程执行日志、外设使用记录等，可从EDR或主机审计系统获取。例如异常文件加密或扩展名更改行为可能暗示数据窃取企图。</li>
+<li>网络流量元数据：补充网络层会话数、流量时序特征等参数，结合深度协议分析识别异常通信模式（如非工作时间大量数据外传）等。</li>
+<li>云研发环境日志：现代企业内部研发多采用云研发环境，通过将UEBA系统集成云DEV平台来监测操作日志，实现异常资源访问检测。</li>
+</ol>
+</li>
+<li>基线建模技术增强<ol>
+<li>动态基线更新机制：采用滚动时间窗口（如1-3个月）定期重建基线，通过RPCA（鲁棒主成分分析）和马尔可夫链模型适应行为演化。例如，采用每小时&#x2F;每天作为粒度来划分行为模式。</li>
+<li>多维度关联分析：结合身份权限（低权限账户实现高权限功能操作）、时空上下文（境外&#x2F;异地登录）、设备指纹（新注册终端&#x2F;新终端登录）等生成综合风险评分。</li>
+</ol>
+</li>
+<li>威胁检测场景细化<ol>
+<li>隐蔽数据泄露：监测高频敏感文件压缩、打印机密文档、刻录光盘等物理介质操作。例如，利用打印机扫描文件后发送外部邮箱。</li>
+<li>权限滥用行为：通过SIEM（Security Information and Event Management，安全信息与事件管理）集成检测权限提升后的异常操作链。例如，账户成功登录后立即访问多个无关系统、短时间内批量执行敏感数据查询等。</li>
+</ol>
+</li>
+<li>响应机制优化<ol>
+<li>分级告警策略：根据风险评分触发不同响应，例如，高风险-自动阻断操作并临时冻结账户，中风险-采用二次操作认证，低风险-告警弹窗提示。</li>
+<li>攻击链可视化：通过时间轴图谱展示异常事件关联关系，辅助研判（如异常用户数据操作行为）。</li>
+</ol>
+</li>
+</ol>
+<h2 id="UEBA架构"><a href="#UEBA架构" class="headerlink" title="UEBA架构"></a>UEBA架构</h2><p>从架构上来看，UEBA系统包含三个层次，分别是数据中心层、算法分析层、场景应用层。其中，算法分析层一般运行在实时流处理、近线增量处理、离线批量处理的大数据计算平台之上。下图是一个典型的完整UEBA架构，该平台运行着传统的规则引擎、关联引擎，同时也支持人工智能引擎，如基线及群组分析、异常检测、集成学习风险评分、安全知识图谱、强化学习等UEBA核心技术。</p>
+<p><img src="/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/1749465889177-d62dcdb7-9cff-413e-9b9c-82aa5bc9a037.png"></p>
+<ol>
+<li>基线与群组分析</li>
+</ol>
+<p>通过构建群组分析，可以跨越单个用户、实体的局限，组合基线分析、群组分析，构建全时空的上下文环境来降低误报，提高信噪比。</p>
+<ol start="2">
+<li>异常检测</li>
+</ol>
+<p>异常检测关注发现统计指标异常、时序异常、序列异常、模式异常等异常信号，采用的技术包括孤立森林、K均值聚类、时序分析、异常检测、变点检测等传统机器学习算法。现代的异常检测也利用深度学习技术，包括基于变分自编码器（VAE）的深度表征重建异常检测、基于循环神经网络（RNN）和长短时记忆网络（LSTM）的序列深度网络异常检测、图神经网络（GNN）的模式异常检测等。针对标记数据缺乏的现状，某些UEBA系统能够采用主动学习技术（Active Learning）、自学习（Self Learning），充分发掘标记数据和无标记数据的价值。</p>
+<ol start="3">
+<li>风险评分</li>
+</ol>
+<p>风险评分需要综合各种告警、异常，以及进行群组对比分析和历史趋势。同时，风险评分技术中用户间风险的传导同样重要，需要一套类似谷歌搜索使用的网页排名PageRank算法的迭代评估机制。风险评分的好坏，将直接影响到UEBA实施的成效，进而直接影响到安全运营的效率。</p>
+<p><img src="/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/1749465889420-a660a452-69de-4a83-97fc-8ee2f91f6f64.png"></p>
+<ol start="4">
+<li>安全知识图谱</li>
+</ol>
+<p>可以将从事件、告警、异常、访问中抽取出的实体及实体间关系，构建成一张网络图谱。任何一个事件、告警、异常，都可以集成到网络图谱中，直观、明晰的呈现多层关系，可以让分析抵达更远的边界，触达更隐蔽的联系，揭露出最细微的线索。结合攻击链和知识图谱的关系回放，还能够让安全分析师近似真实的复现攻击全过程，了解攻击的路径与脆弱点，评估潜在的受影响资产，从而更好的进行应急响应与处置。</p>
+<ol start="5">
+<li>强化学习</li>
+</ol>
+<p>不同目标的环境数据源的多元性及差异性，以及用户对异常风险的定义各有不同，UEBA需要具有一定的自适应性，“入乡随俗”输出更精准的异常风险。强化学习能够根据排查结果自适应地调整正负权重反馈给系统，进而得到更符合目标期望的风险评分。</p>
+<ol start="6">
+<li>其他技术<ol>
+<li>特征工程：从行为模式中提取合理特征向量极为重要，有些特征在不同业务系统之间通用，有些特征需要根据业务场景具体分析，涉及到如何合理、高效设计指标体系，一般需要参考5W1H模型（又称六何法，或6W分析法，即何人（Who）、何事（What）、何时（When）、何地（Where）、何解（Why）及如何（How）。由这六个疑问词所组成的问句，均不是是非题，而是需要一个或多个事实佐证的应用题）。</li>
+<li>会话重组：会话对象为每个用户从会话启动到终止缝合所有事件，并将这些事件与用户联系起来，即使更改了账户、更改了设备或更改了IP。通过查找启动会话的事件，如Kerberos或NTLM登录、VPN事件、应用程序登录、物理打卡记录等，开启生成会话；登出、打卡离开、超时或其他信号指示会话结束。会话的风险得分是分配给会话中每个活动的风险分数的总和。</li>
+<li>身份识别：在识别同一个用户、实体过程中，并不是所有环境中都有集中认知管理，同一个用户、实体，在不同的系统中的标识、用户名可能不同，需要把这些行为关联到同一个身份标示上，才能让行为画像、异常检测更准确更有效。</li>
+</ol>
+</li>
+</ol>
+<h2 id="UEBA现有技术的区别"><a href="#UEBA现有技术的区别" class="headerlink" title="UEBA现有技术的区别"></a>UEBA现有技术的区别</h2><h3 id="UEBA-vs-UBA"><a href="#UEBA-vs-UBA" class="headerlink" title="UEBA vs UBA"></a>UEBA vs UBA</h3><p>UEBA（用户与实体行为分析）是UBA（用户行为分析）的升级版本，两者的核心差异在于分析维度的扩展和技术深度的提升。UBA专注于用户行为的监测，例如登录、文件操作等，而UEBA在此基础上增加了对实体（如设备、IP、应用程序等）的行为分析，形成更全面的安全防护体系。这种进化源于数字时代网络环境的复杂化，传统的固定办公设备逐渐被移动设备、云主机等多样化接入方式取代，网络边界变得模糊，使得单纯分析用户行为已无法满足安全需求。</p>
+<p>UEBA的优势在于其多维度关联分析能力。例如，当攻击者盗用合法账号进行低频、长期的隐蔽攻击时，UBA可能难以察觉，但UEBA能结合实体行为数据（如异常设备登录、非常规时间的数据访问）识别出偏离基线的行为模式。通过机器学习算法（如无监督学习和聚类分析），UEBA还能动态更新行为基线，适应不断变化的威胁环境。</p>
+<p>实际应用中，UEBA特别擅长检测内部威胁和高级持续性攻击（APT）。例如，某员工突然在非工作时间大量下载敏感文件，或服务器异常外联陌生IP，UEBA会综合用户权限、历史行为及实体状态生成风险评分，触发精准告警。这种能力弥补了传统安全工具（如防火墙、SIEM）对内部威胁的盲区，成为现代企业安全架构的关键组件。</p>
+<h3 id="UEBA-vs-SIEM"><a href="#UEBA-vs-SIEM" class="headerlink" title="UEBA vs SIEM"></a>UEBA vs SIEM</h3><p>SIEM（安全信息与事件管理）和UEBA（用户与实体行为分析）是两种互补的网络安全技术，它们在威胁检测方面各有侧重。SIEM通过集中收集和分析来自网络设备、主机、应用等多元日志数据，提供实时安全事件监控和告警功能，其核心是基于规则匹配来识别已知威胁，例如防火墙拦截记录或异常登录尝试。然而，SIEM对规则库的依赖使其难以应对规则被绕过或长期潜伏的APT攻击等复杂威胁。</p>
+<p>UEBA则从行为分析维度弥补了SIEM的不足。它通过机器学习建立用户和设备的行为基线，持续监测偏离基线的异常活动，例如员工非工作时间大量下载敏感文件或服务器异常外联。这种基于风险评分的动态检测机制，使UEBA能发现内部人员滥用权限、账号盗用等隐蔽威胁，尤其擅长识别低频长期的攻击模式。</p>
+<p>当前技术趋势显示，现代SIEM系统正逐步集成UEBA能力。这种融合方案既能利用SIEM的实时事件关联优势，又能结合UEBA的行为分析深度。这种协同显著提升了企业对内外威胁的立体防御能力，形成从即时告警到长期行为追踪的完整安全闭环。</p>
+<h3 id="UEBA-vs-NTA"><a href="#UEBA-vs-NTA" class="headerlink" title="UEBA vs NTA"></a>UEBA vs NTA</h3><p>NTA（网络流量分析）和UEBA（用户与实体行为分析）是两种互补的网络安全技术，它们在检测范围和数据类型上存在显著差异。NTA专注于分析网络流量中的数据包和流，通过监控全网通信实时识别异常连接或数据传输行为，例如DDoS攻击或异常外联流量。其优势在于无需依赖预定义的日志，可直接从流量层面捕获攻击痕迹，但受限于网络层视角，难以检测终端本地操作（如文件篡改）或长期潜伏的高级威胁。</p>
+<p>UEBA则基于日志数据（如系统日志、身份认证记录）构建用户与设备的行为基线，擅长发现内部人员滥用权限、账号盗用等隐蔽风险。例如，它能识别员工非工作时间批量下载敏感文件等偏离正常模式的行为，而这类威胁往往不会在流量层面显现异常。不过，UEBA需要整合多源异构数据（如HR系统、访问控制日志），部署复杂度高于NTA。</p>
+<p>实际应用中，两者常协同工作：NTA提供网络层威胁线索，UEBA补充用户行为上下文，共同构建从网络到终端的立体防护体系。例如，当NTA发现异常数据外传时，UEBA可关联分析发起该流量的用户是否具有合法权限，从而提升检测准确性。</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">UEBA概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">UEBA原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">UEBA架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UEBA%E7%8E%B0%E6%9C%89%E6%8A%80%E6%9C%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">UEBA现有技术的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UEBA-vs-UBA"><span class="toc-number">4.1.</span> <span class="toc-text">UEBA vs UBA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UEBA-vs-SIEM"><span class="toc-number">4.2.</span> <span class="toc-text">UEBA vs SIEM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UEBA-vs-NTA"><span class="toc-number">4.3.</span> <span class="toc-text">UEBA vs NTA</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&text=UEBA基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&is_video=false&description=UEBA基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=UEBA基础&body=Check out this article: https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&title=UEBA基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&name=UEBA基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2025/06/09/UEBA%E5%9F%BA%E7%A1%80/&t=UEBA基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言从JDK8迁移到更高版本的JDK时，在安全性方面做了很大的提升，从JDK9开始引入的模块化系统，到JDK16进一步加强。JDK的强封装是一个重要的特性，它旨在提高JDK的安全性和可维护性，同时减少对非标准、内部JDK实现细节的依赖。JDK17及以后的版本默认对Java本身代码使用强封装（Strong Encapsulation），这意味着使用反射访问JDK内部API的代码将不再被允许，任何对j">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unsafe绕过高版本JDK反射限制">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言从JDK8迁移到更高版本的JDK时，在安全性方面做了很大的提升，从JDK9开始引入的模块化系统，到JDK16进一步加强。JDK的强封装是一个重要的特性，它旨在提高JDK的安全性和可维护性，同时减少对非标准、内部JDK实现细节的依赖。JDK17及以后的版本默认对Java本身代码使用强封装（Strong Encapsulation），这意味着使用反射访问JDK内部API的代码将不再被允许，任何对j">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614269491-8fcad471-fdae-4261-8df9-763ce3aff2f3.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614347238-e7fabd17-ba84-4bca-b553-3431205ae671.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614453473-bebf93e8-a111-4402-bcae-c71eeac1335f.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729615985551-292f8d9f-9b1e-49b0-b6f1-87ea5aa0003a.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729660875570-3cc19ba3-05ee-42d8-adb6-f540b38d6c25.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729665004453-6b718c9a-62b0-4676-98cb-74ef4ff36c9c.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729664566379-f275d344-d853-43de-a523-b4b60b57412b.png">
+<meta property="article:published_time" content="2024-10-23T06:52:00.000Z">
+<meta property="article:modified_time" content="2024-10-23T16:57:11.392Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Trick">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614269491-8fcad471-fdae-4261-8df9-763ce3aff2f3.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>Unsafe绕过高版本JDK反射限制</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/10/22/Solon%E6%A1%86%E6%9E%B6%E5%86%85%E5%AD%98%E9%A9%AC/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&text=Unsafe绕过高版本JDK反射限制"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&is_video=false&description=Unsafe绕过高版本JDK反射限制"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Unsafe绕过高版本JDK反射限制&body=Check out this article: https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&name=Unsafe绕过高版本JDK反射限制&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&t=Unsafe绕过高版本JDK反射限制"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%95%E8%BF%87"><span class="toc-number">3.</span> <span class="toc-text">绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Unsafe"><span class="toc-number">3.1.</span> <span class="toc-text">Unsafe</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bypass"><span class="toc-number">3.2.</span> <span class="toc-text">Bypass</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Unsafe绕过高版本JDK反射限制
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-10-23T06:52:00.000Z" class="dt-published" itemprop="datePublished">2024-10-23</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Trick/" rel="tag">Trick</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><font style="color:#000000;">从JDK8迁移到更高版本的JDK时，在安全性方面做了很大的提升，从JDK9开始引入的模块化系统，到JDK16进一步加强。JDK的强封装是一个重要的特性，它旨在提高JDK的安全性和可维护性，同时减少对非标准、内部JDK实现细节的依赖。</font><strong><font style="color:#000000;">JDK17及以后的版本默认对Java本身代码使用强封装</font></strong><font style="color:#000000;">（Strong Encapsulation），这意味着使用反射访问JDK内部API的代码将不再被允许，</font><strong><font style="color:#000000;">任何对java.*代码中的非公共字段和方法进行反射将抛出InaccessibleObjectException异常</font></strong><font style="color:#000000;">。</font></p>
+<p><font style="color:#000000;">但是需要注意，</font><strong><font style="color:#000000;">sun.misc和sun.reflect包可供所有JDK版本（包括JDK17）中的工具和库进行反射</font></strong><font style="color:#000000;">。</font></p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Java Version: &quot;</span> + System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br><span class="line">        <span class="type">String</span> <span class="variable">evilClassBase64</span> <span class="operator">=</span> <span class="string">&quot;yv66vgAAADQAIQoABgATCgAUABUIABYKABQAFwcAGAcAGQEABjxpbml0PgEAAygpVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAApFeGNlcHRpb25zBwAaAQAJdHJhbnNmb3JtAQCmKExjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NO0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgcAGwEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEAClNvdXJjZUZpbGUBAA9DYWxjdWxhdG9yLmphdmEMAAcACAcAHAwAHQAeAQASb3BlbiAtYSBDYWxjdWxhdG9yDAAfACABAApDYWxjdWxhdG9yAQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAE2phdmEvbGFuZy9FeGNlcHRpb24BADljb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvVHJhbnNsZXRFeGNlcHRpb24BABFqYXZhL2xhbmcvUnVudGltZQEACmdldFJ1bnRpbWUBABUoKUxqYXZhL2xhbmcvUnVudGltZTsBAARleGVjAQAnKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS9sYW5nL1Byb2Nlc3M7ACEABQAGAAAAAAADAAEABwAIAAIACQAAAC4AAgABAAAADiq3AAG4AAISA7YABFexAAAAAQAKAAAADgADAAAACgAEAAsADQAMAAsAAAAEAAEADAABAA0ADgACAAkAAAAZAAAABAAAAAGxAAAAAQAKAAAABgABAAAAEQALAAAABAABAA8AAQANABAAAgAJAAAAGQAAAAMAAAABsQAAAAEACgAAAAYAAQAAABYACwAAAAQAAQAPAAEAEQAAAAIAEg==&quot;</span>;</span><br><span class="line">        <span class="type">byte</span>[] bytes = Base64.getDecoder().decode(evilClassBase64);</span><br><span class="line">        <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> ClassLoader.class.getDeclaredMethod(<span class="string">&quot;defineClass&quot;</span>, String.class, <span class="type">byte</span>[].class, <span class="type">int</span>.class, <span class="type">int</span>.class);</span><br><span class="line">        method.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        ((Class) method.invoke(ClassLoader.getSystemClassLoader(), <span class="string">&quot;Calculator&quot;</span>, bytes, <span class="number">0</span>, bytes.length)).newInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:#000000;">在JDK8版本下，正常反射调用，且没有警告等信息。</font></p>
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614269491-8fcad471-fdae-4261-8df9-763ce3aff2f3.png"></p>
+<p><font style="color:#000000;">在JDK9~JDK16版本下，正常反射调用，但是会出现警告信息。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">WARNING: An illegal reflective access operation has occurred</span><br><span class="line">WARNING: Illegal reflective access by org.example.Main (file:/Users/alphag0/Desktop/Demo/target/classes/) to method java.lang.ClassLoader.defineClass(java.lang.String,<span class="type">byte</span>[],<span class="type">int</span>,<span class="type">int</span>)</span><br><span class="line">WARNING: Please consider reporting <span class="built_in">this</span> to the maintainers of org.example.Main</span><br><span class="line">WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations</span><br><span class="line">WARNING: All illegal access operations will be denied in a future release</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614347238-e7fabd17-ba84-4bca-b553-3431205ae671.png"><font style="color:#000000;">	在JDK17及以上版本下，反射调用失败，抛出异常java.lang.reflect.InaccessibleObjectException。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.reflect.InaccessibleObjectException: Unable to make <span class="keyword">protected</span> <span class="keyword">final</span> java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,<span class="type">byte</span>[],<span class="type">int</span>,<span class="type">int</span>) <span class="keyword">throws</span> java.lang.ClassFormatError accessible: <span class="keyword">module</span> java.base does not <span class="string">&quot;opens java.lang&quot;</span> to unnamed <span class="keyword">module</span> @4bde3f8a</span><br><span class="line">	at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:<span class="number">354</span>)</span><br><span class="line">	at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:<span class="number">297</span>)</span><br><span class="line">	at java.base/java.lang.reflect.Method.checkCanSetAccessible(Method.java:<span class="number">199</span>)</span><br><span class="line">	at java.base/java.lang.reflect.Method.setAccessible(Method.java:<span class="number">193</span>)</span><br><span class="line">	at org.example.Main.main(Main.java:<span class="number">12</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729614453473-bebf93e8-a111-4402-bcae-c71eeac1335f.png"></p>
+<h2 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h2><h3 id="Unsafe"><a href="#Unsafe" class="headerlink" title="Unsafe"></a><font style="color:rgb(51, 51, 51);background-color:rgb(253, 253, 253);">Unsafe</font></h3><p><font style="color:#000000;">Unsafe是位于sun.misc包下的一个类，主要提供一些用于执行低级别、不安全操作的方法，如直接访问系统内存资源、自主管理内存资源等，这些方法在提升Java运行效率、增强Java语言底层资源操作能力方面起到了很大的作用。但由于Unsafe类使Java语言拥有了类似C语言指针一样操作内存空间的能力，这无疑也增加了程序发生相关指针问题的风险。在程序中过度、不正确使用Unsafe类会使得程序出错的概率变大，使得Java这种安全的语言变得不再“安全”，因此对Unsafe的使用一定要慎重。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">Unsafe</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        Reflection.registerMethodsToFilter(Unsafe.class, Set.of(<span class="string">&quot;getUnsafe&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Unsafe</span><span class="params">()</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Unsafe</span> <span class="variable">theUnsafe</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Unsafe</span>();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> jdk.internal.misc.<span class="type">Unsafe</span> <span class="variable">theInternalUnsafe</span> <span class="operator">=</span> jdk.internal.misc.Unsafe.getUnsafe();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Provides the caller with the capability of performing unsafe</span></span><br><span class="line"><span class="comment">     * operations.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;The returned &#123;<span class="doctag">@code</span> Unsafe&#125; object should be carefully guarded</span></span><br><span class="line"><span class="comment">     * by the caller, since it can be used to read and write data at arbitrary</span></span><br><span class="line"><span class="comment">     * memory addresses.  It must never be passed to untrusted code.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Most methods in this class are very low-level, and correspond to a</span></span><br><span class="line"><span class="comment">     * small number of hardware instructions (on typical machines).  Compilers</span></span><br><span class="line"><span class="comment">     * are encouraged to optimize these methods accordingly.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;Here is a suggested idiom for using unsafe operations:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment">     * class MyTrustedClass &#123;</span></span><br><span class="line"><span class="comment">     *   private static final Unsafe unsafe = Unsafe.getUnsafe();</span></span><br><span class="line"><span class="comment">     *   ...</span></span><br><span class="line"><span class="comment">     *   private long myCountAddress = ...;</span></span><br><span class="line"><span class="comment">     *   public int getCount() &#123; return unsafe.getByte(myCountAddress); &#125;</span></span><br><span class="line"><span class="comment">     * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * (It may assist compilers to make the local variable &#123;<span class="doctag">@code</span> final&#125;.)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span>  SecurityException if the class loader of the caller</span></span><br><span class="line"><span class="comment">     *          class is not in the system domain in which all permissions</span></span><br><span class="line"><span class="comment">     *          are granted.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@CallerSensitive</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Unsafe <span class="title function_">getUnsafe</span><span class="params">()</span> &#123;</span><br><span class="line">        Class&lt;?&gt; caller = Reflection.getCallerClass();</span><br><span class="line">        <span class="keyword">if</span> (!VM.isSystemDomainLoader(caller.getClassLoader()))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;Unsafe&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> theUnsafe;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:#000000;">使用Unsafe类时，可以通过两个方法获取其实例。</font></p>
+<ul>
+<li><font style="color:#000000;">从getUnsafe方法的使用限制条件出发，通过Java命令行命令-Xbootclasspath&#x2F;a把调用Unsafe相关方法的类A所在jar包路径追加到默认的bootstrap路径中，使得A被引导类加载器加载，从而通过Unsafe.getUnsafe方法安全的获取Unsafe实例。</font></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 其中path为调用Unsafe相关方法的类所在jar包路径</span></span><br><span class="line">java -Xbootclasspath/a: <span class="variable">$&#123;path&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font style="color:#000000;">通过反射获取单例对象theUnsafe。</font></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Unsafe <span class="title function_">reflectGetUnsafe</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Class&lt;?&gt; name = Class.forName(<span class="string">&quot;sun.misc.Unsafe&quot;</span>);</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> name.getDeclaredField(<span class="string">&quot;theUnsafe&quot;</span>);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> (Unsafe) field.get(<span class="literal">null</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        log.error(e.getMessage(), e);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:#000000;">如下图所示，Unsafe提供的API大致可分为内存操作、CAS、Class相关、对象操作、线程调度、系统信息获取、内存屏障、数组操作等几类。</font></p>
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729615985551-292f8d9f-9b1e-49b0-b6f1-87ea5aa0003a.png"></p>
+<p><font style="color:#000000;">在Class相关部分主要提供Class和它的静态字段的操作相关方法，包含静态字段内存定位、定义类、定义匿名类、检验&amp;确保初始化等。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取给定静态字段的内存地址偏移量，这个值对于给定的字段是唯一且固定不变的</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">long</span> <span class="title function_">staticFieldOffset</span><span class="params">(Field f)</span>;</span><br><span class="line"><span class="comment">// 获取一个静态类中给定字段的对象指针</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Object <span class="title function_">staticFieldBase</span><span class="params">(Field f)</span>;</span><br><span class="line"><span class="comment">// 判断是否需要初始化一个类，通常在获取一个类的静态属性的时候（因为一个类如果没初始化，它的静态属性也不会初始化）使用。 当且仅当ensureClassInitialized方法不生效时返回false。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">shouldBeInitialized</span><span class="params">(Class&lt;?&gt; c)</span>;</span><br><span class="line"><span class="comment">// 检测给定的类是否已经初始化。通常在获取一个类的静态属性的时候（因为一个类如果没初始化，它的静态属性也不会初始化）使用。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">ensureClassInitialized</span><span class="params">(Class&lt;?&gt; c)</span>;</span><br><span class="line"><span class="comment">// 定义一个类，此方法会跳过JVM的所有安全检查，默认情况下，ClassLoader（类加载器）和ProtectionDomain（保护域）实例来源于调用者</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Class&lt;?&gt; defineClass(String name, <span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len, ClassLoader loader, ProtectionDomain protectionDomain);</span><br><span class="line"><span class="comment">// 定义一个匿名类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Class&lt;?&gt; defineAnonymousClass(Class&lt;?&gt; hostClass, <span class="type">byte</span>[] data, Object[] cpPatches);</span><br></pre></td></tr></table></figure>
+
+<p>在对象操作部分主要包含对象成员属性相关操作及非常规的对象实例化方式等相关方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回对象成员属性在内存地址相对于此对象的内存地址的偏移量</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">long</span> <span class="title function_">objectFieldOffset</span><span class="params">(Field f)</span>;</span><br><span class="line"><span class="comment">// 获得给定对象的指定地址偏移量的值，与此类似操作还有：getInt，getDouble，getLong，getChar等</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Object <span class="title function_">getObject</span><span class="params">(Object o, <span class="type">long</span> offset)</span>;</span><br><span class="line"><span class="comment">// 给定对象的指定地址偏移量设值，与此类似操作还有：putInt，putDouble，putLong，putChar等</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">putObject</span><span class="params">(Object o, <span class="type">long</span> offset, Object x)</span>;</span><br><span class="line"><span class="comment">// 从对象的指定偏移量处获取变量的引用，使用volatile的加载语义</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Object <span class="title function_">getObjectVolatile</span><span class="params">(Object o, <span class="type">long</span> offset)</span>;</span><br><span class="line"><span class="comment">// 存储变量的引用到对象的指定的偏移量处，使用volatile的存储语义</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">putObjectVolatile</span><span class="params">(Object o, <span class="type">long</span> offset, Object x)</span>;</span><br><span class="line"><span class="comment">// 有序、延迟版本的putObjectVolatile方法，不保证值的改变被其他线程立即看到。只有在field被volatile修饰符修饰时有效</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">putOrderedObject</span><span class="params">(Object o, <span class="type">long</span> offset, Object x)</span>;</span><br><span class="line"><span class="comment">// 绕过构造方法、初始化代码来创建对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Object <span class="title function_">allocateInstance</span><span class="params">(Class&lt;?&gt; cls)</span> <span class="keyword">throws</span> InstantiationException;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Bypass"><a href="#Bypass" class="headerlink" title="Bypass"></a>Bypass</h3><p><font style="color:#000000;">在上文提到了</font><strong><font style="color:#000000;">sun.misc和sun.reflect包可供所有JDK版本（包括JDK17）中的工具和库进行反射</font></strong><font style="color:#000000;">，而在sun.misc包下就有着Unsafe类。那么该如何利用Unsafe来打破JDK17及以上的强封装module限制呢？</font></p>
+<p><font style="color:#000000;">在Java中，setAccessible是一个用于改变Java反射时对私有属性或方法访问限制的方法。它是java.lang.reflect.AccessibleObject类的一个方法，该类是Field、Method和Constructor等类的超类。setAccessible(true)方法允许绕过Java的访问控制检查，从而访问私有（private）或受保护（protected）的属性和方法。</font></p>
+<p>跟进<font style="color:#000000;">setAccessible方法，首先调用AccessibleObject类的静态方法checkPermission，该方法检查当前的安全策略是否允许改变访问控制；如果不允许，会抛出SecurityException。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAccessible</span><span class="params">(<span class="type">boolean</span> flag)</span> &#123;</span><br><span class="line">    AccessibleObject.checkPermission();</span><br><span class="line">    <span class="keyword">if</span> (flag) checkCanSetAccessible(Reflection.getCallerClass());</span><br><span class="line">    setAccessible0(flag);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">checkPermission</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;removal&quot;)</span></span><br><span class="line">    <span class="type">SecurityManager</span> <span class="variable">sm</span> <span class="operator">=</span> System.getSecurityManager();</span><br><span class="line">    <span class="keyword">if</span> (sm != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// SecurityConstants.ACCESS_PERMISSION is used to check</span></span><br><span class="line">        <span class="comment">// whether a client has sufficient privilege to defeat Java</span></span><br><span class="line">        <span class="comment">// language access control checks.</span></span><br><span class="line">        sm.checkPermission(SecurityConstants.ACCESS_PERMISSION);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:#000000;">接着，当设置非公共字段或方法的访问权限为true时，会调用checkCanSetAccessible方法，这个方法检查调用setAccessible方法的类是否有权限改变访问控制。Reflection.getCallerClass()方法获取调用setAccessible方法的类，不包括匿名内部类。</font></p>
+<p><font style="color:#000000;">跟进java.lang.reflect.AccessibleObject#checkCanSetAccessible方法，可以看到，callerModule获取调用者的模块，declaringModule获取声明成员（方法或字段）的类的模块，如果调用者的模块与声明成员的类的模块相同，或者调用者是未知模块（Object.class.getModule()通常返回null），则允许访问。</font></p>
+<p><font style="color:#000000;">因此，可以尝试利用Unsafe类来修改当前类的module属性和java.*下类的module属性一致来进行绕过。</font></p>
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729660875570-3cc19ba3-05ee-42d8-adb6-f540b38d6c25.png"></p>
+<p><font style="color:#000000;">在Unsafe类中，存在方法getAndSetObject，该方法是一个用于原子操作的方法，它主要用于在多线程环境下对对象的字段进行安全的更新操作，类似于反射赋值，可以利用其修改调用类的module。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title function_">getAndSetObject</span><span class="params">(Object o, <span class="type">long</span> offset, Object newValue)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> theInternalUnsafe.getAndSetReference(o, offset, newValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用Unsafe绕过JDK17+反射限制代码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sun.misc.Unsafe;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Java Version: &quot;</span> + System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br><span class="line"></span><br><span class="line">        Class&lt;?&gt; aClass = Class.forName(<span class="string">&quot;sun.misc.Unsafe&quot;</span>);</span><br><span class="line">        <span class="type">Field</span> <span class="variable">theUnsafe</span> <span class="operator">=</span> aClass.getDeclaredField(<span class="string">&quot;theUnsafe&quot;</span>);</span><br><span class="line">        theUnsafe.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">Unsafe</span> <span class="variable">unsafe</span> <span class="operator">=</span> (Unsafe) theUnsafe.get(<span class="literal">null</span>);</span><br><span class="line">        <span class="type">Module</span> <span class="variable">module</span> <span class="operator">=</span> Object.class.getModule();</span><br><span class="line">        Class&lt;Main&gt; mainClass = Main.class;</span><br><span class="line">        <span class="type">long</span> <span class="variable">offset</span> <span class="operator">=</span> unsafe.objectFieldOffset(Class.class.getDeclaredField(<span class="string">&quot;module&quot;</span>));</span><br><span class="line">        unsafe.getAndSetObject(mainClass, offset, <span class="keyword">module</span>);</span><br><span class="line"><span class="comment">//        unsafe.putObject(mainClass, offset, module);</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">evilClassBase64</span> <span class="operator">=</span> <span class="string">&quot;yv66vgAAAD0AIgoAAgADBwAEDAAFAAYBABBqYXZhL2xhbmcvT2JqZWN0AQAGPGluaXQ+AQADKClWCgAIAAkHAAoMAAsADAEAEWphdmEvbGFuZy9SdW50aW1lAQAKZ2V0UnVudGltZQEAFSgpTGphdmEvbGFuZy9SdW50aW1lOwgADgEAEm9wZW4gLWEgQ2FsY3VsYXRvcgoACAAQDAARABIBAARleGVjAQAnKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS9sYW5nL1Byb2Nlc3M7BwAUAQATamF2YS9pby9JT0V4Y2VwdGlvbgcAFgEAGmphdmEvbGFuZy9SdW50aW1lRXhjZXB0aW9uCgAVABgMAAUAGQEAGChMamF2YS9sYW5nL1Rocm93YWJsZTspVgcAGwEABEV2aWwBAARDb2RlAQAPTGluZU51bWJlclRhYmxlAQAIPGNsaW5pdD4BAA1TdGFja01hcFRhYmxlAQAKU291cmNlRmlsZQEACUV2aWwuamF2YQAhABoAAgAAAAAAAgABAAUABgABABwAAAAhAAEAAQAAAAUqtwABsQAAAAEAHQAAAAoAAgAAAAQABAAGAAgAHgAGAAEAHAAAAFQAAwABAAAAF7gABxINtgAPV6cADUu7ABVZKrcAF7+xAAEAAAAJAAwAEwACAB0AAAAWAAUAAAAKAAkADQAMAAsADQAMABYADgAfAAAABwACTAcAEwkAAQAgAAAAAgAh&quot;</span>;</span><br><span class="line">        <span class="type">byte</span>[] bytes = Base64.getDecoder().decode(evilClassBase64);</span><br><span class="line"></span><br><span class="line">        <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> ClassLoader.class.getDeclaredMethod(<span class="string">&quot;defineClass&quot;</span>, String.class, <span class="type">byte</span>[].class, <span class="type">int</span>.class, <span class="type">int</span>.class);</span><br><span class="line">        method.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        ((Class)method.invoke(ClassLoader.getSystemClassLoader(), <span class="string">&quot;Evil&quot;</span>, bytes, <span class="number">0</span>, bytes.length)).newInstance();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729665004453-6b718c9a-62b0-4676-98cb-74ef4ff36c9c.png"></p>
+<p><img src="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/1729664566379-f275d344-d853-43de-a523-b4b60b57412b.png"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/17/migrate/migrating-jdk-8-later-jdk-releases.html">Migrating From JDK 8 to Later JDK Releases</a></p>
+<p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html">Java魔法类：Unsafe应用解析</a></p>
+<p><a target="_blank" rel="noopener" href="https://pankas.top/2023/12/05/jdk17-%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87">JDK17+反射限制绕过</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%95%E8%BF%87"><span class="toc-number">3.</span> <span class="toc-text">绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Unsafe"><span class="toc-number">3.1.</span> <span class="toc-text">Unsafe</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bypass"><span class="toc-number">3.2.</span> <span class="toc-text">Bypass</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&text=Unsafe绕过高版本JDK反射限制"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&is_video=false&description=Unsafe绕过高版本JDK反射限制"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Unsafe绕过高版本JDK反射限制&body=Check out this article: https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&title=Unsafe绕过高版本JDK反射限制"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&name=Unsafe绕过高版本JDK反射限制&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/&t=Unsafe绕过高版本JDK反射限制"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

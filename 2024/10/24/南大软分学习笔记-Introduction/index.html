@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Programming Languages静态程序分析是编程语言中应用层面下的一个细分领域，它是一个非常重要的核心内容。 Programming Languages可以大致分为三个部分：  在理论部分，考虑的是如何设计一个语言的语法和语义，如何设计语言的类型系统等等问题。 在环境部分，由于已经有了语言的语法、语义和类型系统，需要支撑语言的运行，因此需要考虑如何为运行中的程序提供运行时环境，即如何设">
+<meta property="og:type" content="article">
+<meta property="og:title" content="南大软分学习笔记-Introduction">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="Programming Languages静态程序分析是编程语言中应用层面下的一个细分领域，它是一个非常重要的核心内容。 Programming Languages可以大致分为三个部分：  在理论部分，考虑的是如何设计一个语言的语法和语义，如何设计语言的类型系统等等问题。 在环境部分，由于已经有了语言的语法、语义和类型系统，需要支撑语言的运行，因此需要考虑如何为运行中的程序提供运行时环境，即如何设">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729694621188-c5cda1e1-c406-467e-996e-ebb32820f71c.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729697168476-7b4c3be6-77ba-47b1-a1de-dffecce72a27.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729697587651-51486139-8a8b-4d1d-a491-50045373b7bf.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729698633761-e775ff4f-94e4-4861-8e7a-d42dcf385103.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729698818693-ca38fd56-9d25-403a-a187-6a8af3e2e397.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729700169457-c6f3b9f4-e926-415a-8d4b-437b6c1348fc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729700566139-5c282687-b942-4130-b118-9d0e51bd5fdf.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729700963485-a209566c-c4dc-4c98-a746-3d93bc778435.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729701401089-9582fb6d-6dc7-4609-a4f4-cbff1e7f24cc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729701339427-88fedb44-b37d-4690-88cf-476679c0d109.png">
+<meta property="article:published_time" content="2024-10-23T16:40:00.000Z">
+<meta property="article:modified_time" content="2024-10-23T16:51:47.551Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="静态代码分析">
+<meta property="article:tag" content="南大软分学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729694621188-c5cda1e1-c406-467e-996e-ebb32820f71c.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>南大软分学习笔记-Introduction</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/10/27/%E5%8D%97%E5%A4%A7%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Intermediate-Representation/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/10/23/Unsafe%E7%BB%95%E8%BF%87%E9%AB%98%E7%89%88%E6%9C%ACJDK%E5%8F%8D%E5%B0%84%E9%99%90%E5%88%B6/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&text=南大软分学习笔记-Introduction"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&is_video=false&description=南大软分学习笔记-Introduction"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=南大软分学习笔记-Introduction&body=Check out this article: https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&name=南大软分学习笔记-Introduction&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&t=南大软分学习笔记-Introduction"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Programming-Languages"><span class="toc-number">1.</span> <span class="toc-text">Programming Languages</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Background-Challenge"><span class="toc-number">2.</span> <span class="toc-text">Background &amp; Challenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Necessity"><span class="toc-number">3.</span> <span class="toc-text">Necessity</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Static-Program-Analysis"><span class="toc-number">4.</span> <span class="toc-text">Static Program Analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Example"><span class="toc-number">5.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Abstraction-Over-approximation"><span class="toc-number">6.</span> <span class="toc-text">Abstraction &amp; Over-approximation</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        南大软分学习笔记-Introduction
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-10-23T16:40:00.000Z" class="dt-published" itemprop="datePublished">2024-10-24</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">静态代码分析</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0/" rel="tag">南大软分学习</a>, <a class="p-category" href="/tags/%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">静态代码分析</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Programming-Languages"><a href="#Programming-Languages" class="headerlink" title="Programming Languages"></a>Programming Languages</h2><p><strong><font style="color:#000000;">静态程序分析</font></strong><font style="color:#000000;">是</font><strong><font style="color:#000000;">编程语言</font></strong><font style="color:#000000;">中应用层面下的一个细分领域，它是一个非常重要的核心内容。</font></p>
+<p><font style="color:#000000;">Programming Languages可以大致分为三个部分：</font></p>
+<ul>
+<li><strong><font style="color:#000000;">在理论部分</font></strong><font style="color:#000000;">，考虑的是如何设计一个语言的语法和语义，如何设计语言的类型系统等等问题。</font></li>
+<li><strong><font style="color:#000000;">在环境部分</font></strong><font style="color:#000000;">，由于已经有了语言的语法、语义和类型系统，需要支撑语言的运行，因此需要考虑如何为运行中的程序提供运行时环境，即如何设计编译器，在运行时需要怎样的支持（如内存的分配管理）等等。</font></li>
+<li><strong><font style="color:#000000;">在应用部分</font></strong><font style="color:#000000;">，则需要关注如何保证语言所写出程序的效率、安全性和可靠性，主要考虑如何对程序进行分析，验证和合成（如何自动合成一个程序）。</font></li>
+</ul>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729694621188-c5cda1e1-c406-467e-996e-ebb32820f71c.png"></p>
+<h2 id="Background-Challenge"><a href="#Background-Challenge" class="headerlink" title="Background &amp; Challenge"></a>Background &amp; Challenge</h2><p><font style="color:#000000;">Background: In the last decade, the language cores had few changes, but </font><strong><font style="color:#000000;">the programs became significantly larger and more complicated</font></strong><font style="color:#000000;">.</font></p>
+<p><font style="color:#000000;">Challenge: How to ensure the </font><strong><font style="color:#000000;">reliability, security and other promises</font></strong><font style="color:#000000;"> of large-scale and complex programs?</font></p>
+<h2 id="Necessity"><a href="#Necessity" class="headerlink" title="Necessity"></a>Necessity</h2><ul>
+<li><strong><font style="color:#000000;">提高程序可靠性</font></strong><font style="color:#000000;">：空指针引用，内存泄漏等。</font></li>
+<li><strong><font style="color:#000000;">提高程序安全性</font></strong><font style="color:#000000;">：隐私信息泄露、注入攻击等。</font></li>
+<li><strong><font style="color:#000000;">编译优化</font></strong><font style="color:#000000;">：消除程序死代码（不会对程序执行结果产生影响的代码）、代码移动（通过重新排列指令来提高程序的性能，通常发生在编译器的中间代码生成或优化阶段）等。</font></li>
+<li><strong><font style="color:#000000;">提高程序可读性</font></strong><font style="color:#000000;">：集成开发环境（IDE）、代码调用层级（Call Hierarchy）、类型指示（Type Indication）等。</font></li>
+</ul>
+<h2 id="Static-Program-Analysis"><a href="#Static-Program-Analysis" class="headerlink" title="Static Program Analysis"></a>Static Program Analysis</h2><p><font style="color:#000000;">简单来说，静态分析就是通过分析程序来推断其行为，并在运行程序之前确定该程序是否满足某些属性。（Static analysis analyzes a program P to reason about its behaviors and determines whether it satisfies some properties before running P）例如：</font></p>
+<ul>
+<li><font style="color:#000000;">程序是否包含任何隐私信息泄露？</font></li>
+<li><font style="color:#000000;">程序是否引用任何空指针？</font></li>
+<li><font style="color:#000000;">程序中的所有强制转换操作是否安全？</font></li>
+<li><font style="color:#000000;">程序中的指针1和指针2可以指向相同的内存位置吗？</font></li>
+<li><font style="color:#000000;">程序中的某些断言语句会失败吗？</font></li>
+<li><font style="color:#000000;">程序中的这段代码是死的吗（这样它就可以被消除）？</font></li>
+</ul>
+<blockquote>
+<p><strong>Rice’s Theorem: Any non-trivial property of the behavior of programs in a r.e. language is undecidable.</strong></p>
+</blockquote>
+<p><font style="color:#000000;">Rice’s Theorem（莱斯定理）证明，对于任何非平凡的部分函数属性，不存在一种通用且有效的方法来决定一个算法是否计算具有该属性的部分函数。换句话说，</font><strong><font style="color:#000000;">没有有效的方法仅通过查看程序代码即可确定函数的非平凡属性</font></strong><font style="color:#000000;">（即上述示例中提到的空指针引用、隐私信息泄露等）。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729697168476-7b4c3be6-77ba-47b1-a1de-dffecce72a27.png"></p>
+<p><font style="color:#000000;">进一步理解，在下图中，莱斯定理指出不存在一个Perfect Static Analysis（例如空指针问题中，Perfect Static Analysis指的就是能够准确地给出是否存在空指针漏洞，存在几个空指针漏洞等）。</font></p>
+<p><strong><font style="color:#000000;">一个Perfect Static Analysis必须满足Sound又Complete</font></strong><font style="color:#000000;">。具体地说， Truth可以理解为程序中有N个空指针漏洞；Sound表示报告包含了所有的真实错误，但可能包含了误报的错误；Complete表示报告包含的错误都是真实的错误，但可能并未包含全部的错误。那么Sound、Truth和Complete之间的关系为</font><strong><font style="color:#000000;">Complete ⊆ Truth ⊆ Sound</font></strong><font style="color:#000000;">，Sound称之为over-approximate，Complete称之为under-approximate。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729697587651-51486139-8a8b-4d1d-a491-50045373b7bf.png"></p>
+<p><font style="color:#000000;">既然不存在Perfect Static Analysis，即无法同时满足Sound和Complete，那么可以妥协其中一方，在某种程度上牺牲Sound或Complete中的一个，即Useful Static Analysis。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729698633761-e775ff4f-94e4-4861-8e7a-d42dcf385103.png"></p>
+<p><font style="color:#000000;">在Useful Static Analysis中，妥协soundness，会造成false negatives（漏报）；妥协completeness，会造成false positives（误报）。</font></p>
+<p><font style="color:#000000;">通常情况下，</font><strong><font style="color:#000000;">静态分析时总是选择牺牲completeness，保全soundness</font></strong><font style="color:#000000;">。即，宁可有误报，也不漏掉一个正确结果。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729698818693-ca38fd56-9d25-403a-a187-6a8af3e2e397.png"></p>
+<p><font style="color:#000000;">那么为什么总选择保全Soundness呢？</font></p>
+<ol>
+<li><strong><font style="color:#000000;">Soundness is critical to a collection of important (static-analysis) applications</font></strong><font style="color:#000000;">, such as compiler optimization and program verification.</font></li>
+<li><strong><font style="color:#000000;">Soundness is also preferable to other (static-analysis) applications for which soundness is not demanded</font></strong><font style="color:#000000;">, e.g., bug detection, as better soundness implies more bugs could be found.</font></li>
+</ol>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><font style="color:#000000;">在下图示例代码中，存在两种不同表述的分析结果：</font></p>
+<ul>
+<li><font style="color:#000000;">当input为true时，x等于1；当input为false时，x等于0。</font></li>
+<li><font style="color:#000000;">x等于1或0。</font></li>
+</ul>
+<p><font style="color:#000000;">但是这两个分析都是sound的，区别在于，前者结果更精确，但是耗时长；后者结果不精确，但是速度快。因此，</font><strong><font style="color:#000000;">静态分析时通常需要尽力确保soundness，并在precision和speed之间做取舍</font></strong><font style="color:#000000;">。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729700169457-c6f3b9f4-e926-415a-8d4b-437b6c1348fc.png"></p>
+<h2 id="Abstraction-Over-approximation"><a href="#Abstraction-Over-approximation" class="headerlink" title="Abstraction &amp; Over-approximation"></a><font style="color:#000000;">Abstraction &amp; Over-approximation</font></h2><p><font style="color:#000000;">大多数静态分析都可以用abstraction和over-approximation两个词概括，而后者又包含transfer functions和control flows。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729700566139-5c282687-b942-4130-b118-9d0e51bd5fdf.png"></p>
+<p><strong><font style="color:#000000;">Abstraction是指将变量从concrete domain映射到abstract domain（符合集合）</font></strong><font style="color:#000000;">，方便后续处理。由于在程序中，变量很可能是不确定的（unknown）或非法、未定义（undefined）的。因此，</font><strong><font style="color:#000000;">abstract domain包含五类符号+−O⊤⊥，其中⊤表示unknown，⊥表示undefined</font></strong><font style="color:#000000;">。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729700963485-a209566c-c4dc-4c98-a746-3d93bc778435.png"></p>
+<p><font style="color:#000000;">Over-approximation中的transfer functions定义了怎样在abstract values上对程序语句求值。transfer functions通常根据要分析的问题和程序语句相关的语义确定。对于算数运算，相关的transfer functions可以由算术运算规则和特性生成。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729701401089-9582fb6d-6dc7-4609-a4f4-cbff1e7f24cc.png"></p>
+<p><font style="color:#000000;">Over-approximation中的control flows指的是，在实际场景中进行控制流相关的静态分析时，由于无法枚举所有路径，我们通常采用flow merging（一种over-approximation的方式）来处理。</font></p>
+<p><img src="/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/1729701339427-88fedb44-b37d-4690-88cf-476679c0d109.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Programming-Languages"><span class="toc-number">1.</span> <span class="toc-text">Programming Languages</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Background-Challenge"><span class="toc-number">2.</span> <span class="toc-text">Background &amp; Challenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Necessity"><span class="toc-number">3.</span> <span class="toc-text">Necessity</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Static-Program-Analysis"><span class="toc-number">4.</span> <span class="toc-text">Static Program Analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Example"><span class="toc-number">5.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Abstraction-Over-approximation"><span class="toc-number">6.</span> <span class="toc-text">Abstraction &amp; Over-approximation</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&text=南大软分学习笔记-Introduction"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&is_video=false&description=南大软分学习笔记-Introduction"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=南大软分学习笔记-Introduction&body=Check out this article: https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&title=南大软分学习笔记-Introduction"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&name=南大软分学习笔记-Introduction&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/10/24/%E5%8D%97%E5%A4%A7%E8%BD%AF%E5%88%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Introduction/&t=南大软分学习笔记-Introduction"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

