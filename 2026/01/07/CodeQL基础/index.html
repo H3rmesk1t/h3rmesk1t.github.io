@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="安装 CodeQL CLI引擎安装，https:&#x2F;&#x2F;github.com&#x2F;github&#x2F;codeql-cli-binaries&#x2F;releases  123456# 下载wget https:&#x2F;&#x2F;github.com&#x2F;github&#x2F;codeql-cli-binaries&#x2F;releases&#x2F;download&#x2F;codeql-osx64.zip# 将codeql添加至path中echo &quot;ali">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CodeQL基础">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="H3rmesk1t">
+<meta property="og:description" content="安装 CodeQL CLI引擎安装，https:&#x2F;&#x2F;github.com&#x2F;github&#x2F;codeql-cli-binaries&#x2F;releases  123456# 下载wget https:&#x2F;&#x2F;github.com&#x2F;github&#x2F;codeql-cli-binaries&#x2F;releases&#x2F;download&#x2F;codeql-osx64.zip# 将codeql添加至path中echo &quot;ali">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767530656565-089d01ae-7bf6-402a-8ad6-488899c4c336.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767623984699-6c2bdc4b-1441-49f2-9e0a-38f407cd5e76.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767624212195-c0e13dcb-b471-4513-afe0-a2e65363b838.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767712474253-33597f89-55be-463d-81ec-314588a9b7fb.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767711186990-efd971fc-eb2e-480d-a4ed-712380bf62f3.png">
+<meta property="article:published_time" content="2026-01-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-06T16:13:45.977Z">
+<meta property="article:author" content="H3rmesk1t">
+<meta property="article:tag" content="CodeQL">
+<meta property="article:tag" content="静态代码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767530656565-089d01ae-7bf6-402a-8ad6-488899c4c336.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/my-logo-mosaic.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/my-logo-mosaic-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/my-logo-mosaic.png">
+        
+      
+    
+    <!-- title -->
+    <title>CodeQL基础</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="H3rmesk1t" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/12/27/2025/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&text=CodeQL基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&is_video=false&description=CodeQL基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CodeQL基础&body=Check out this article: https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&name=CodeQL基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&t=CodeQL基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">2.</span> <span class="toc-text">数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95%E7%89%87%E6%AE%B5"><span class="toc-number">4.</span> <span class="toc-text">语法片段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        CodeQL基础
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">H3rmesk1t</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-01-06T16:00:00.000Z" class="dt-published" itemprop="datePublished">2026-01-07</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/CodeQL/">CodeQL</a> › <a class="category-link" href="/categories/CodeQL/%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">静态代码分析</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CodeQL/" rel="tag">CodeQL</a>, <a class="p-category" href="/tags/%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag">静态代码分析</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ol>
+<li>CodeQL CLI引擎安装，<a target="_blank" rel="noopener" href="https://github.com/github/codeql-cli-binaries/releases">https://github.com/github/codeql-cli-binaries/releases</a></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载</span></span><br><span class="line">wget https://github.com/github/codeql-cli-binaries/releases/download/codeql-osx64.zip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将codeql添加至path中</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;alias codeql=\&quot;/Users/alphag0/Desktop/CodeQL/codeql/codeql\&quot;&quot;</span> &gt;&gt; ~/.zshrc</span><br><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>CodeQL SDK安装，<a target="_blank" rel="noopener" href="https://github.com/github/codeql">https://github.com/github/codeql</a></li>
+<li>VSCode CodeQL扩展安装，扩展中搜索CodeQL进行安装，并配置CLI地址</li>
+</ol>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><ol>
+<li>准备源代码，对于闭源代码可以通过反编译的方式来获取（例如Java项目），本文基于项目<a target="_blank" rel="noopener" href="https://github.com/l4yn3/micro_service_seclab/">micro_service_seclab</a>进行学习</li>
+<li>利用CodeQL CLI创建数据库</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基本命令</span></span><br><span class="line">codeql database create &lt;数据库名&gt; --language=&lt;语言标识符&gt; --source-root=&lt;源码路径&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译数据库</span></span><br><span class="line">codeql database create ./databases/micro_service_seclab --language=<span class="string">&quot;java&quot;</span> --<span class="built_in">command</span>=<span class="string">&quot;mvn clean compile -DskipTests&quot;</span> --source-root=./micro_service_seclab/ --overwrite</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>创建完成后在VSCode插件中加载编译后的数据库，选择Language为Java，安装依赖</li>
+</ol>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767530656565-089d01ae-7bf6-402a-8ad6-488899c4c336.png"></p>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p>CodeQL包含用于查找每种受支持语言中最相关、最有趣的问题的查询功能，还可以编写自定义查询来查找与项目相关的特定问题，重要的查询类型包括：</p>
+<ol>
+<li>警报查询，用于突出显示代码中特定位置问题的查询</li>
+<li>路径查询，描述代码中source和sink之间信息流的查询</li>
+</ol>
+<p>CodeQL报警查询基本结构：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Query metadata</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">import <span class="comment">/* ... CodeQL libraries or modules ... */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ... Optional, define CodeQL classes and predicates ... */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> <span class="comment">/* ... variable declarations ... */</span></span><br><span class="line"><span class="keyword">where</span> <span class="comment">/* ... logical formula ... */</span></span><br><span class="line"><span class="keyword">select</span> <span class="comment">/* ... expressions ... */</span></span><br></pre></td></tr></table></figure>
+
+<p>CodeQL路径查询基本结构：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ...</span></span><br><span class="line"><span class="comment"> * @kind path-problem</span></span><br><span class="line"><span class="comment"> * ...</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">import <span class="operator">&lt;</span><span class="keyword">language</span><span class="operator">&gt;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span> <span class="keyword">For</span> <span class="keyword">some</span> languages (Java<span class="operator">/</span>C<span class="operator">+</span><span class="operator">+</span><span class="operator">/</span>Python<span class="operator">/</span>Rust<span class="operator">/</span>Swift) you need <span class="keyword">to</span> explicitly import the data flow library, such <span class="keyword">as</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span> import semmle.code.java.dataflow.DataFlow <span class="keyword">or</span> import codeql.swift.dataflow.DataFlow</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> Flow <span class="operator">=</span> DataFlow::<span class="keyword">Global</span><span class="operator">&lt;</span>MyConfiguration<span class="operator">&gt;</span>;</span><br><span class="line">import Flow::PathGraph</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> Flow::PathNode source, Flow::PathNode sink</span><br><span class="line"><span class="keyword">where</span> Flow::flowPath(source, sink)</span><br><span class="line"><span class="keyword">select</span> sink.getNode(), source, sink, &quot;&lt;message&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>CodeQL查询文件（.ql）元数据属性：</p>
+<table>
+<thead>
+<tr>
+<th><strong>属性</strong></th>
+<th><strong>值类型</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@description</code></td>
+<td><code>&lt;text&gt;</code></td>
+<td>用一句话或一段话描述查询的目的以及结果的_用途_或重要性</td>
+</tr>
+<tr>
+<td><code>@id</code></td>
+<td><code>&lt;text&gt;</code></td>
+<td>由小写字母或数字组成的单词序列，以逗号<code>/</code>或空格分隔<code>-</code>，用于标识和分类查询</td>
+</tr>
+<tr>
+<td><code>@previous-id</code></td>
+<td><code>&lt;text&gt;</code></td>
+<td>表示该查询结果之前已在其他查询中报告过</td>
+</tr>
+<tr>
+<td><code>@kind</code></td>
+<td><code>problem</code><br/><code>path-problem</code></td>
+<td>标识查询是警报查询还是路径查询</td>
+</tr>
+<tr>
+<td><code>@name</code></td>
+<td><code>&lt;text&gt;</code></td>
+<td>用于定义查询标签的语句</td>
+</tr>
+<tr>
+<td><code>@tags</code></td>
+<td><code>correctness</code><br/><code>maintainability</code><br/><code>readability</code><br/><code>security</code></td>
+<td>这些标签将查询归类到不同的类别中，以便于搜索和识别</td>
+</tr>
+<tr>
+<td><code>@precision</code></td>
+<td><code>low</code><br/><code>medium</code><br/><code>high</code><br/><code>very-high</code></td>
+<td>表示查询结果中真正阳性结果（而非假阳性结果）的百分比</td>
+</tr>
+<tr>
+<td><code>@problem.severity</code></td>
+<td><code>error</code><br/><code>warning</code><br/><code>recommendation</code></td>
+<td>定义非安全查询生成的任何警报的严重级别</td>
+</tr>
+<tr>
+<td><code>@security-severity</code></td>
+<td><code>&lt;score&gt;</code></td>
+<td>定义查询的严重级别，介于<code>0.0</code>和<code>10.0</code>之间</td>
+</tr>
+</tbody></table>
+<p>有关CodeQL中包含的谓词、模块和类的详细信息，<a target="_blank" rel="noopener" href="https://codeql.github.com/codeql-standard-libraries/">https://codeql.github.com/codeql-standard-libraries/</a></p>
+<p>在CodeQL中存在两种数据流：</p>
+<ol>
+<li>本地数据流：本地数据流是指单个方法或可调用函数内的数据流，本地数据流通常比全局数据流更简单、更快速、更精确，并且足以应对许多查询</li>
+<li>全局数据流：全局数据流跟踪整个程序的数据流，然而，全局数据流的精确度低于局部数据流，并且分析通常需要更多的时间和内存</li>
+</ol>
+<p>针对项目的部分漏洞学习全局数据流，查询语句如下：</p>
+<ol>
+<li>XXE漏洞查询语句</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This is an automatically generated file</span></span><br><span class="line"><span class="comment"> * @name xxe</span></span><br><span class="line"><span class="comment"> * @kind path-problem</span></span><br><span class="line"><span class="comment"> * @problem.severity warning</span></span><br><span class="line"><span class="comment"> * @id java/micro-service-seclab/xxe</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">import java</span><br><span class="line">import semmle.code.java.dataflow.DataFlow</span><br><span class="line">import semmle.code.java.dataflow.TaintTracking</span><br><span class="line">import semmle.code.java.dataflow.FlowSources</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 全局数据流 */</span></span><br><span class="line"><span class="keyword">module</span> XXEConfig implements DataFlow::ConfigSig &#123;</span><br><span class="line">  <span class="comment">/* 任何远程输入参数 */</span></span><br><span class="line">  predicate isSource(DataFlow::Node src) &#123;</span><br><span class="line">    src instanceof RemoteFlowSource</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* parse方法的第0个实参 */</span></span><br><span class="line">  predicate isSink(DataFlow::Node snk) &#123;</span><br><span class="line">    <span class="keyword">exists</span>(MethodCall <span class="keyword">call</span> <span class="operator">|</span></span><br><span class="line">      call.getMethod().hasName(&quot;parse&quot;) <span class="keyword">and</span></span><br><span class="line">      snk.asExpr() <span class="operator">=</span> call.getArgument(<span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 可在此处补充 isBarrier / isAdditionalFlowStep 等高级规则 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 实例化全局数据流 */</span></span><br><span class="line"><span class="keyword">module</span> XXEFlow <span class="operator">=</span> TaintTracking::<span class="keyword">Global</span><span class="operator">&lt;</span>XXEConfig<span class="operator">&gt;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导入 PathGraph, 使用 flowPath 路径查询 */</span></span><br><span class="line">import XXEFlow::PathGraph</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 路径查询, source -&gt; sink */</span></span><br><span class="line"><span class="keyword">from</span> XXEFlow::PathNode src, XXEFlow::PathNode snk</span><br><span class="line"><span class="keyword">where</span> XXEFlow::flowPath(src, snk)</span><br><span class="line"><span class="keyword">select</span> src.getNode(), src, snk, &quot;远程输入数据可能流入 parse 方法, 存在 XXE 等风险&quot;</span><br></pre></td></tr></table></figure>
+
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767623984699-6c2bdc4b-1441-49f2-9e0a-38f407cd5e76.png"></p>
+<ol start="2">
+<li>Fastjson漏洞查询语句</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This is an automatically generated file</span></span><br><span class="line"><span class="comment"> * @name fastjson</span></span><br><span class="line"><span class="comment"> * @kind path-problem</span></span><br><span class="line"><span class="comment"> * @problem.severity warning</span></span><br><span class="line"><span class="comment"> * @id java/micro-service-seclab/fastjson</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">import java</span><br><span class="line">import semmle.code.java.dataflow.DataFlow</span><br><span class="line">import semmle.code.java.dataflow.TaintTracking</span><br><span class="line">import semmle.code.java.dataflow.FlowSources</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> FastjsonConfig implements DataFlow::ConfigSig &#123;</span><br><span class="line">  predicate isSource(DataFlow::Node src) &#123;</span><br><span class="line">    src instanceof RemoteFlowSource</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  predicate isSink(DataFlow::Node snk) &#123;</span><br><span class="line">    <span class="keyword">exists</span>(MethodCall <span class="keyword">call</span> <span class="operator">|</span></span><br><span class="line">      call.getMethod().hasName(&quot;parseObject&quot;) <span class="keyword">and</span></span><br><span class="line">      snk.asExpr() <span class="operator">=</span> call.getArgument(<span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> FastjsonFlow <span class="operator">=</span> TaintTracking::<span class="keyword">Global</span><span class="operator">&lt;</span>FastjsonConfig<span class="operator">&gt;</span>;</span><br><span class="line">import FastjsonFlow::PathGraph</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> FastjsonFlow::PathNode src, FastjsonFlow::PathNode snk</span><br><span class="line"><span class="keyword">where</span> FastjsonFlow::flowPath(src, snk)</span><br><span class="line"><span class="keyword">select</span> src.getNode(), src, snk, &quot;远程输入数据可能流入 parseObject 方法, 存在 Fastjson 反序列化等风险&quot;</span><br></pre></td></tr></table></figure>
+
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767624212195-c0e13dcb-b471-4513-afe0-a2e65363b838.png"></p>
+<ol start="3">
+<li>SQL漏洞查询语句</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This is an automatically generated file</span></span><br><span class="line"><span class="comment"> * @name sql</span></span><br><span class="line"><span class="comment"> * @kind path-problem</span></span><br><span class="line"><span class="comment"> * @problem.severity warning</span></span><br><span class="line"><span class="comment"> * @id java/micro-service-seclab/sql</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">import java</span><br><span class="line">import semmle.code.java.dataflow.DataFlow</span><br><span class="line">import semmle.code.java.dataflow.TaintTracking</span><br><span class="line">import semmle.code.java.dataflow.FlowSources</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> SQLConfig implements DataFlow::ConfigSig &#123;</span><br><span class="line">  predicate isSource(DataFlow::Node src) &#123;</span><br><span class="line">    src instanceof RemoteFlowSource</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  predicate isSink(DataFlow::Node snk) &#123;</span><br><span class="line">    <span class="keyword">exists</span>(MethodCall <span class="keyword">call</span> <span class="operator">|</span></span><br><span class="line">      call.getMethod().hasName(&quot;query&quot;) <span class="keyword">and</span></span><br><span class="line">      snk.asExpr() <span class="operator">=</span> call.getArgument(<span class="number">0</span>)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  predicate isBarrier(DataFlow::Node sanitizer) &#123;</span><br><span class="line">    sanitizer.getType() instanceof NumberType</span><br><span class="line">    <span class="keyword">or</span> <span class="keyword">exists</span>(ParameterizedType pt <span class="operator">|</span> </span><br><span class="line">        sanitizer.getType() <span class="operator">=</span> pt <span class="keyword">and</span> </span><br><span class="line">        pt.getTypeArgument(<span class="number">0</span>) instanceof NumberType</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> SQLFlow <span class="operator">=</span> TaintTracking::<span class="keyword">Global</span><span class="operator">&lt;</span>SQLConfig<span class="operator">&gt;</span>;</span><br><span class="line">import SQLFlow::PathGraph</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> SQLFlow::PathNode src, SQLFlow::PathNode snk</span><br><span class="line"><span class="keyword">where</span> SQLFlow::flowPath(src, snk)</span><br><span class="line"><span class="keyword">select</span> src.getNode(), src, snk, &quot;远程输入数据可能流入 query 方法, 存在 SQL 注入等风险&quot;</span><br></pre></td></tr></table></figure>
+
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767712474253-33597f89-55be-463d-81ec-314588a9b7fb.png"></p>
+<ol start="4">
+<li>RCE漏洞查询语句</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This is an automatically generated file</span></span><br><span class="line"><span class="comment"> * @name rce</span></span><br><span class="line"><span class="comment"> * @kind path-problem</span></span><br><span class="line"><span class="comment"> * @problem.severity warning</span></span><br><span class="line"><span class="comment"> * @id java/micro-service-seclab/rce</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">import java</span><br><span class="line">import semmle.code.java.dataflow.DataFlow</span><br><span class="line">import semmle.code.java.dataflow.TaintTracking</span><br><span class="line">import semmle.code.java.dataflow.FlowSources</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> RCEConfig implements DataFlow::ConfigSig &#123;</span><br><span class="line">  predicate isSource(DataFlow::Node src) &#123;</span><br><span class="line">    src instanceof RemoteFlowSource</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  predicate isSink(DataFlow::Node snk) &#123;</span><br><span class="line">    snk.asExpr() instanceof ArgumentToExec</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">module</span> RCEFlow <span class="operator">=</span> TaintTracking::<span class="keyword">Global</span><span class="operator">&lt;</span>RCEConfig<span class="operator">&gt;</span>;</span><br><span class="line">import RCEFlow::PathGraph</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> RCEFlow::PathNode src, RCEFlow::PathNode snk</span><br><span class="line"><span class="keyword">where</span> RCEFlow::flowPath(src, snk)</span><br><span class="line"><span class="keyword">select</span> src.getNode(), src, snk, &quot;远程输入数据可能流入 exec 方法, 存在 RCE 风险&quot;</span><br></pre></td></tr></table></figure>
+
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/1767711186990-efd971fc-eb2e-480d-a4ed-712380bf62f3.png"></p>
+<h2 id="语法片段"><a href="#语法片段" class="headerlink" title="语法片段"></a>语法片段</h2><ol>
+<li>获取setter方法</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 返回 void、恰好 1 参，且名字以 set 开头 */</span></span><br><span class="line">class SetterMethod extends <span class="keyword">Method</span> &#123;</span><br><span class="line">  SetterMethod() &#123;</span><br><span class="line">    this.getReturnType() instanceof VoidType <span class="keyword">and</span></span><br><span class="line">    this.getNumberOfParameters() <span class="operator">=</span> <span class="number">1</span> <span class="keyword">and</span></span><br><span class="line">    this.getName().<span class="keyword">matches</span>(&quot;set%&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>获取getter方法</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 无参、非 void 返回，且名字以 get / is 开头 */</span></span><br><span class="line">class GetterMethod extends <span class="keyword">Method</span> &#123;</span><br><span class="line">  GetterMethod() &#123;</span><br><span class="line">    this.getNumberOfParameters() <span class="operator">=</span> <span class="number">0</span> <span class="keyword">and</span></span><br><span class="line">    <span class="keyword">not</span> this.getReturnType() instanceof VoidType <span class="keyword">and</span></span><br><span class="line">    (</span><br><span class="line">      this.getName().<span class="keyword">matches</span>(&quot;get%&quot;) <span class="keyword">or</span></span><br><span class="line">      this.getName().<span class="keyword">matches</span>(&quot;is%&quot;)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>获取无参构造方法</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 获取所有无参构造器 */</span></span><br><span class="line">class NoArgConstructor extends Constructor &#123;</span><br><span class="line">  NoArgConstructor() &#123;</span><br><span class="line">    this.getNumberOfParameters() <span class="operator">=</span> <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>获取toString&#x2F;hashCode&#x2F;equals方法</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">class ToStringMethod extends <span class="keyword">Method</span> &#123;</span><br><span class="line">  ToStringMethod() &#123;</span><br><span class="line">    this.hasName(&quot;toString&quot;) <span class="keyword">and</span></span><br><span class="line">    this.getNumberOfParameters() <span class="operator">=</span> <span class="number">0</span> <span class="keyword">and</span></span><br><span class="line">    this.getReturnType().hasQualifiedName(&quot;java.lang&quot;, &quot;String&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class HashCodeMethod extends <span class="keyword">Method</span> &#123;</span><br><span class="line">  HashCodeMethod() &#123;</span><br><span class="line">    this.hasName(&quot;hashCode&quot;) <span class="keyword">and</span></span><br><span class="line">    this.getNumberOfParameters() <span class="operator">=</span> <span class="number">0</span> <span class="keyword">and</span></span><br><span class="line">    this.getReturnType().hasQualifiedName(&quot;int&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class EqualsMethod extends <span class="keyword">Method</span> &#123;</span><br><span class="line">  EqualsMethod() &#123;</span><br><span class="line">    this.hasName(&quot;equals&quot;) <span class="keyword">and</span></span><br><span class="line">    this.getNumberOfParameters() <span class="operator">=</span> <span class="number">1</span> <span class="keyword">and</span></span><br><span class="line">    this.getParameter(<span class="number">0</span>).getType() instanceof TypeObject <span class="keyword">and</span></span><br><span class="line">    this.getReturnType().hasQualifiedName(&quot;boolean&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://codeql.github.com/docs/">CodeQL Documentation</a></p>
+<p><a target="_blank" rel="noopener" href="https://codeql.github.com/codeql-standard-libraries/java/index.html">CodeQL library for Java&#x2F;Kotlin</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">2.</span> <span class="toc-text">数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95%E7%89%87%E6%AE%B5"><span class="toc-number">4.</span> <span class="toc-text">语法片段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&text=CodeQL基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&is_video=false&description=CodeQL基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CodeQL基础&body=Check out this article: https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&title=CodeQL基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&name=CodeQL基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/&t=CodeQL基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        Copyright &copy;
+        
+        
+        2023-2026
+        H3rmesk1t
+      </div>
+      <div class="footer-right">
+        <nav>
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/tags/">Tag</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+          <ul>
+            
+              <!-- 不蒜子统计 -->
+              <span id="busuanzi_container_site_pv">
+                  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      本站访客数<span id="busuanzi_value_site_uv"></span>人
+              </span>
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+      
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'H3rmesk1t/h3rmesk1t.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = '💬';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>
