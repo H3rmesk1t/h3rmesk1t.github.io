@@ -1111,6 +1111,9 @@ article header .author {
 article header .postdate {
   display: inline;
 }
+article .content > p {
+  text-indent: 2em;
+}
 article .content h2:before {
   position: absolute;
   top: -4px;
@@ -1199,6 +1202,21 @@ article .content .caption {
   color: #666;
   text-align: center;
   font-size: 0.9em;
+}
+article .content table {
+  width: auto;
+  border-collapse: collapse;
+  text-align: left;
+  margin: 0 auto;
+}
+article .content th {
+  padding: 8px;
+  border-bottom: 1px dashed #666;
+  color: #383838;
+  font-weight: bold;
+}
+article .content td {
+  padding: 0 8px;
 }
 .posttitle {
   text-transform: none;
