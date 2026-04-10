@@ -6,22 +6,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="简介eBPF（Extended Berkeley Packet Filter）起源于Linux内核，它可以在中断上下文中（如操作系统内核）运行沙盒程序。它用于安全有效地扩展内核的功能，与传统方法需要修改内核源代码或加载新模块不同，eBPF使得动态定制和优化网络行为成为可能，且不会中断系统操作。 eBPF的强大之处包括：  直接内核交互：eBPF程序在内核中执行，与系统级事件如网络包、系统调用或追踪">
+    <meta name="description" content="BPFBPF（Berkeley Packet Filter，伯克利数据包过滤）于1992年在论文“The BSD Packet Filter: A New Architecture for User-level Packet Capture”中被提出。当时设计的BPF具有以下两个特性：  内核态引入一个新的虚拟机，所有的指令都在内核虚拟机中运行； 用户态使用BPF字节码来定义过滤表达式，然后传递给">
 <meta property="og:type" content="article">
-<meta property="og:title" content="eBPF基础">
-<meta property="og:url" content="https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:title" content="eBPF初探">
+<meta property="og:url" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/index.html">
 <meta property="og:site_name" content="H3rmesk1t">
-<meta property="og:description" content="简介eBPF（Extended Berkeley Packet Filter）起源于Linux内核，它可以在中断上下文中（如操作系统内核）运行沙盒程序。它用于安全有效地扩展内核的功能，与传统方法需要修改内核源代码或加载新模块不同，eBPF使得动态定制和优化网络行为成为可能，且不会中断系统操作。 eBPF的强大之处包括：  直接内核交互：eBPF程序在内核中执行，与系统级事件如网络包、系统调用或追踪">
+<meta property="og:description" content="BPFBPF（Berkeley Packet Filter，伯克利数据包过滤）于1992年在论文“The BSD Packet Filter: A New Architecture for User-level Packet Capture”中被提出。当时设计的BPF具有以下两个特性：  内核态引入一个新的虚拟机，所有的指令都在内核虚拟机中运行； 用户态使用BPF字节码来定义过滤表达式，然后传递给">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775402692916-a883ae61-6da2-442a-89b7-b215b58e98af.png">
-<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775402674733-513ace87-030e-46fc-95a1-c7778598fd45.png">
-<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775476904759-b5d4272c-3cc6-421f-af53-04c429cae491.png">
-<meta property="article:published_time" content="2026-04-06T15:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-06T15:25:05.470Z">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775833256452-a6e1df5f-f9cf-4af1-ba84-22f11628fcd5.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775833496145-64322ad2-c0b5-456f-bae3-4b31ce7aa252.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775402692916-a883ae61-6da2-442a-89b7-b215b58e98af.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775402674733-513ace87-030e-46fc-95a1-c7778598fd45.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775815238784-d3e2a1a0-23a9-4623-822e-22fc378baff0.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775476904759-b5d4272c-3cc6-421f-af53-04c429cae491.png">
+<meta property="article:published_time" content="2026-04-10T15:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-10T15:49:26.230Z">
 <meta property="article:author" content="H3rmesk1t">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775402692916-a883ae61-6da2-442a-89b7-b215b58e98af.png">
+<meta name="twitter:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775833256452-a6e1df5f-f9cf-4af1-ba84-22f11628fcd5.png">
     
     
       
@@ -41,7 +44,7 @@
       
     
     <!-- title -->
-    <title>eBPF基础</title>
+    <title>eBPF初探</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -90,8 +93,6 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/2026/04/10/XDP%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
-        
         
         <li><a class="icon" aria-label="Next post" href="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
@@ -106,24 +107,24 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&text=eBPF基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&is_video=false&description=eBPF基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=eBPF基础&body=Check out this article: https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&name=eBPF基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&t=eBPF基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&text=eBPF初探"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&is_video=false&description=eBPF初探"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=eBPF初探&body=Check out this article: https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&name=eBPF初探&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&t=eBPF初探"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">测试代码</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BPF"><span class="toc-number">1.</span> <span class="toc-text">BPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eBPF"><span class="toc-number">2.</span> <span class="toc-text">eBPF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">内核原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%BA%A4%E4%BA%92"><span class="toc-number">2.2.</span> <span class="toc-text">内核交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">2.3.</span> <span class="toc-text">开发工具链</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
       </div>
     
   </span>
@@ -136,7 +137,7 @@
   <header>
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        eBPF基础
+        eBPF初探
     </h1>
 
 
@@ -148,7 +149,7 @@
       
     <div class="postdate">
       
-        <time datetime="2026-04-06T15:00:00.000Z" class="dt-published" itemprop="datePublished">2026-04-06</time>
+        <time datetime="2026-04-10T15:00:00.000Z" class="dt-published" itemprop="datePublished">2026-04-10</time>
         
       
     </div>
@@ -173,31 +174,50 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>eBPF（Extended Berkeley Packet Filter）起源于Linux内核，它可以在中断上下文中（如操作系统内核）运行沙盒程序。它用于安全有效地扩展内核的功能，与传统方法需要修改内核源代码或加载新模块不同，eBPF使得动态定制和优化网络行为成为可能，且不会中断系统操作。</p>
-<p>eBPF的强大之处包括：</p>
-<ul>
-<li>直接内核交互：eBPF程序在内核中执行，与系统级事件如网络包、系统调用或追踪点交互。</li>
-<li>安全执行：eBPF通过验证器在程序运行前检查其逻辑，防止潜在的内核崩溃或安全漏洞。</li>
-<li>最低开销：eBPF通过使用即时编译器（JIT），将eBPF字节码转换为针对特定架构的优化机器码，实现近原生执行速度。</li>
-</ul>
-<p>eBPF程序是事件驱动的，当内核或应用程序通过某个钩子点时运行。预定义的钩子包括系统调用、函数入口&#x2F;退出、内核跟踪点、网络事件等。如果预定义的钩子不能满足特定需求，则可以创建内核探针（kprobe）或用户探针（uprobe），以便在内核用户或应用程序的几乎任何位置附加eBPF程序。<br>确定需要的钩子后，就可以使用bpf系统调用将eBPF程序加载到Linux内核中。当程序被加载到Linux内核时，它在被附加到所请求的钩子上之前需要经过两个步骤：</p>
+    <h2 id="BPF"><a href="#BPF" class="headerlink" title="BPF"></a>BPF</h2><p>BPF（Berkeley Packet Filter，伯克利数据包过滤）于1992年在论文“The BSD Packet Filter: A New Architecture for User-level Packet Capture”中被提出。当时设计的BPF具有以下两个特性：</p>
+<ol>
+<li>内核态引入一个新的虚拟机，所有的指令都在内核虚拟机中运行；</li>
+<li>用户态使用BPF字节码来定义过滤表达式，然后传递给内核，由内核虚拟机解释执行。</li>
+</ol>
+<p>BPF技术可在无需编译内核或加载内核模块的情况下，安全地高效地附加到内核的各种事件上，对内核事件进行监控、跟踪和可观测性，避免了向用户态复制每个数据，极大提升了包过滤性能。</p>
+<p>在Linux 2.1.75中，首次引入了BPF技术；在Linux 3.0中，增加了BPF即时编译器，它替换掉了原本性能更差的解释器，优化了BPF指令运行的效率，但BPF只是一种数据包过滤技术。</p>
+<h2 id="eBPF"><a href="#eBPF" class="headerlink" title="eBPF"></a>eBPF</h2><p>2014年，Alexei Starovoitov将BPF扩展为一个通用的虚拟机，即eBPF（Extended Berkeley Packet Filter，扩展的伯克利包过滤器）。eBPF不仅扩展了寄存器的数量，引入了全新的BPF映射存储，同时还在Linux 4.x中将原本单一的数据包过滤事件逐步扩展到了内核态函数、用户态函数、跟踪点、性能事件以及安全控制等。</p>
+<p>eBPF的诞生是BPF技术的一个转折点，使得BPF不在局限于网络栈，而是成为内核的一个顶级子系统。它与传统方法需要修改内核源代码或加载新模块不同，eBPF使得动态定制和优化网络行为成为可能，且不会中断系统操作。eBPF的整个发展流程如下图所示，目前eBPF广泛用于网络、安全、可观测等领域。</p>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775833256452-a6e1df5f-f9cf-4af1-ba84-22f11628fcd5.png"></p>
+<h3 id="内核原理"><a href="#内核原理" class="headerlink" title="内核原理"></a>内核原理</h3><p>eBPF是一个运行在内核中的虚拟机，与系统虚拟化（例如kvm）中的虚拟机存在本质不同。系统虚拟化基于x86或arm64等通用指令集，这些指令集足以完成完整计算机的所有功能。而为了确保在内核中安全地执行，eBPF只提供了非常有限的指令集。这些指令集可用于完成一部分内核的功能，但却远不足以模拟完整的计算机。如下图所示，eBPF在内核中的运行时主要由5个模块组成：</p>
+<ol>
+<li>eBPF辅助函数。它提供了一系列用于eBPF程序与内核其他模块进行交互的函数，这些函数并不是任意一个eBPF程序都可以调用的，具体可用的函数集由BPF程序类型决定。</li>
+<li>eBPF验证器。它用于确保eBPF程序的安全，验证器会将待执行的指令创建为一个有向无环图（DAG），确保程序中不包含不可达指令；接着再模拟指令的执行过程，确保不会执行无效指令。</li>
+<li>存储模块。该模块是由11个64位寄存器、一个程序计数器和一个512字节的栈组成的存储模块。这个模块用于控制eBPF程序的执行。其中，R0寄存器用于存储函数调用和eBPF程序的返回值，这意味着函数调用最多只能有一个返回值；R1-R5寄存器用于函数调用的参数，因此函数调用的参数最多不能超过5个；而R10则是一个只读寄存器，用于从栈中读取数据。</li>
+<li>即时编译器。它将eBPF字节码编译成本地机器指令，以便更高效地在内核中执行。</li>
+<li>BPF映射。它用于提供大块的存储，这些存储可被用户空间程序用来进行访问，进而控制eBPF程序的运行状态。</li>
+</ol>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775833496145-64322ad2-c0b5-456f-bae3-4b31ce7aa252.png"></p>
+<h3 id="内核交互"><a href="#内核交互" class="headerlink" title="内核交互"></a>内核交互</h3><p>eBPF程序是事件驱动的，当内核或应用程序通过某个钩子点时运行。预定义的钩子包括系统调用、函数入口&#x2F;退出、内核跟踪点、网络事件等。如果预定义的钩子不能满足特定需求，则可以创建内核探针（kprobe）或用户探针（uprobe），以便在内核用户或应用程序的几乎任何位置附加eBPF程序。<br>确定需要的钩子后，就可以使用bpf系统调用将eBPF程序加载到Linux内核中。当程序被加载到Linux内核时，它在被附加到所请求的钩子上之前需要经过两个步骤：</p>
 <ol>
 <li>验证：验证步骤用于保证eBPF程序可以安全运行。它可以验证程序是否满足几个条件：<ul>
-<li>加载eBPF程序的进程必须有必需的能力（特权）。除非启用非特权eBPF，否则只有特权进程可以加载eBPF程序。</li>
-<li>eBPF程序不会崩溃或者对系统造成损害。</li>
+<li>加载eBPF程序的进程必须有必需的能力（特权），除非启用非特权eBPF，否则只有特权进程可以加载eBPF程序；</li>
+<li>eBPF程序不会崩溃或者对系统造成损害；</li>
 <li>eBPF程序一定会运行至结束（即程序不会处于循环状态中，否则会阻碍后续的处理）。</li>
 </ul>
 </li>
 <li>JIT编译：JIT（Just-in-Time）编译步骤将程序的通用字节码高效转换为机器的特定指令集，从而优化程序的执行。这使得eBPF程序可以像本地编译的内核代码或作为内核模块加载的代码一样地运行。</li>
 </ol>
 <!-- 这是一张图片，ocr 内容为： -->
-<p><img src="/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775402692916-a883ae61-6da2-442a-89b7-b215b58e98af.png"></p>
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775402692916-a883ae61-6da2-442a-89b7-b215b58e98af.png"></p>
 <p>eBPF程序的其中一个重要方面是共享和存储所收集的信息和状态的能力。为此，eBPF程序可以利用eBPF Maps的概念来存储和检索各种数据结构中的数据。如下图所示，eBPF Maps既可以从eBPF程序访问，也可以通过系统调用从用户空间中的应用程序访问。</p>
 <!-- 这是一张图片，ocr 内容为： -->
-<p><img src="/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775402674733-513ace87-030e-46fc-95a1-c7778598fd45.png"></p>
-<p>一个典型的eBPF程序包含两个部分：内核空间代码（*_kern.c）和用户空间代码（*_user.c）。</p>
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775402674733-513ace87-030e-46fc-95a1-c7778598fd45.png"></p>
+<p>这其中，最关键的是设置映射的类型。内核头文件<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.19/source/include/uapi/linux/bpf.h#L880">bpf.h</a>中的bpf_map_type定义了所有支持的映射类型，也可以使用bpftool命令<code>bpftool feature probe | grep map_type</code>来查询当前系统支持哪些映射类型。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">bpf_map_type</span> &#123;</span></span><br><span class="line">	BPF_MAP_TYPE_UNSPEC,</span><br><span class="line">	BPF_MAP_TYPE_HASH,</span><br><span class="line">	BPF_MAP_TYPE_ARRAY,</span><br><span class="line">	BPF_MAP_TYPE_PROG_ARRAY,</span><br><span class="line">	BPF_MAP_TYPE_PERF_EVENT_ARRAY,</span><br><span class="line">	BPF_MAP_TYPE_PERCPU_HASH,</span><br><span class="line">	BPF_MAP_TYPE_PERCPU_ARRAY,</span><br><span class="line">	BPF_MAP_TYPE_STACK_TRACE,</span><br><span class="line">	BPF_MAP_TYPE_CGROUP_ARRAY,</span><br><span class="line">	BPF_MAP_TYPE_LRU_HASH,</span><br><span class="line">	BPF_MAP_TYPE_LRU_PERCPU_HASH,</span><br><span class="line">	BPF_MAP_TYPE_LPM_TRIE,</span><br><span class="line">	BPF_MAP_TYPE_ARRAY_OF_MAPS,</span><br><span class="line">	BPF_MAP_TYPE_HASH_OF_MAPS,</span><br><span class="line">	BPF_MAP_TYPE_DEVMAP,</span><br><span class="line">	BPF_MAP_TYPE_SOCKMAP,</span><br><span class="line">	BPF_MAP_TYPE_CPUMAP,</span><br><span class="line">	BPF_MAP_TYPE_XSKMAP,</span><br><span class="line">	BPF_MAP_TYPE_SOCKHASH,</span><br><span class="line">	BPF_MAP_TYPE_CGROUP_STORAGE,</span><br><span class="line">	BPF_MAP_TYPE_REUSEPORT_SOCKARRAY,</span><br><span class="line">	BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE,</span><br><span class="line">	BPF_MAP_TYPE_QUEUE,</span><br><span class="line">	BPF_MAP_TYPE_STACK,</span><br><span class="line">	BPF_MAP_TYPE_SK_STORAGE,</span><br><span class="line">	BPF_MAP_TYPE_DEVMAP_HASH,</span><br><span class="line">	BPF_MAP_TYPE_STRUCT_OPS,</span><br><span class="line">	BPF_MAP_TYPE_RINGBUF,</span><br><span class="line">	BPF_MAP_TYPE_INODE_STORAGE,</span><br><span class="line">	BPF_MAP_TYPE_TASK_STORAGE,</span><br><span class="line">	BPF_MAP_TYPE_BLOOM_FILTER,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>如下图所示，一个完整的eBPF程序通常包含用户态（*_kern.c）和内核态（*_user.c）两部分。其中，用户态负责eBPF程序的加载、事件绑定以及eBPF程序运行结果的汇总输出；内核态运行在eBPF虚拟机中，负责定制和控制系统的运行状态。</p>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775815238784-d3e2a1a0-23a9-4623-822e-22fc378baff0.png"></p>
 <ol>
-<li>内核空间代码定义逻辑：</li>
+<li>内核空间代码定义逻辑</li>
 </ol>
 <table>
 <thead>
@@ -215,18 +235,18 @@
 <td>在内核态直接捕获数据，进行初步过滤和聚合，减少用户态开销</td>
 </tr>
 <tr>
-<td>Map操作</td>
-<td>将处理结果写入BPF Map（内核与用户空间共享的键值存储）</td>
+<td><code>Map</code>操作</td>
+<td>将处理结果写入<code>BPF Map</code>（内核与用户空间共享的键值存储）</td>
 </tr>
 <tr>
 <td>触发通知</td>
-<td>通过bpf_ringbuf_submit()或perf_event向用户空间发送事件</td>
+<td>通过<code>bpf_ringbuf_submit()</code>或<code>perf_event</code>向用户空间发送事件</td>
 </tr>
 </tbody></table>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明程序类型（如跟踪点、Kprobe、XDP等）</span></span><br><span class="line">SEC(<span class="string">&quot;tracepoint/syscalls/sys_enter_openat&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">trace_openat</span><span class="params">(<span class="keyword">struct</span> trace_event_raw_sys_enter *ctx)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 内核态逻辑：读取参数、过滤、记录到Map</span></span><br><span class="line">    bpf_printk(<span class="string">&quot;PID %d opening file&quot;</span>, bpf_get_current_pid_tgid() &gt;&gt; <span class="number">32</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
-<li>用户空间代码负责加载和与内核交互：</li>
+<li>用户空间代码负责加载和与内核交互</li>
 </ol>
 <table>
 <thead>
@@ -237,34 +257,42 @@
 </thead>
 <tbody><tr>
 <td>加载eBPF程序</td>
-<td>将编译好的*_kern.o字节码加载进内核，经过验证器检查</td>
+<td>将编译好的<code>*_kern.o</code>字节码加载进内核，经过验证器检查</td>
 </tr>
 <tr>
 <td>附着到钩子点</td>
-<td>把程序挂到具体的事件源（如tracepoint、kprobe、XDP等）</td>
+<td>把程序挂到具体的事件源（如<code>tracepoint</code>、<code>kprobe</code>、<code>XDP</code>等）</td>
 </tr>
 <tr>
-<td>管理BPF Map</td>
-<td>创建、读取、更新Map，与内核程序交换数据</td>
+<td>管理<code>BPF Map</code></td>
+<td>创建、读取、更新<code>Map</code>，与内核程序交换数据</td>
 </tr>
 <tr>
 <td>处理数据输出</td>
-<td>从Map或Ring Buffer读取结果，格式化输出（打印、存文件、发网络等）</td>
+<td>从<code>Map</code>或<code>Ring Buffer</code>读取结果，格式化输出（打印、存文件、发网络等）</td>
 </tr>
 <tr>
 <td>生命周期控制</td>
 <td>信号处理、优雅退出、资源清理</td>
 </tr>
 </tbody></table>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 打开并加载eBPF对象</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bpf_object</span> *<span class="title">obj</span> =</span> bpf_object__open_file(<span class="string">&quot;program_kern.o&quot;</span>, <span class="literal">NULL</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 2. 加载进内核（此时触发验证器）</span></span><br><span class="line">    bpf_object__load(obj);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 3. 找到并附着程序到内核钩子</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bpf_program</span> *<span class="title">prog</span> =</span> bpf_object__find_program_by_name(obj, <span class="string">&quot;trace_openat&quot;</span>);</span><br><span class="line">    bpf_program__attach(prog);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 4. 查找Map并读取数据</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> *<span class="title">map</span> =</span> bpf_object__find_map_by_name(obj, <span class="string">&quot;events&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 5. 轮询或事件驱动地处理数据...</span></span><br><span class="line">    <span class="keyword">while</span> (running) &#123;</span><br><span class="line">        <span class="comment">// 从Ring Buffer读取内核发来的事件</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 6. 清理</span></span><br><span class="line">    bpf_object__close(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> </span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 打开并加载eBPF对象</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bpf_object</span> *<span class="title">obj</span> =</span> bpf_object_open_file(<span class="string">&quot;program_kern.o&quot;</span>, <span class="literal">NULL</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 2. 加载进内核（此时触发验证器）</span></span><br><span class="line">    bpf_object_load(obj);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 3. 找到并附着程序到内核钩子</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bpf_program</span> *<span class="title">prog</span> =</span> bpf_object_find_program_by_name(obj, <span class="string">&quot;trace_openat&quot;</span>);</span><br><span class="line">    bpf_program_attach(prog);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 4. 查找Map并读取数据</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> *<span class="title">map</span> =</span> bpf_object_find_map_by_name(obj, <span class="string">&quot;events&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 5. 轮询或事件驱动地处理数据...</span></span><br><span class="line">    <span class="keyword">while</span> (running) &#123;</span><br><span class="line">        <span class="comment">// 从Ring Buffer读取内核发来的事件</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 6. 清理</span></span><br><span class="line">    bpf_object_close(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>在实际开发中，eBPF并不是直接使用，而是通过像Cilium、bcc或bpftrace这样的项目间接使用，这些项目提供了eBPF上面的抽象，不需要直接编写定义程序，而是提供了基于意图的来实现的能力，然后用eBPF实现。以下是一些eBPF开发工具：</p>
+<p>虽然eBPF的功能很强大，但是为了保证内核安全，对eBPF的程序也有很多的限制：</p>
+<ol>
+<li>eBPF程序必须被验证器校验通过之后才能执行，且不能包含无法到达的指令；</li>
+<li>eBPF程序不能随意调用内核函数，只能调用在API中定义的辅助函数；</li>
+<li>eBPF程序栈空间最多只有512字节，可以通过映射保存；</li>
+<li>在内核5.2之前，eBPF字节码最多只支持4096条指令，而5.2内核提升至100万条；</li>
+<li>由于内核的快速变化，在不同版本内核中运行时，需要访问内核数据结构的eBPF程序就需要修改源代码重新编译。</li>
+</ol>
+<h3 id="开发工具链"><a href="#开发工具链" class="headerlink" title="开发工具链"></a>开发工具链</h3><p>在实际开发中，eBPF并不是直接使用，而是通过像Cilium、bcc或bpftrace这样的项目间接使用，这些项目提供了eBPF上面的抽象，不需要直接编写定义程序，而是提供了基于意图的来实现的能力，然后用eBPF实现。以下是一些eBPF开发工具：</p>
 <ul>
-<li>BCC：一个基于Python的工具链，简化了eBPF程序的编写、编译和加载。它提供了许多预构建的追踪工具，但在依赖和兼容性方面存在一些限制。</li>
-<li>eBPF Go库：一个Go库，解耦了获取eBPF字节码的过程与加载和管理eBPF程序的过程。</li>
-<li>libbpf-bootstrap：基于libbpf的现代脚手架，提供了高效的工作流用于编写eBPF程序，提供简单的一次性编译过程以生成可重用的字节码。</li>
-<li>eunomia-bpf：一个用于编写仅包含内核空间代码的eBPF程序的工具链，它通过动态加载eBPF程序简化了eBPF程序的开发。</li>
-<li>Aya：一个纯Rust实现的eBPF开发框架，提供了完全基于Rust的工具链来同时编写内核空间和用户空间代码。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/iovisor/bcc">BCC</a>：一个基于Python的工具链，简化了eBPF程序的编写、编译和加载。它提供了许多预构建的追踪工具，但在依赖和兼容性方面存在一些限制。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cilium/ebpf">eBPF Go库</a>：一个Go库，解耦了获取eBPF字节码的过程与加载和管理eBPF程序的过程。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/libbpf/libbpf-bootstrap">libbpf-bootstrap</a>：基于libbpf的现代脚手架，提供了高效的工作流用于编写eBPF程序，提供简单的一次性编译过程以生成可重用的字节码。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/eunomia-bpf/eunomia-bpf">eunomia-bpf</a>：一个用于编写仅包含内核空间代码的eBPF程序的工具链，它通过动态加载eBPF程序简化了eBPF程序的开发。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/aya-rs/aya">Aya</a>：一个纯Rust实现的eBPF开发框架，提供了完全基于Rust的工具链来同时编写内核空间和用户空间代码。</li>
 </ul>
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>由于eBPF是内核技术，因此需要具备较新版本的Linux内核（推荐Ubuntu24.04），以支持eBPF功能。以ebpf-go框架为例，安装如下依赖与相关包：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install -y make clang llvm libelf-dev libbpf-dev bpfcc-tools libbpfcc-dev linux-tools-$(<span class="built_in">uname</span> -r) linux-headers-$(<span class="built_in">uname</span> -r)</span><br><span class="line"></span><br><span class="line">go <span class="built_in">env</span> -w GOPROXY=https://goproxy.cn,direct</span><br><span class="line">go install github.com/cilium/ebpf/cmd/bpf2go@latest</span><br><span class="line">go install github.com/aya-rs/bpf-linker@latest</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=$PATH:$(go env GOPATH)/bin&#x27;</span> &gt;&gt; ~/.bashrc</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
@@ -281,7 +309,9 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//go:build linux</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用bpf2go将C代码编译并生成Go绑定代码</span></span><br><span class="line"><span class="comment">// 生成后会得到helloObjects、loadHelloObjects等类型/函数供本文件调用</span></span><br><span class="line"><span class="comment">//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc clang -cflags &quot;-O2 -g -Wall -I/usr/include/x86_64-linux-gnu&quot; hello ../../bpf/hello.bpf.c -- -I../../bpf</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;bytes&quot;</span></span><br><span class="line">    <span class="string">&quot;context&quot;</span></span><br><span class="line">    <span class="string">&quot;encoding/binary&quot;</span></span><br><span class="line">    <span class="string">&quot;errors&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;log&quot;</span></span><br><span class="line">    <span class="string">&quot;net&quot;</span></span><br><span class="line">    <span class="string">&quot;os/signal&quot;</span></span><br><span class="line">    <span class="string">&quot;syscall&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;github.com/cilium/ebpf/link&quot;</span></span><br><span class="line">    <span class="string">&quot;github.com/cilium/ebpf/ringbuf&quot;</span></span><br><span class="line">    <span class="string">&quot;github.com/cilium/ebpf/rlimit&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> event <span class="keyword">struct</span> &#123;</span><br><span class="line">    SrcIP   [<span class="number">4</span>]<span class="type">byte</span></span><br><span class="line">    SrcPort <span class="type">uint16</span></span><br><span class="line">    DstPort <span class="type">uint16</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 监听Ctrl+C/SIGTERM, 用于退出</span></span><br><span class="line">    ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)</span><br><span class="line">    <span class="keyword">defer</span> stop()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 放宽memlock限制, 避免加载eBPF对象时因锁页内存不足失败</span></span><br><span class="line">    <span class="keyword">if</span> err := rlimit.RemoveMemlock(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalf(<span class="string">&quot;remove memlock limit failed: %v&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加载由bpf2go生成的eBPF程序与map</span></span><br><span class="line">    <span class="keyword">var</span> objs helloObjects</span><br><span class="line">    <span class="keyword">if</span> err := loadHelloObjects(&amp;objs, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalf(<span class="string">&quot;load eBPF objects failed: %v&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> objs.Close()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将eBPF程序挂载到inet_sock_set_state tracepoint</span></span><br><span class="line">    tp, err := link.Tracepoint(<span class="string">&quot;sock&quot;</span>, <span class="string">&quot;inet_sock_set_state&quot;</span>, objs.HandleSshConn, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalf(<span class="string">&quot;attach tracepoint failed: %v&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> tp.Close()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打开ring buffer读取器, 用于实时接收每次触发事件</span></span><br><span class="line">    rd, err := ringbuf.NewReader(objs.Events)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalf(<span class="string">&quot;open ring buffer failed: %v&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> rd.Close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        &lt;-ctx.Done()</span><br><span class="line">        _ = rd.Close()</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    log.Println(<span class="string">&quot;eBPF program attached. Printing SSH source IP on new connections. Press Ctrl+C to exit.&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        rec, err := rd.Read()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> errors.Is(err, ringbuf.ErrClosed) &#123;</span><br><span class="line">                log.Println(<span class="string">&quot;stopping...&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">            log.Printf(<span class="string">&quot;read ring buffer failed: %v&quot;</span>, err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> e event</span><br><span class="line">        <span class="keyword">if</span> err := binary.Read(bytes.NewReader(rec.RawSample), binary.LittleEndian, &amp;e); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Printf(<span class="string">&quot;decode event failed: %v&quot;</span>, err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        srcIP := net.IPv4(e.SrcIP[<span class="number">0</span>], e.SrcIP[<span class="number">1</span>], e.SrcIP[<span class="number">2</span>], e.SrcIP[<span class="number">3</span>])</span><br><span class="line">        fmt.Printf(<span class="string">&quot;new SSH connection: src=%s:%d dst_port=%d\n&quot;</span>, srcIP.String(), e.SrcPort, e.DstPort)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <!-- 这是一张图片，ocr 内容为： -->
-<p><img src="/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/1775476904759-b5d4272c-3cc6-421f-af53-04c429cae491.png"></p>
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775476904759-b5d4272c-3cc6-421f-af53-04c429cae491.png"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://ebpf.io/zh-hans/what-is-ebpf/">eBPF 文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://time.geekbang.org/column/intro/100104501">eBPF 核心技术与实战</a></p>
 
   </div>
 </article>
@@ -317,23 +347,23 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">测试代码</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BPF"><span class="toc-number">1.</span> <span class="toc-text">BPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eBPF"><span class="toc-number">2.</span> <span class="toc-text">eBPF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">内核原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%BA%A4%E4%BA%92"><span class="toc-number">2.2.</span> <span class="toc-text">内核交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">2.3.</span> <span class="toc-text">开发工具链</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
       </div>
     
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&text=eBPF基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&is_video=false&description=eBPF基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=eBPF基础&body=Check out this article: https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&title=eBPF基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&name=eBPF基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/06/eBPF%E5%9F%BA%E7%A1%80/&t=eBPF基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&text=eBPF初探"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&is_video=false&description=eBPF初探"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=eBPF初探&body=Check out this article: https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&name=eBPF初探&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&t=eBPF初探"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
