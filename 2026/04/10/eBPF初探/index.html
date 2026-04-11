@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="description" content="BPFBPF（Berkeley Packet Filter，伯克利数据包过滤）于1992年在论文“The BSD Packet Filter: A New Architecture for User-level Packet Capture”中被提出。当时设计的BPF具有以下两个特性：  内核态引入一个新的虚拟机，所有的指令都在内核虚拟机中运行； 用户态使用BPF字节码来定义过滤表达式，然后传递给">
 <meta property="og:type" content="article">
-<meta property="og:title" content="eBPF初探">
+<meta property="og:title" content="eBPF基础">
 <meta property="og:url" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/index.html">
 <meta property="og:site_name" content="H3rmesk1t">
 <meta property="og:description" content="BPFBPF（Berkeley Packet Filter，伯克利数据包过滤）于1992年在论文“The BSD Packet Filter: A New Architecture for User-level Packet Capture”中被提出。当时设计的BPF具有以下两个特性：  内核态引入一个新的虚拟机，所有的指令都在内核虚拟机中运行； 用户态使用BPF字节码来定义过滤表达式，然后传递给">
@@ -18,9 +18,14 @@
 <meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775402692916-a883ae61-6da2-442a-89b7-b215b58e98af.png">
 <meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775402674733-513ace87-030e-46fc-95a1-c7778598fd45.png">
 <meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775815238784-d3e2a1a0-23a9-4623-822e-22fc378baff0.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775895124902-cefb33a5-3852-4dcf-8865-25e7cc2f90f6.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775896325510-ff510bf5-6fc7-4e1b-8f7b-edc0870ef8f2.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775896610706-ba759013-9bfc-4c02-a0df-ce5b0a3c6e4d.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775899522170-9bb5c1f9-bb47-4cd3-b4e4-c2bcb4e6cae2.png">
+<meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775899678669-09bce584-1f73-4084-8b3f-991017e9b4fb.png">
 <meta property="og:image" content="https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775476904759-b5d4272c-3cc6-421f-af53-04c429cae491.png">
-<meta property="article:published_time" content="2026-04-10T15:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-10T15:49:26.230Z">
+<meta property="article:published_time" content="2026-04-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-11T11:53:15.556Z">
 <meta property="article:author" content="H3rmesk1t">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
@@ -44,7 +49,7 @@
       
     
     <!-- title -->
-    <title>eBPF初探</title>
+    <title>eBPF基础</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -93,6 +98,8 @@
     <span id="actions">
       <ul>
         
+        <li><a class="icon" aria-label="Previous post" href="/2026/04/11/XDP%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
         
         <li><a class="icon" aria-label="Next post" href="/2026/01/07/CodeQL%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
@@ -108,23 +115,23 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&text=eBPF初探"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&is_video=false&description=eBPF初探"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=eBPF初探&body=Check out this article: https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&name=eBPF初探&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&t=eBPF初探"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&text=eBPF基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&is_video=false&description=eBPF基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=eBPF基础&body=Check out this article: https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&name=eBPF基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&t=eBPF基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BPF"><span class="toc-number">1.</span> <span class="toc-text">BPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eBPF"><span class="toc-number">2.</span> <span class="toc-text">eBPF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">内核原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%BA%A4%E4%BA%92"><span class="toc-number">2.2.</span> <span class="toc-text">内核交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">2.3.</span> <span class="toc-text">开发工具链</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BPF"><span class="toc-number">1.</span> <span class="toc-text">BPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eBPF"><span class="toc-number">2.</span> <span class="toc-text">eBPF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">内核原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%BA%A4%E4%BA%92"><span class="toc-number">2.2.</span> <span class="toc-text">内核交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">2.3.</span> <span class="toc-text">开发工具链</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%88%86%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">程序分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">3.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%9F%E8%B8%AA%E7%B1%BBeBPF%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.2.</span> <span class="toc-text">跟踪类eBPF程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E7%B1%BBeBPF%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.3.</span> <span class="toc-text">网络类eBPF程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%B1%BBeBPF%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.4.</span> <span class="toc-text">其它类eBPF程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E8%BF%BD%E8%B8%AA"><span class="toc-number">4.</span> <span class="toc-text">事件追踪</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#kprobe-kretprobe"><span class="toc-number">4.1.</span> <span class="toc-text">kprobe&#x2F;kretprobe</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tracepoint"><span class="toc-number">4.2.</span> <span class="toc-text">tracepoint</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#socket"><span class="toc-number">4.3.</span> <span class="toc-text">socket</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tc"><span class="toc-number">4.4.</span> <span class="toc-text">tc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#xdp"><span class="toc-number">4.5.</span> <span class="toc-text">xdp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#uprobe"><span class="toc-number">4.6.</span> <span class="toc-text">uprobe</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E6%8F%92%E6%A1%A9"><span class="toc-number">5.</span> <span class="toc-text">程序插桩</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E6%8F%92%E6%A1%A9%E7%82%B9"><span class="toc-number">5.1.</span> <span class="toc-text">内核插桩点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0-%E5%86%85%E6%A0%B8%E8%B7%9F%E8%B8%AA%E7%82%B9-%E6%80%A7%E8%83%BD%E4%BA%8B%E4%BB%B6"><span class="toc-number">5.1.1.</span> <span class="toc-text">如何获取内核函数&#x2F;内核跟踪点&#x2F;性能事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0-%E8%B7%9F%E8%B8%AA%E7%82%B9%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">5.1.2.</span> <span class="toc-text">如何查看内核函数&#x2F;跟踪点的参数和数据结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E6%8F%92%E6%A1%A9%E7%82%B9"><span class="toc-number">5.2.</span> <span class="toc-text">应用插桩点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">6.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">7.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
       </div>
     
   </span>
@@ -137,7 +144,7 @@
   <header>
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        eBPF初探
+        eBPF基础
     </h1>
 
 
@@ -149,7 +156,7 @@
       
     <div class="postdate">
       
-        <time datetime="2026-04-10T15:00:00.000Z" class="dt-published" itemprop="datePublished">2026-04-10</time>
+        <time datetime="2026-04-09T16:00:00.000Z" class="dt-published" itemprop="datePublished">2026-04-10</time>
         
       
     </div>
@@ -235,12 +242,12 @@
 <td>在内核态直接捕获数据，进行初步过滤和聚合，减少用户态开销</td>
 </tr>
 <tr>
-<td><code>Map</code>操作</td>
-<td>将处理结果写入<code>BPF Map</code>（内核与用户空间共享的键值存储）</td>
+<td>Map操作</td>
+<td>将处理结果写入BPF Map（内核与用户空间共享的键值存储）</td>
 </tr>
 <tr>
 <td>触发通知</td>
-<td>通过<code>bpf_ringbuf_submit()</code>或<code>perf_event</code>向用户空间发送事件</td>
+<td>通过bpf_ringbuf_submit()或perf_event向用户空间发送事件</td>
 </tr>
 </tbody></table>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明程序类型（如跟踪点、Kprobe、XDP等）</span></span><br><span class="line">SEC(<span class="string">&quot;tracepoint/syscalls/sys_enter_openat&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">trace_openat</span><span class="params">(<span class="keyword">struct</span> trace_event_raw_sys_enter *ctx)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 内核态逻辑：读取参数、过滤、记录到Map</span></span><br><span class="line">    bpf_printk(<span class="string">&quot;PID %d opening file&quot;</span>, bpf_get_current_pid_tgid() &gt;&gt; <span class="number">32</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -257,19 +264,19 @@
 </thead>
 <tbody><tr>
 <td>加载eBPF程序</td>
-<td>将编译好的<code>*_kern.o</code>字节码加载进内核，经过验证器检查</td>
+<td>将编译好的*_kern.o字节码加载进内核，经过验证器检查</td>
 </tr>
 <tr>
 <td>附着到钩子点</td>
-<td>把程序挂到具体的事件源（如<code>tracepoint</code>、<code>kprobe</code>、<code>XDP</code>等）</td>
+<td>把程序挂到具体的事件源（如tracepoint、kprobe、XDP等）</td>
 </tr>
 <tr>
-<td>管理<code>BPF Map</code></td>
-<td>创建、读取、更新<code>Map</code>，与内核程序交换数据</td>
+<td>管理BPF Map</td>
+<td>创建、读取、更新Map，与内核程序交换数据</td>
 </tr>
 <tr>
 <td>处理数据输出</td>
-<td>从<code>Map</code>或<code>Ring Buffer</code>读取结果，格式化输出（打印、存文件、发网络等）</td>
+<td>从Map或Ring Buffer读取结果，格式化输出（打印、存文件、发网络等）</td>
 </tr>
 <tr>
 <td>生命周期控制</td>
@@ -294,6 +301,263 @@
 <li><a target="_blank" rel="noopener" href="https://github.com/eunomia-bpf/eunomia-bpf">eunomia-bpf</a>：一个用于编写仅包含内核空间代码的eBPF程序的工具链，它通过动态加载eBPF程序简化了eBPF程序的开发。</li>
 <li><a target="_blank" rel="noopener" href="https://github.com/aya-rs/aya">Aya</a>：一个纯Rust实现的eBPF开发框架，提供了完全基于Rust的工具链来同时编写内核空间和用户空间代码。</li>
 </ul>
+<h2 id="程序分类"><a href="#程序分类" class="headerlink" title="程序分类"></a>程序分类</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>根据内核头文件<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.19.17/source/include/uapi/linux/bpf.h">bpf.h</a>中bpf_prog_type的定义，Linux内核v5.19已经支持30余种不同类型的eBPF程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">bpf_prog_type</span> &#123;</span></span><br><span class="line">	BPF_PROG_TYPE_UNSPEC,</span><br><span class="line">	BPF_PROG_TYPE_SOCKET_FILTER,</span><br><span class="line">	BPF_PROG_TYPE_KPROBE,</span><br><span class="line">	BPF_PROG_TYPE_SCHED_CLS,</span><br><span class="line">	BPF_PROG_TYPE_SCHED_ACT,</span><br><span class="line">	BPF_PROG_TYPE_TRACEPOINT,</span><br><span class="line">	BPF_PROG_TYPE_XDP,</span><br><span class="line">	BPF_PROG_TYPE_PERF_EVENT,</span><br><span class="line">	BPF_PROG_TYPE_CGROUP_SKB,</span><br><span class="line">	BPF_PROG_TYPE_CGROUP_SOCK,</span><br><span class="line">	BPF_PROG_TYPE_LWT_IN,</span><br><span class="line">	BPF_PROG_TYPE_LWT_OUT,</span><br><span class="line">	BPF_PROG_TYPE_LWT_XMIT,</span><br><span class="line">	BPF_PROG_TYPE_SOCK_OPS,</span><br><span class="line">	BPF_PROG_TYPE_SK_SKB,</span><br><span class="line">	BPF_PROG_TYPE_CGROUP_DEVICE,</span><br><span class="line">	BPF_PROG_TYPE_SK_MSG,</span><br><span class="line">	BPF_PROG_TYPE_RAW_TRACEPOINT,</span><br><span class="line">	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,</span><br><span class="line">	BPF_PROG_TYPE_LWT_SEG6LOCAL,</span><br><span class="line">	BPF_PROG_TYPE_LIRC_MODE2,</span><br><span class="line">	BPF_PROG_TYPE_SK_REUSEPORT,</span><br><span class="line">	BPF_PROG_TYPE_FLOW_DISSECTOR,</span><br><span class="line">	BPF_PROG_TYPE_CGROUP_SYSCTL,</span><br><span class="line">	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,</span><br><span class="line">	BPF_PROG_TYPE_CGROUP_SOCKOPT,</span><br><span class="line">	BPF_PROG_TYPE_TRACING,</span><br><span class="line">	BPF_PROG_TYPE_STRUCT_OPS,</span><br><span class="line">	BPF_PROG_TYPE_EXT,</span><br><span class="line">	BPF_PROG_TYPE_LSM,</span><br><span class="line">	BPF_PROG_TYPE_SK_LOOKUP,</span><br><span class="line">	BPF_PROG_TYPE_SYSCALL, <span class="comment">/* a program that can execute syscalls */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>对于具体的内核来说，因为不同内核的版本和编译配置选项不同，通常一个内核并不会支持所有的程序类型。可以通过执行<code>bpftool feature probe | grep program_type</code>来查询当前系统支持的程序类型。以阿里云云服务为例，内核版本5.15.0-106-generic，可以看到当前内核支持kprobe、tracepoint、xdp、perf_event等程序类型，而不支持tracing、ext、lsm等程序类型。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">eBPF program_type socket_filter is available</span><br><span class="line">eBPF program_type kprobe is available</span><br><span class="line">eBPF program_type sched_cls is available</span><br><span class="line">eBPF program_type sched_act is available</span><br><span class="line">eBPF program_type tracepoint is available</span><br><span class="line">eBPF program_type xdp is available</span><br><span class="line">eBPF program_type perf_event is available</span><br><span class="line">eBPF program_type cgroup_skb is available</span><br><span class="line">eBPF program_type cgroup_sock is available</span><br><span class="line">eBPF program_type lwt_in is available</span><br><span class="line">eBPF program_type lwt_out is available</span><br><span class="line">eBPF program_type lwt_xmit is available</span><br><span class="line">eBPF program_type sock_ops is available</span><br><span class="line">eBPF program_type sk_skb is available</span><br><span class="line">eBPF program_type cgroup_device is available</span><br><span class="line">eBPF program_type sk_msg is available</span><br><span class="line">eBPF program_type raw_tracepoint is available</span><br><span class="line">eBPF program_type cgroup_sock_addr is available</span><br><span class="line">eBPF program_type lwt_seg6local is available</span><br><span class="line">eBPF program_type lirc_mode2 is NOT available</span><br><span class="line">eBPF program_type sk_reuseport is available</span><br><span class="line">eBPF program_type flow_dissector is available</span><br><span class="line">eBPF program_type cgroup_sysctl is available</span><br><span class="line">eBPF program_type raw_tracepoint_writable is available</span><br><span class="line">eBPF program_type cgroup_sockopt is available</span><br><span class="line">eBPF program_type tracing is NOT available</span><br><span class="line">eBPF program_type struct_ops is available</span><br><span class="line">eBPF program_type ext is NOT available</span><br><span class="line">eBPF program_type lsm is NOT available</span><br><span class="line">eBPF program_type sk_lookup is available</span><br></pre></td></tr></table></figure>
+
+<p>根据具体功能和应用场景的不同，这些程序类型大致可以划分为三类：</p>
+<ol>
+<li>跟踪类eBPF程序，即从内核和程序的运行状态中提取跟踪信息，来了解当前系统正在发生什么。</li>
+<li>网络类eBPF程序，即对网络数据包进行过滤和处理，来了解和控制网络数据包的收发过程。</li>
+<li>其它类eBPF程序，即除跟踪和网络之外的其他类型，包括安全控制、BPF扩展等。</li>
+</ol>
+<h3 id="跟踪类eBPF程序"><a href="#跟踪类eBPF程序" class="headerlink" title="跟踪类eBPF程序"></a>跟踪类eBPF程序</h3><p>跟踪类eBPF程序主要用于从系统中提取跟踪信息，进而为监控、排错、性能优化等提供数据支撑，包括KPROBE、TRACEPOINT、PERF_EVENT等。下表中包含了常见的跟踪类BPF程序的主要功能以及使用限制。</p>
+<table>
+<thead>
+<tr>
+<th><strong>程序类型</strong></th>
+<th><strong>功能描述</strong></th>
+<th><strong>功能限制</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BPF_PROG_TYPE_KPROBE</td>
+<td>用于对特定函数进行动态插桩，根据函数位置的不同，又可以分为内核态kprobe和用户态uprobe</td>
+<td>内核函数和用户函数的定义属于不稳定API，在不同内核版本中使用时，可能需要调整eBPF代码实现</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_TRACEPOINT</td>
+<td>用于内核静态跟踪点，会附加到Linux内核中预定义的跟踪点（可以使用perf list命令来查询所有的跟踪点）</td>
+<td>虽然跟踪点可以保持稳定性，但不如KPROBE类型灵活，无法按需增加新的跟踪点</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_PERF_EVENT</td>
+<td>用于性能事件（perf_events）跟踪，包括内核调用、定时器、硬件等各类性能数据</td>
+<td>需配合BPF_MAP_TYPE_PERF_EVENT_ARRAY或BPF_MAP_TYPE_RINGBUF类型的映射使用</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_RAW_TRACEPOINT   BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE</td>
+<td>用于原始跟踪点，直接访问内核传递给跟踪点的原始参数，避免参数解析开销</td>
+<td>不处理参数格式化，需要自行解析原始参数</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_TRACING</td>
+<td>用于开启BTF的跟踪点，支持fentry、fexit、fmod_ret、iter等多种跟踪模式</td>
+<td>需要开启BTF调试信息，内核编译时需开启CONFIG_DEBUG_INFO_BTF</td>
+</tr>
+</tbody></table>
+<h3 id="网络类eBPF程序"><a href="#网络类eBPF程序" class="headerlink" title="网络类eBPF程序"></a>网络类eBPF程序</h3><p>网络类eBPF程序主要用于对网络数据包进行过滤和处理，进而实现网络的观测、过滤、流量控制以及性能优化等各种丰富的功能。根据事件触发位置的不同，网络类eBPF程序又可以分为 XDP（eXpress Data Path，高速数据路径）程序、TC（Traffic Control，流量控制）程序、套接字程序以及cgroup程序。下表中包含了常见的跟踪类BPF程序的主要功能以及使用限制。</p>
+<ol>
+<li>XDP程序，类型为BPF_PROG_TYPE_XDP，在网络驱动程序刚刚收到数据包时触发执行。可用来实现高性能的网络处理方案。</li>
+<li>TC程序，类型为BPF_PROG_TYPE_SCHED_CLS和BPF_PROG_TYPE_SCHED_ACT，分别作为Linux流量控制的分类器和执行器。</li>
+<li>套接字程序，用于过滤、观测或重定向套接字网络包，具体的种类也比较丰富。根据类型的不同，套接字eBPF程序可以挂载到套接字（socket）、控制组（cgroup）以及网络命名空间（netns）等各个位置。</li>
+<li>cgroup程序，用于对cgroup内所有进程的网络过滤、套接字选项以及转发等进行动态控制，它最典型的应用场景是对容器中运行的多个进程进行网络控制。</li>
+</ol>
+<p>这几类网络eBPF程序是在不同的事件触发时执行的，因此，在实际应用中通常可以把多个类型的eBPF程序结合一起使用，来实现复杂的网络控制功能。例如下图中，Kubernetes的网络方案Cilium就大量使用了XDP、TC和套接字eBPF程序。</p>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775895124902-cefb33a5-3852-4dcf-8865-25e7cc2f90f6.png"></p>
+<p>下表中包含了常见的网络类BPF程序的主要功能以及使用限制。</p>
+<table>
+<thead>
+<tr>
+<th><strong>程序类型</strong></th>
+<th><strong>功能描述</strong></th>
+<th><strong>功能限制</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BPF_PROG_TYPE_SOCKET_FILTER</td>
+<td>用于套接字过滤器，最早的网络类eBPF程序，可过滤套接字接收的数据包</td>
+<td>只能用于接收路径，无法修改数据包，功能较为基础，已被更强大的类型替代</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SCHED_CLS</td>
+<td>用于流量控制（TC）分类器，在ingress&#x2F;egress路径对数据包进行分类和过滤</td>
+<td>需要配合TC工具使用，仅支持已启用qdisc的网络设备</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SCHED_ACT</td>
+<td>用于流量控制（TC）动作，在分类后执行具体的处理动作（如丢弃、重定向、修改）</td>
+<td>需要与SCHED_CLS配合使用，依赖TC框架</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_XDP</td>
+<td>用于XDP，在网络驱动层最早的处理点执行，可实现高性能包处理</td>
+<td>运行环境受限（如不支持睡眠、部分内核API不可用），需要网卡驱动支持XDP模式</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SOCK_OPS</td>
+<td>用于套接字操作，跟踪TCP连接状态变化（如连接建立、重传、拥塞控制）</td>
+<td>主要用于状态跟踪和参数设置，不直接处理数据包内容</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SK_SKB</td>
+<td>用于套接字级别的数据包处理，配合sockmap实现套接字之间的数据包转发</td>
+<td>需要配合BPF_MAP_TYPE_SOCKMAP使用，配置相对复杂</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SK_MSG</td>
+<td>用于套接字消息处理，在sendmsg&#x2F;recvmsg系统调用层面执行</td>
+<td>需要配合BPF_MAP_TYPE_SOCKHASH或SOCKMAP使用</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SK_LOOKUP</td>
+<td>用于套接字查找，在数据包到达时自定义选择目标套接字</td>
+<td>需要内核5.9+，用于替代或补充内核的套接字查找逻辑</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_SK_REUSEPORT</td>
+<td>用于SO_REUSEPORT套接字选择，在多个监听套接字之间选择接收连接的目标</td>
+<td>仅影响连接分发策略，需要在应用层设置SO_REUSEPORT</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_CGROUP_SKB</td>
+<td>用于cgroup级别的套接字缓冲区过滤，对cgroup内的网络流量进行过滤</td>
+<td>只能过滤，无法修改数据包；需要配合cgroup v2使用</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_CGROUP_SOCK</td>
+<td>用于cgroup级别的套接字操作，在套接字创建、绑定、监听等时刻执行</td>
+<td>仅控制套接字生命周期事件，不处理实际数据包</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_CGROUP_SOCK_ADDR</td>
+<td>用于cgroup级别的套接字地址绑定，在bind()、connect()等调用时修改地址</td>
+<td>仅在连接建立阶段执行，不处理后续数据流</td>
+</tr>
+<tr>
+<td>BPF_PROG_TYPE_FLOW_DISSECTOR</td>
+<td>用于流解析器，在数据包早期解析协议头，提取流标识信息</td>
+<td>解析逻辑受限，不能依赖完整的协议栈状态</td>
+</tr>
+</tbody></table>
+<h3 id="其它类eBPF程序"><a href="#其它类eBPF程序" class="headerlink" title="其它类eBPF程序"></a>其它类eBPF程序</h3><p>其它类eBPF程序，包括Linux安全模块、轻量级隧道处理，内核结构体修改等。下表中包含了这些不常用BPF程序的主要功能以及应用场景。</p>
+<table>
+<thead>
+<tr>
+<th><strong>程序类型</strong></th>
+<th><strong>功能描述</strong></th>
+<th><strong>应用场景</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BPF_PROG_TYPE_LSM</td>
+<td>用于Linux安全模块（Linux Security Module，LSM）访问控制和审计策略</td>
+<td>在文件访问、进程创建等关键安全操作点执行，用于安全审计和访问控制；需要内核开启CONFIG_BPF_LSM</td>
+</tr>
+<tr>
+<td><font style="color:rgba(0, 0, 0, 0.9);">BPF_PROG_TYPE_LWT_IN   </font><font style="color:rgba(0, 0, 0, 0.9);">BPF_PROG_TYPE_LWT_OUT   </font><font style="color:rgba(0, 0, 0, 0.9);">BPF_PROG_TYPE_LWT_XMIT</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">用于轻量级隧道（Lightweight Tunnel）处理，分别在隧道接收、发送、传输阶段执行</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">用于轻量级隧道（如vxlan、mpls等）的封装或解封装；需要配合iproute2的lwtunnel使用</font></td>
+</tr>
+<tr>
+<td><font style="color:rgba(0, 0, 0, 0.9);">BPF_PROG_TYPE_LIRC_MODE2</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">用于红外设备的远程遥控</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">处理红外信号解码；需要硬件支持LIRC，应用场景较为特定</font></td>
+</tr>
+<tr>
+<td><font style="color:rgba(0, 0, 0, 0.9);">BPF_PROG_TYPE_STRUCT_OPS</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">用于修改内核结构体</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">目前仅支持拥塞控制算法tcp_congestion_ops，可将eBPF程序作为内核回调函数注册，实现自定义TCP拥塞控制算法；需要内核BTF支持</font></td>
+</tr>
+<tr>
+<td><font style="color:rgba(0, 0, 0, 0.9);">BPF_PROG_TYPE_EXT</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">用于扩展BPF程序</font></td>
+<td><font style="color:rgba(0, 0, 0, 0.9);">允许一个程序作为另一个程序的扩展（类似动态链接），用于代码复用和模块化；需要被扩展的程序支持</font></td>
+</tr>
+</tbody></table>
+<h2 id="事件追踪"><a href="#事件追踪" class="headerlink" title="事件追踪"></a>事件追踪</h2><p>通过eBPF可以对多种类型的事件进行跟踪，例如内核动&#x2F;静态跟踪、用户态跟踪、性能分析、网络包过滤、网络流量控制等等。</p>
+<h3 id="kprobe-kretprobe"><a href="#kprobe-kretprobe" class="headerlink" title="kprobe&#x2F;kretprobe"></a>kprobe&#x2F;kretprobe</h3><p>kprobe允许在内核函数的入口处插入一个断点。当CPU执行到这个位置时，会触发一个陷入（trap），CPU切换到预先定义的处理函数（probe handler）执行。这个处理函数可以访问和修改内核的状态，包括CPU寄存器、内核栈、全局变量等。执行完处理函数后，CPU会返回到断点处，继续执行原来的内核代码。</p>
+<p>kretprobe允许在内核函数返回时插入一个断点，当函数返回时，CPU会先跳转到自定义的处理函数，然后再返回到原来的地址。kretprobe的使用基本上和kprobe是一致的，只是需要将SEC(“kprobe&#x2F;xxx”)改为SEC(“kretprobe&#x2F;xxx”)即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">SEC(<span class="string">&quot;kprobe/vfs_mkdir&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">BPF_KPROBE</span><span class="params">(kprobe_vfs_mkdir)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;kprobe:vfs_mkdir\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">SEC(<span class="string">&quot;kretprobe/vfs_mkdir&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">BPF_KRETPROBE</span><span class="params">(kretpobe_mkdir,<span class="type">long</span> retval)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;kretprobe:vfs_mkdir\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="tracepoint"><a href="#tracepoint" class="headerlink" title="tracepoint"></a>tracepoint</h3><p>tracepoints是Linux内核中的一种机制，它们是在内核源代码中预定义的钩子点，用于插入用于跟踪和调试的代码。tracepoints在内核中的特定位置被硬编码，每个tracepoint都有一个唯一的名称和一组相关的参数。tracepoints和kprobes&#x2F;kretprobes都是Linux内核中用于动态跟踪的机制，但它们在使用和性能方面有一些关键的区别。以下是tracepoints的优缺点：</p>
+<ul>
+<li>优点：<ul>
+<li>稳定性：tracepoints是在内核源代码中预定义的，提供了稳定的ABI。即使内核版本升级，tracepoint的名称和参数也不会改变，这使得开发者可以编写依赖于特定tracepoint的代码，而不用担心在未来的内核版本中这些tracepoint会改变。</li>
+<li>性能：tracepoints对性能的影响非常小。只有当tracepoint被激活，并且有一个或多个探针附加到它时，才会消耗CPU时间，这使得tracepoints非常适合在生产环境中使用。</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>可用性：tracepoints的数量和覆盖范围有限。并非所有的内核函数都有对应的tracepoint，这限制了可以监控的事件。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SEC(<span class="string">&quot;tracepoint/sock/inet_sock_set_state&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">handle_ssh_conn</span><span class="params">(<span class="keyword">struct</span> trace_event_raw_inet_sock_set_state *ctx)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;tracepoint:sock:inet_sock_set_state\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="socket"><a href="#socket" class="headerlink" title="socket"></a>socket</h3><p>socket就是和网络包相关的事件，常见的网络包处理函数有sock_filter和sockops。eBPF所有可以处理的事件类型都在bpf.h文件中定义。其中和socket相关的事件有：</p>
+<ol>
+<li>BPF_PROG_TYPE_SOCKET_FILTER：用于套接字过滤器，可过滤套接字接收的数据包。</li>
+<li>BPF_PROG_TYPE_SOCK_OPS：用于套接字操作，跟踪TCP连接状态变化（如连接建立、重传、拥塞控制）。</li>
+<li>BPF_PROG_TYPE_SK_SKB：用于套接字级别的数据包处理，配合sockmap实现套接字之间的数据包转发。</li>
+<li>BPF_PROG_TYPE_SK_MSG：用于套接字消息处理，在sendmsg&#x2F;recvmsg系统调用层面执行。</li>
+<li>BPF_PROG_TYPE_SK_LOOKUP：用于套接字查找，在数据包到达时自定义选择目标套接字。</li>
+<li>BPF_PROG_TYPE_SK_REUSEPORT：用于SO_REUSEPORT套接字选择，在多个监听套接字之间选择接收连接的目标。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SEC(<span class="string">&quot;socket/sock_filter&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">socket_sock_filter</span><span class="params">(<span class="type">void</span> *ctx)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;socket:sock_filter\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="tc"><a href="#tc" class="headerlink" title="tc"></a>tc</h3><p>TC的全称是Traffic Control，即流量控制。通过TC可以对网络流量进行控制，例如限速、限流、负载均衡等。</p>
+<p>从内核4.1开始，TC支持加载eBPF程序到子系统的Hook点，并且在之后的内核4.4中引入了direct-action模式，Cilium、Calico等网络插件大量使用TC Hook来控制网络包的转发。子系统包括qdisc、class、classifier（filter）、action等概念，eBPF程序可以作为classifier被挂载。想较于其它类型的事件，需要额外引入uapi&#x2F;linux&#x2F;pkt_cls.h文件，pkt_cls.h头文件提供了一组用于数据包分类的常量、数据结构和函数原型。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 出流量</span><br><span class="line">SEC(<span class="string">&quot;classifier/egress&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">egress_cls_func</span><span class="params">(<span class="keyword">struct</span> __sk_buff *skb)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;classifier:egress\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> TC_ACT_OK;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"># 进流量</span><br><span class="line">SEC(<span class="string">&quot;classifier/ingress&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">ingress_cls_func</span><span class="params">(<span class="keyword">struct</span> __sk_buff *skb)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;classifier:ingress\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> TC_ACT_OK;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="xdp"><a href="#xdp" class="headerlink" title="xdp"></a>xdp</h3><p>XDP的全称是eXpress Data Path，即即快速数据路径。XDP机制通过将eBPF程序附加到网络设备的接收路径上来提高网络性能和降低延迟。具体而言，XDP程序会在数据包进入网络设备的接收队列之前执行，这样可以在内核中进行快速的数据包过滤和处理，而无需将数据包传递给用户空间。</p>
+<p>TC和XDP是Linux网络中两种不同的数据包处理机制，它们的区别如下：</p>
+<ul>
+<li>位置不同。TC位于Linux网络协议栈的较高层，主要用于在网络设备的出入口处对数据包进行分类、调度和限速等操作；XDP位于网络设备驱动程序的接收路径上，用于快速处理数据包并决定是否将其传递给协议栈。</li>
+<li>执行时机不同。TC在数据包进入或离开网络设备时执行，通常在内核空间中进行；XDP在数据包进入网络设备驱动程序的接收路径时执行，可以在内核空间中或用户空间中执行。</li>
+<li>处理能力不同。TC提供了更复杂的流量控制和分类策略，可以实现各种QoS功能，它可以对数据包进行过滤、限速、排队等操作；XDP主要用于快速的数据包过滤和处理，以降低延迟和提高性能。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SEC(<span class="string">&quot;xdp/ingress&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">egress_cls_func</span><span class="params">(<span class="keyword">struct</span> __sk_buff *skb)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;xdp:ingress\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> XDP_PASS;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="uprobe"><a href="#uprobe" class="headerlink" title="uprobe"></a>uprobe</h3><p>uprobe是User Probe的缩写，它利用了Linux内核中的ftrace（function trace）框架来实现。通过uprobe，可以在用户空间程序的指定函数入口或出口处插入探测点，当该函数被调用或返回时，可以触发事先定义的处理逻辑。相较于kprobe是用于监控内核态的程序，uprobe则是用于监控用户态的程序。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SEC(<span class="string">&quot;uprobe/readline&quot;</span>)</span><br><span class="line"><span class="type">int</span> <span class="title function_">uprobe_readline</span><span class="params">(<span class="type">void</span> *ctx)</span></span><br><span class="line">&#123;</span><br><span class="line">    bpf_printk(<span class="string">&quot;uprobe:readline\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="程序插桩"><a href="#程序插桩" class="headerlink" title="程序插桩"></a>程序插桩</h2><h3 id="内核插桩点"><a href="#内核插桩点" class="headerlink" title="内核插桩点"></a>内核插桩点</h3><p>以监控和诊断领域为例，跟踪类eBPF程序的事件源包含内核函数（kprobe），内核跟踪点（tracepoint）和性能事件（perf_event）三类。</p>
+<h4 id="如何获取内核函数-内核跟踪点-性能事件"><a href="#如何获取内核函数-内核跟踪点-性能事件" class="headerlink" title="如何获取内核函数&#x2F;内核跟踪点&#x2F;性能事件"></a>如何获取<font style="color:rgb(42, 42, 42);">内核函数&#x2F;内核跟踪点&#x2F;性能事件</font></h4><ol>
+<li>通过Linux内核的跟踪事件调试信息&#x2F;sys&#x2F;kernel&#x2F;debug&#x2F;tracing&#x2F;events来获取内核函数、内核跟踪点，在&#x2F;sys&#x2F;kernel&#x2F;debug&#x2F;tracing&#x2F;available_events文件里可以看到系统中所有可用跟踪点的汇总结果。</li>
+</ol>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775896325510-ff510bf5-6fc7-4e1b-8f7b-edc0870ef8f2.png"></p>
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775896610706-ba759013-9bfc-4c02-a0df-ce5b0a3c6e4d.png"></p>
+<p>对于基于BTF的eBPF跟踪程序（如fentry&#x2F;fexit），通常只有包含BTF信息的内核函数才可以进行动态跟踪；而传统kprobe可以探测&#x2F;proc&#x2F;kallsyms中可见的绝大多数符号，但可能因编译优化（内联、静态）或运行时状态而受限。可以通过&#x2F;sys&#x2F;kernel&#x2F;tracing&#x2F;available_filter_functions或&#x2F;proc&#x2F;kallsyms查看各内核函数。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方法1, 查看/proc/kallsyms</span></span><br><span class="line">root@ubuntu:~# grep tcp_sendmsg /proc/kallsyms</span><br><span class="line">ffffffff89bcd9c0 T tcp_sendmsg					<span class="comment"># T = 全局符号, 可探测	</span></span><br><span class="line">ffffffff89cf5790 t mptcp_sendmsg				<span class="comment"># t = 局部符号, 可能受限</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法2, 使用perf probe测试</span></span><br><span class="line">root@ubuntu:~# perf probe --add tcp_sendmsg		<span class="comment"># 成功=可探测</span></span><br><span class="line">Added new event:</span><br><span class="line">  probe:tcp_sendmsg    (on tcp_sendmsg)</span><br><span class="line"></span><br><span class="line">You can now use it <span class="keyword">in</span> all perf tools, such as:</span><br><span class="line"></span><br><span class="line">        perf record -e probe:tcp_sendmsg -aR <span class="built_in">sleep</span> 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法3, bpftool检查BTF</span></span><br><span class="line">root@ubuntu:~# bpftool btf dump file /sys/kernel/btf/vmlinux | grep tcp_sendmsg</span><br><span class="line">[41519] STRUCT <span class="string">&#x27;mptcp_sendmsg_info&#x27;</span> size=20 vlen=6</span><br><span class="line">[71757] FUNC <span class="string">&#x27;espintcp_sendmsg&#x27;</span> type_id=71756 linkage=static</span><br><span class="line">[90594] FUNC <span class="string">&#x27;mptcp_sendmsg&#x27;</span> type_id=90593 linkage=static</span><br><span class="line">[90596] FUNC <span class="string">&#x27;mptcp_sendmsg_frag&#x27;</span> type_id=90595 linkage=static</span><br><span class="line">[111577] FUNC <span class="string">&#x27;tcp_sendmsg&#x27;</span> type_id=71756 linkage=static</span><br><span class="line">[111578] FUNC <span class="string">&#x27;tcp_sendmsg_locked&#x27;</span> type_id=71756 linkage=static</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用bpftrace来获取内核函数、内核跟踪点，使用perf list获取性能事件。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询所有内核插桩和跟踪点</span></span><br><span class="line">bpftrace -l | <span class="built_in">wc</span> -l</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用通配符查询所有的系统调用跟踪点</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;tracepoint:syscalls:*&#x27;</span> | <span class="built_in">wc</span> -l</span><br><span class="line"><span class="comment"># 查找与文件操作相关的调用（open/read/write/close）</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;tracepoint:syscalls:*&#x27;</span> | grep -E <span class="string">&quot;(open|read|write|close)&quot;</span></span><br><span class="line"><span class="comment"># 查找网络相关调用（socket/bind/connect/send/recv）</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;tracepoint:syscalls:*&#x27;</span> | grep -E <span class="string">&quot;(socket|bind|connect|send|recv|accept)&quot;</span></span><br><span class="line"><span class="comment"># 查找进程管理调用（fork/clone/exec/exit）</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;tracepoint:syscalls:*&#x27;</span> | grep -E <span class="string">&quot;(fork|clone|exec|exit)&quot;</span></span><br><span class="line"><span class="comment"># 查找所有可能涉及权限检查的调用（access/chmod/chown）</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;tracepoint:syscalls:*&#x27;</span> | grep -E <span class="string">&quot;(access|chmod|chown|stat)&quot;</span></span><br><span class="line"><span class="comment"># 查找 mmap/mprotect/munmap 内存相关</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;tracepoint:syscalls:*&#x27;</span> | grep -E <span class="string">&quot;m(map|protect|unlock|advise)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取性能事件</span></span><br><span class="line">perf list tracepoint</span><br></pre></td></tr></table></figure>
+
+<h4 id="如何查看内核函数-跟踪点的参数和数据结构"><a href="#如何查看内核函数-跟踪点的参数和数据结构" class="headerlink" title="如何查看内核函数&#x2F;跟踪点的参数和数据结构"></a>如何<font style="color:rgb(42, 42, 42);">查看内核函数&#x2F;跟踪点的参数和数据结构</font></h4><ol>
+<li>使用调试信息获取。以sock的inet_sock_set_state为例，查看调试信息下的format文件。注意，format列出的字段中，前8个字节对应的字段普通的ebpf程序都不能直接访问（部分bpf helpers辅助函数可以访问），其他的字段一般都可以访问，具体以print fmt中引用的字段为准。对于kprobe，是无法通过上面方式获取参数的，可从内核代码找对应的内核函数。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# <span class="built_in">cat</span> /sys/kernel/debug/tracing/events/sock/inet_sock_set_state/format </span><br><span class="line">name: inet_sock_set_state</span><br><span class="line">ID: 1477</span><br><span class="line">format:</span><br><span class="line">        field:unsigned short common_type;       offset:0;       size:2; signed:0;</span><br><span class="line">        field:unsigned char common_flags;       offset:2;       size:1; signed:0;</span><br><span class="line">        field:unsigned char common_preempt_count;       offset:3;       size:1; signed:0;</span><br><span class="line">        field:int common_pid;   offset:4;       size:4; signed:1;</span><br><span class="line"></span><br><span class="line">        field:const void * skaddr;      offset:8;       size:8; signed:0;</span><br><span class="line">        field:int oldstate;     offset:16;      size:4; signed:1;</span><br><span class="line">        field:int newstate;     offset:20;      size:4; signed:1;</span><br><span class="line">        field:__u16 sport;      offset:24;      size:2; signed:0;</span><br><span class="line">        field:__u16 dport;      offset:26;      size:2; signed:0;</span><br><span class="line">        field:__u16 family;     offset:28;      size:2; signed:0;</span><br><span class="line">        field:__u16 protocol;   offset:30;      size:2; signed:0;</span><br><span class="line">        field:__u8 saddr[4];    offset:32;      size:4; signed:0;</span><br><span class="line">        field:__u8 daddr[4];    offset:36;      size:4; signed:0;</span><br><span class="line">        field:__u8 saddr_v6[16];        offset:40;      size:16;        signed:0;</span><br><span class="line">        field:__u8 daddr_v6[16];        offset:56;      size:16;        signed:0;</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span> <span class="built_in">fmt</span>: <span class="string">&quot;family=%s protocol=%s sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c oldstate=%s newstate=%s&quot;</span>, __print_symbolic(REC-&gt;family, &#123; 2, <span class="string">&quot;AF_INET&quot;</span> &#125;, &#123; 10, <span class="string">&quot;AF_INET6&quot;</span> &#125;), __print_symbolic(REC-&gt;protocol, &#123; 6, <span class="string">&quot;IPPROTO_TCP&quot;</span> &#125;, &#123; 33, <span class="string">&quot;IPPROTO_DCCP&quot;</span> &#125;, &#123; 132, <span class="string">&quot;IPPROTO_SCTP&quot;</span> &#125;, &#123; 262, <span class="string">&quot;IPPROTO_MPTCP&quot;</span> &#125;), REC-&gt;sport, REC-&gt;dport, REC-&gt;saddr, REC-&gt;daddr, REC-&gt;saddr_v6, REC-&gt;daddr_v6, __print_symbolic(REC-&gt;oldstate, &#123; 1, <span class="string">&quot;TCP_ESTABLISHED&quot;</span> &#125;, &#123; 2, <span class="string">&quot;TCP_SYN_SENT&quot;</span> &#125;, &#123; 3, <span class="string">&quot;TCP_SYN_RECV&quot;</span> &#125;, &#123; 4, <span class="string">&quot;TCP_FIN_WAIT1&quot;</span> &#125;, &#123; 5, <span class="string">&quot;TCP_FIN_WAIT2&quot;</span> &#125;, &#123; 6, <span class="string">&quot;TCP_TIME_WAIT&quot;</span> &#125;, &#123; 7, <span class="string">&quot;TCP_CLOSE&quot;</span> &#125;, &#123; 8, <span class="string">&quot;TCP_CLOSE_WAIT&quot;</span> &#125;, &#123; 9, <span class="string">&quot;TCP_LAST_ACK&quot;</span> &#125;, &#123; 10, <span class="string">&quot;TCP_LISTEN&quot;</span> &#125;, &#123; 11, <span class="string">&quot;TCP_CLOSING&quot;</span> &#125;, &#123; 12, <span class="string">&quot;TCP_NEW_SYN_RECV&quot;</span> &#125;), __print_symbolic(REC-&gt;newstate, &#123; 1, <span class="string">&quot;TCP_ESTABLISHED&quot;</span> &#125;, &#123; 2, <span class="string">&quot;TCP_SYN_SENT&quot;</span> &#125;, &#123; 3, <span class="string">&quot;TCP_SYN_RECV&quot;</span> &#125;, &#123; 4, <span class="string">&quot;TCP_FIN_WAIT1&quot;</span> &#125;, &#123; 5, <span class="string">&quot;TCP_FIN_WAIT2&quot;</span> &#125;, &#123; 6, <span class="string">&quot;TCP_TIME_WAIT&quot;</span> &#125;, &#123; 7, <span class="string">&quot;TCP_CLOSE&quot;</span> &#125;, &#123; 8, <span class="string">&quot;TCP_CLOSE_WAIT&quot;</span> &#125;, &#123; 9, <span class="string">&quot;TCP_LAST_ACK&quot;</span> &#125;, &#123; 10, <span class="string">&quot;TCP_LISTEN&quot;</span> &#125;, &#123; 11, <span class="string">&quot;TCP_CLOSING&quot;</span> &#125;, &#123; 12, <span class="string">&quot;TCP_NEW_SYN_RECV&quot;</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用bpftrace获取。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# bpftrace -lv tracepoint:sock:inet_sock_set_state</span><br><span class="line">tracepoint:sock:inet_sock_set_state</span><br><span class="line">    const void * skaddr</span><br><span class="line">    int oldstate</span><br><span class="line">    int newstate</span><br><span class="line">    __u16 sport</span><br><span class="line">    __u16 dport</span><br><span class="line">    __u16 family</span><br><span class="line">    __u16 protocol</span><br><span class="line">    __u8 saddr[4]</span><br><span class="line">    __u8 daddr[4]</span><br><span class="line">    __u8 saddr_v6[16]</span><br><span class="line">    __u8 daddr_v6[16]</span><br></pre></td></tr></table></figure>
+
+<h3 id="应用插桩点"><a href="#应用插桩点" class="headerlink" title="应用插桩点"></a>应用插桩点</h3><ol>
+<li>使用readelf、objdump、nm查询。静态编译语言通过-g编译选项保留调试信息，应用程序二进制会包含DWARF（Debugging With Attributed Record Format），有了调试信息，可以通过readelf、objdump、nm等工具来查询可用于跟踪的函数、变量等符号列表。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># readelf - Displays information about ELF files.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询符号表</span></span><br><span class="line"><span class="comment"># -s --syms/--symbols    Display the symbol table</span></span><br><span class="line">readelf -s xxxxxx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询USDT信息</span></span><br><span class="line"><span class="comment"># -n --notes    Display the core notes (if present)</span></span><br><span class="line">readelf -n xxxxxx </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># objdump - display information from object files.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -t, --syms    Display the contents of the symbol table(s)</span></span><br><span class="line">objdump -t xxxxxx</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># nm - list symbols from object files</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -a, --debug-syms    Display debugger-only symbols</span></span><br><span class="line">nm -a xxxxxx</span><br></pre></td></tr></table></figure>
+
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775899522170-9bb5c1f9-bb47-4cd3-b4e4-c2bcb4e6cae2.png"></p>
+<ol start="2">
+<li>使用bpftrace查询。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询uprobe</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;uprobe:xxxxxx:*&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看USDT</span></span><br><span class="line">bpftrace -l <span class="string">&#x27;usdt:xxxxxx:*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<!-- 这是一张图片，ocr 内容为： -->
+<p><img src="/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/1775899678669-09bce584-1f73-4084-8b3f-991017e9b4fb.png"></p>
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>由于eBPF是内核技术，因此需要具备较新版本的Linux内核（推荐Ubuntu24.04），以支持eBPF功能。以ebpf-go框架为例，安装如下依赖与相关包：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install -y make clang llvm libelf-dev libbpf-dev bpfcc-tools libbpfcc-dev linux-tools-$(<span class="built_in">uname</span> -r) linux-headers-$(<span class="built_in">uname</span> -r)</span><br><span class="line"></span><br><span class="line">go <span class="built_in">env</span> -w GOPROXY=https://goproxy.cn,direct</span><br><span class="line">go install github.com/cilium/ebpf/cmd/bpf2go@latest</span><br><span class="line">go install github.com/aya-rs/bpf-linker@latest</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=$PATH:$(go env GOPATH)/bin&#x27;</span> &gt;&gt; ~/.bashrc</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
 
@@ -347,23 +611,23 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BPF"><span class="toc-number">1.</span> <span class="toc-text">BPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eBPF"><span class="toc-number">2.</span> <span class="toc-text">eBPF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">内核原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%BA%A4%E4%BA%92"><span class="toc-number">2.2.</span> <span class="toc-text">内核交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">2.3.</span> <span class="toc-text">开发工具链</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BPF"><span class="toc-number">1.</span> <span class="toc-text">BPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eBPF"><span class="toc-number">2.</span> <span class="toc-text">eBPF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">内核原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%BA%A4%E4%BA%92"><span class="toc-number">2.2.</span> <span class="toc-text">内核交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">2.3.</span> <span class="toc-text">开发工具链</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%88%86%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">程序分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">3.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%9F%E8%B8%AA%E7%B1%BBeBPF%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.2.</span> <span class="toc-text">跟踪类eBPF程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E7%B1%BBeBPF%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.3.</span> <span class="toc-text">网络类eBPF程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%B1%BBeBPF%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.4.</span> <span class="toc-text">其它类eBPF程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E8%BF%BD%E8%B8%AA"><span class="toc-number">4.</span> <span class="toc-text">事件追踪</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#kprobe-kretprobe"><span class="toc-number">4.1.</span> <span class="toc-text">kprobe&#x2F;kretprobe</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tracepoint"><span class="toc-number">4.2.</span> <span class="toc-text">tracepoint</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#socket"><span class="toc-number">4.3.</span> <span class="toc-text">socket</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tc"><span class="toc-number">4.4.</span> <span class="toc-text">tc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#xdp"><span class="toc-number">4.5.</span> <span class="toc-text">xdp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#uprobe"><span class="toc-number">4.6.</span> <span class="toc-text">uprobe</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E6%8F%92%E6%A1%A9"><span class="toc-number">5.</span> <span class="toc-text">程序插桩</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E6%8F%92%E6%A1%A9%E7%82%B9"><span class="toc-number">5.1.</span> <span class="toc-text">内核插桩点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0-%E5%86%85%E6%A0%B8%E8%B7%9F%E8%B8%AA%E7%82%B9-%E6%80%A7%E8%83%BD%E4%BA%8B%E4%BB%B6"><span class="toc-number">5.1.1.</span> <span class="toc-text">如何获取内核函数&#x2F;内核跟踪点&#x2F;性能事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0-%E8%B7%9F%E8%B8%AA%E7%82%B9%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">5.1.2.</span> <span class="toc-text">如何查看内核函数&#x2F;跟踪点的参数和数据结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E6%8F%92%E6%A1%A9%E7%82%B9"><span class="toc-number">5.2.</span> <span class="toc-text">应用插桩点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">6.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="toc-number">7.</span> <span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
       </div>
     
 
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&text=eBPF初探"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&is_video=false&description=eBPF初探"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=eBPF初探&body=Check out this article: https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF初探"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&name=eBPF初探&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&t=eBPF初探"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&text=eBPF基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&is_video=false&description=eBPF基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=eBPF基础&body=Check out this article: https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&title=eBPF基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&name=eBPF基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://h3rmesk1t.github.io/2026/04/10/eBPF%E5%88%9D%E6%8E%A2/&t=eBPF基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
